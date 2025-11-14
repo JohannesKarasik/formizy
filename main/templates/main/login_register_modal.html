@@ -180,31 +180,31 @@
   }
   
   async function handleRegister(event) {
-      event.preventDefault();
-  
-      const email = document.getElementById("register-email").value;
-      const password = document.getElementById("register-password").value;
-  
-      const res = await fetch("/register/", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-CSRFToken": getCSRF(),
-          },
-          body: new URLSearchParams({
-              email: email,
-              password: password,
-              next: window.location.pathname
-          })
-      });
-  
-      if (res.redirected) {
-          window.location = res.url;
-          return;
-      }
-  
-      alert("Registration failed. Try another email.");
-  }
+    event.preventDefault();
+
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    const res = await fetch("/register/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRF(),
+        },
+        body: formData
+    });
+
+    if (!res.redirected && !res.ok) {
+        alert("Registration failed. Try another email.");
+        return;
+    }
+
+    window.location.reload();
+}
+
   
   function getCSRF() {
       return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
