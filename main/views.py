@@ -335,3 +335,45 @@ def register_view(request):
    user = User.objects.create_user(username=email, password=password)
    login(request, user)
    return redirect(next_url)
+
+
+
+import stripe
+from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+# Make sure your STRIPE_WEBHOOK_SECRET is loaded from settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle event types
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+
+        # you can read metadata here (if you added metadata during checkout)
+        form_slug = session["metadata"].get("form_slug", "")
+        email = session.get("customer_details", {}).get("email")
+
+        # TODO: mark payment as successful in DB, unlock PDF, etc.
+        print("Payment successful for:", form_slug, "by", email)
+
+    return HttpResponse(status=200)
