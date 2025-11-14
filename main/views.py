@@ -278,33 +278,37 @@ def map_form(request, country_code, form_slug):
 # AUTH
 # ===========================
 
-
 def register_view(request):
     if request.method == 'POST':
         print("REGISTER HIT — DATA:", request.POST)
 
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
 
-        print("REGISTER username:", username)
+        print("REGISTER email:", email)
         print("REGISTER password length:", len(password) if password else "NO PASSWORD")
 
+        if not email or not password:
+            print("REGISTER ERROR — Missing fields")
+            return JsonResponse({"error": "missing fields"}, status=400)
+
+        if User.objects.filter(username=email).exists():
+            print("REGISTER ERROR — email already exists")
+            return JsonResponse({"error": "exists"}, status=400)
+
         try:
-            user = User.objects.create_user(username=username, password=password)
+            user = User.objects.create_user(username=email, email=email, password=password)
             print("REGISTER SUCCESS — user id:", user.id)
         except Exception as e:
             print("REGISTER ERROR:", str(e))
-            return render(request, "auth/register.html", {
-                "error": f"Register failed: {e}"
-            })
+            return JsonResponse({"error": str(e)}, status=400)
 
         login(request, user)
         print("REGISTER LOGIN SUCCESS")
 
         return redirect(request.POST.get('next', '/'))
 
-    print("REGISTER VIEW GET")
-    return render(request, 'auth/register.html')
+    return JsonResponse({"error": "GET not allowed"}, status=405)
 
 
 
