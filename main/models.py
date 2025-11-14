@@ -1,4 +1,6 @@
 from django.db import models
+from django.db import models
+from django.contrib.auth.models import User
 
 
 
@@ -37,3 +39,14 @@ class Form(models.Model):
     def __str__(self):
         return self.title
 
+
+class PaidForm(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    form_slug = models.CharField(max_length=200)
+    paid_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "form_slug")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.form_slug}"
