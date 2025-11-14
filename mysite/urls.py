@@ -23,8 +23,8 @@ from main.views import stripe_webhook
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls')),
     path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
+    path('', include('main.urls')),
 
 ]
 
