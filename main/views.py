@@ -348,6 +348,10 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
 def stripe_webhook(request):
+    # Stripe sends ONLY POST
+    if request.method != "POST":
+        return HttpResponse("Webhook endpoint", status=200)
+
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
     event = None
@@ -359,21 +363,13 @@ def stripe_webhook(request):
             settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
-        # Invalid payload
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError:
-        # Invalid signature
         return HttpResponse(status=400)
 
-    # Handle event types
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-
-        # you can read metadata here (if you added metadata during checkout)
-        form_slug = session["metadata"].get("form_slug", "")
-        email = session.get("customer_details", {}).get("email")
-
-        # TODO: mark payment as successful in DB, unlock PDF, etc.
-        print("Payment successful for:", form_slug, "by", email)
+        print("Payment successful:", session)
 
     return HttpResponse(status=200)
+
