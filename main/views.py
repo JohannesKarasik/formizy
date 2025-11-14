@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.conf import settings
+import stripe
 
 
 import json, io, os
@@ -391,8 +392,6 @@ def stripe_webhook(request):
 
 @login_required
 def create_checkout_session(request, country_code, form_slug):
-    import stripe
-    stripe.api_key = settings.STRIPE_SECRET_KEY
 
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
