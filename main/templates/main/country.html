@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ country_name }} Forms — FillThatForm{% endblock %}
+
+{% block content %}
+  <div style="text-align:center; padding:40px;">
+    <h1>{{ country_name }} Forms</h1>
+    <ul style="list-style:none; padding:0;">
+      {% for form in forms %}
+        <li style="
+          background:white;
+          margin:10px auto;
+          padding:15px 25px;
+          border-radius:10px;
+          box-shadow:0 1px 5px rgba(0,0,0,0.1);
+          max-width:400px;
+          text-align:left;
+        ">
+          <a href="/{{ country_code }}/{{ form.slug }}/" 
+             style="text-decoration:none; color:#1e40af; font-weight:600;">
+            {{ form.name }}
+          </a>
+        </li>
+      {% empty %}
+        <p>No forms available for this country yet.</p>
+      {% endfor %}
+    </ul>
+    <p style="margin-top:20px;"><a href="/" style="color:#333;">← Back to countries</a></p>
+  </div>
+{% endblock %}

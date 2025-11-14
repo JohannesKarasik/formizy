@@ -1,0 +1,388 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FillThatForm{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+  html, body {
+    font-family: 'Manrope', Arial, sans-serif;
+}
+  
+      header {
+        background: white;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        padding: 16px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+  
+      .logo {
+        font-size: 1.4rem;
+        color: #0071e3;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-decoration: none;
+      }
+  
+      .hamburger {
+        width: 28px;
+        height: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+  
+      .hamburger div {
+        height: 3px;
+        background: #111;
+        border-radius: 4px;
+        transition: 0.3s;
+      }
+  
+      .mobile-menu {
+        display: none;
+        flex-direction: column;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        position: absolute;
+        top: 64px;
+        right: 0;
+        width: 200px;
+        padding: 16px;
+        border-radius: 8px;
+        z-index: 200;
+      }
+  
+      .mobile-menu a {
+        text-decoration: none;
+        color: #111;
+        padding: 10px 0;
+        font-size: 1rem;
+        border-bottom: 1px solid #eee;
+        font-weight: 600;
+      }
+  
+      .mobile-menu a:last-child {
+        border-bottom: none;
+      }
+  
+
+  
+      footer {
+        text-align: center;
+        color: #666;
+        font-size: 0.85rem;
+        padding: 40px 0;
+        margin-top: 60px;
+      }
+
+      :root {
+    --bg: #f6f9ff;
+    --surface: #ffffff;
+    --surface-2: #f0f4ff;
+    --text: #0b1225;
+    --muted: #5b6b88;
+    --border: #dce6ff;
+    --shadow: 0 8px 32px rgba(0, 30, 150, .08);
+
+    --brand: #3b82f6;      /* blue primary */
+    --brand-2: #60a5fa;    /* lighter blue */
+    --brand-lite: #e8f1ff; /* pale background-blue */
+
+    --radius: 14px;
+}
+
+.page {
+    background:
+        radial-gradient(900px 500px at 80% -10%, rgba(59,130,246,0.14), transparent 70%),
+        radial-gradient(700px 400px at -10% 10%, rgba(96,165,250,0.12), transparent 70%),
+        linear-gradient(180deg, #ffffff, #f6f9ff 65%, #ffffff);
+    min-height: 100dvh;
+    color: var(--text);
+}
+
+.wrap {
+    max-width: 1100px;
+    margin-inline: auto;
+    padding: 32px 20px;
+}
+
+/* ===========================================
+   HERO
+=========================================== */
+
+.hero {
+    text-align: center;
+    padding: 72px 0 36px;
+}
+
+.hero .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .95rem;
+    color: var(--brand);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--brand-lite);
+    font-weight: 600;
+}
+
+.title {
+    font-size: clamp(2.3rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    margin: 20px auto 12px;
+    max-width: 18ch;
+}
+
+.sub {
+    max-width: 65ch;
+    margin: 0 auto;
+    color: var(--muted);
+}
+
+/* Card under hero */
+.heroCard {
+    margin: 26px auto 0;
+    max-width: 760px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.heroCheck {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.heroCheck b {
+    color: #16a34a;
+    font-size: 1.2rem;
+}
+
+/* CTA buttons */
+.ctaGroup {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    transition: transform .12s ease;
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+}
+
+.cta.secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* ===========================================
+   COUNTRY PICKER
+=========================================== */
+
+.block-title {
+    margin: 50px 0 20px;
+    text-align: center;
+}
+
+.block-title h2 {
+    margin: 0;
+    font-size: 1.9rem;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: min(450px, 100%);
+    margin: 14px auto 0;
+}
+
+.search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    width: 100%;
+}
+
+.countries {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 20px;
+}
+
+@media (max-width: 1100px) { .countries { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px)  { .countries { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px)  { .countries { grid-template-columns: 1fr; } }
+
+.country {
+    background: var(--surface);
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: 0.2s ease;
+}
+
+.country:hover {
+    border-color: var(--brand);
+    transform: translateY(-2px);
+}
+
+.flag {
+    font-size: 1.8rem;
+}
+
+.country small {
+    color: var(--muted);
+}
+
+/* Utility */
+.muted { color: var(--muted); }
+
+
+/* Logo link wrapper */
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Logo image styling */
+.logo-img {
+    height: 70px;           /* clean, modern navbar size */
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+
+    </style>
+  
+    {# 🔹 per-page meta + CSS from child templates goes here #}
+    {% block meta %}{% endblock %}
+  
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+      }
+    </script>
+  </head>
+  
+
+<body>
+    <header>
+      <a href="/" class="logo-link">
+        <img src="{% static 'main/logo.png' %}" alt="FillThatForm Logo" class="logo-img">
+    </a>
+          
+        <div style="display:flex;align-items:center;gap:14px;">
+    
+          {% if user.is_authenticated %}
+            <!-- Contact Us -->
+            <a href="/contact/"
+               style="
+                padding:6px 12px;
+                border:1px solid #2563eb;
+                color:#2563eb;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:600;
+                font-size:14px;
+               ">
+              Contact Us
+            </a>
+    
+            <!-- Logout -->
+            <a href="/logout/"
+               style="
+                padding:6px 12px;
+                border:1px solid #2563eb;
+                color:#2563eb;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:600;
+                font-size:14px;
+               ">
+              Logout
+            </a>
+          {% endif %}
+      
+          <!-- Hamburger Icon -->
+          <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/">Home</a>
+            <a href="/de/">Germany</a>
+            <a href="/dk/">Denmark</a>
+            <a href="/us/">USA</a>
+    
+            {% if user.is_authenticated %}
+              <a href="/contact/" style="color:#2563eb;">Contact Us</a>
+              <a href="/logout/" style="color:#2563eb;">Logout</a>
+            {% endif %}
+        </div>
+    </header>
+    
+      
+    
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    © {{ now|date:"Y" }} FillThatForm — All rights reserved.
+  </footer>
+</body>
+</html>

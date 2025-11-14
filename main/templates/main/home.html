@@ -1,0 +1,266 @@
+{% extends "main/base.html" %}
+
+{% block title %}FillThatForm — Fill & Download Official Forms Online{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===========================================
+   SOFT WHITE / BLUE SAAS THEME
+   Clean, modern, bright, professional
+=========================================== */
+
+:root {
+    --bg: #f6f9ff;
+    --surface: #ffffff;
+    --surface-2: #f0f4ff;
+    --text: #0b1225;
+    --muted: #5b6b88;
+    --border: #dce6ff;
+    --shadow: 0 8px 32px rgba(0, 30, 150, .08);
+
+    --brand: #3b82f6;      /* blue primary */
+    --brand-2: #60a5fa;    /* lighter blue */
+    --brand-lite: #e8f1ff; /* pale background-blue */
+
+    --radius: 14px;
+}
+
+.page {
+    background:
+        radial-gradient(900px 500px at 80% -10%, rgba(59,130,246,0.14), transparent 70%),
+        radial-gradient(700px 400px at -10% 10%, rgba(96,165,250,0.12), transparent 70%),
+        linear-gradient(180deg, #ffffff, #f6f9ff 65%, #ffffff);
+    min-height: 100dvh;
+    color: var(--text);
+}
+
+.wrap {
+    max-width: 1100px;
+    margin-inline: auto;
+    padding: 32px 20px;
+}
+
+/* ===========================================
+   HERO
+=========================================== */
+
+.hero {
+    text-align: center;
+    padding: 72px 0 36px;
+}
+
+.hero .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .95rem;
+    color: var(--brand);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--brand-lite);
+    font-weight: 600;
+}
+
+.title {
+    font-size: clamp(2.3rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    margin: 20px auto 12px;
+    max-width: 18ch;
+}
+
+.sub {
+    max-width: 65ch;
+    margin: 0 auto;
+    color: var(--muted);
+}
+
+/* Card under hero */
+.heroCard {
+    margin: 26px auto 0;
+    max-width: 760px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.heroCheck {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.heroCheck b {
+    color: #16a34a;
+    font-size: 1.2rem;
+}
+
+/* CTA buttons */
+.ctaGroup {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    transition: transform .12s ease;
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+}
+
+.cta.secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* ===========================================
+   COUNTRY PICKER
+=========================================== */
+
+.block-title {
+    margin: 50px 0 20px;
+    text-align: center;
+}
+
+.block-title h2 {
+    margin: 0;
+    font-size: 1.9rem;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: min(450px, 100%);
+    margin: 14px auto 0;
+}
+
+.search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    width: 100%;
+}
+
+.countries {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 20px;
+}
+
+@media (max-width: 1100px) { .countries { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px)  { .countries { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px)  { .countries { grid-template-columns: 1fr; } }
+
+.country {
+    background: var(--surface);
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: 0.2s ease;
+}
+
+.country:hover {
+    border-color: var(--brand);
+    transform: translateY(-2px);
+}
+
+.flag {
+    font-size: 1.8rem;
+}
+
+.country small {
+    color: var(--muted);
+}
+
+/* Utility */
+.muted { color: var(--muted); }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="page">
+  <div class="wrap">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <span class="kicker">📑 Fill, e-sign & download official forms</span>
+      <h1 class="title" id="hero-title">Forms, ready in minutes—not hours</h1>
+      <p class="sub">
+        Formskies lets you complete government and administrative forms online with smart guidance,
+        then download a perfect PDF. No formatting headaches, no retyping.
+      </p>
+
+      <div class="heroCard">
+        <div class="heroCheck"><b>✓</b> Auto-save & resume anywhere</div>
+        <div class="heroCheck"><b>✓</b> Built-in validation prevents mistakes</div>
+        <div class="heroCheck"><b>✓</b> Instant PDF download & share</div>
+      </div>
+
+      <p class="ctaGroup">
+        <a class="cta" href="#countries"><span>🌍</span> Choose your country</a>
+      </p>
+    </section>
+
+    <section id="countries" aria-labelledby="countries-title">
+      <div class="block-title">
+        <h2 id="countries-title">Choose your country</h2>
+        <label class="search" for="countrySearch">
+          <span aria-hidden="true">🔎</span>
+          <input id="countrySearch" type="search" placeholder="Search countries…" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="countries">
+        {% for c in countries %}
+        <a href="/{{ c.code }}/" class="country" data-search="{{ c.name|lower }} {{ c.code|lower }}">
+          <span class="flag">{{ c.flag }}</span>
+          <div>
+            <strong>{{ c.name }}</strong>
+            <small>{{ c.code|upper }}</small>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if countries|length == 0 %}
+      <p class="muted" style="text-align:center;margin-top:10px;">
+        No countries available yet. Check back soon.
+      </p>
+      {% endif %}
+    </section>
+
+  </div>
+</main>
+{% endblock %}
