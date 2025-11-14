@@ -278,70 +278,76 @@ def map_form(request, country_code, form_slug):
 
 
 def register_view(request):
-   if request.method == 'POST':
-       username = request.POST['username']
-       password = request.POST['password']
-       user = User.objects.create_user(username=username, password=password)
-       login(request, user)
-       return redirect(request.POST.get('next', '/'))
-   return render(request, 'auth/register.html')
+    if request.method == 'POST':
+        print("REGISTER HIT — DATA:", request.POST)
+
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        print("REGISTER username:", username)
+        print("REGISTER password length:", len(password) if password else "NO PASSWORD")
+
+        try:
+            user = User.objects.create_user(username=username, password=password)
+            print("REGISTER SUCCESS — user id:", user.id)
+        except Exception as e:
+            print("REGISTER ERROR:", str(e))
+            return render(request, "auth/register.html", {
+                "error": f"Register failed: {e}"
+            })
+
+        login(request, user)
+        print("REGISTER LOGIN SUCCESS")
+
+        return redirect(request.POST.get('next', '/'))
+
+    print("REGISTER VIEW GET")
+    return render(request, 'auth/register.html')
 
 
 
+
+from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect, render
 
 def login_view(request):
-   if request.method == 'POST':
-       username = request.POST['username']
-       password = request.POST['password']
-       user = authenticate(request, username=username, password=password)
-       if user:
-           login(request, user)
-           return redirect(request.POST.get('next', '/'))
-       return render(request, 'auth/login.html', {"error": "Invalid credentials"})
-   return render(request, 'auth/login.html')
+    next_url = request.GET.get("next", "/")
+    print("LOGIN VIEW — METHOD:", request.method)
+
+    if request.method == "POST":
+        print("LOGIN HIT — POST DATA:", request.POST)
+
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        next_url = request.POST.get("next", "/")
+
+        print("LOGIN email:", email)
+        print("LOGIN password length:", len(password) if password else "NO PASSWORD")
+
+        user = authenticate(request, username=email, password=password)
+        print("AUTH RESULT:", user)
+
+        if user:
+            login(request, user)
+            print("LOGIN SUCCESS — user id:", user.id)
+            return redirect(next_url)
+
+        print("LOGIN FAILED — wrong credentials")
+        return render(request, "auth/login.html", {
+            "error": "Invalid email or password",
+            "next": next_url,
+        })
+
+    print("LOGIN VIEW GET")
+    return render(request, "auth/login.html", {"next": next_url})
 
 
 
 
-@require_POST
-def login_view(request):
-   email = request.POST.get("email")
-   password = request.POST.get("password")
-   next_url = request.POST.get("next", "/")
-
-
-   user = authenticate(request, username=email, password=password)
-   if user:
-       login(request, user)
-       return redirect(next_url)
-
-
-   return redirect(f"{next_url}?login_error=1")
 
 
 
-
-@require_POST
-def register_view(request):
-   email = request.POST.get("email")
-   password = request.POST.get("password")
-   next_url = request.POST.get("next", "/")
-
-
-   if User.objects.filter(username=email).exists():
-       return redirect(f"{next_url}?register_error=exists")
-
-
-   user = User.objects.create_user(username=email, password=password)
-   login(request, user)
-   return redirect(next_url)
-
-
-
-import stripe
-from django.conf import settings
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 
 # Make sure your STRIPE_WEBHOOK_SECRET is loaded from settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
