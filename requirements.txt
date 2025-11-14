@@ -14,3 +14,62 @@ PyMuPDF==1.26.6
 reportlab==4.4.4
 sqlparse==0.5.3
 typing_extensions==4.15.0
+
+
+#[Unit]
+#Description=gunicorn daemon
+#After=network.target
+
+#[Service]
+#User=clinton
+#Group=www-data
+#WorkingDirectory=/home/clinton/formizy
+#ExecStart=/home/clinton/formizy/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/clinton/mysite.sock mysite.wsgi:application
+
+
+#[Install]
+#WantedBy=multi-user.target
+
+
+#sudo ln -s /etc/nginx/sites-available/formizy /etc/nginx/sites-enabled/
+
+
+#server {
+ #   listen 80;
+ #   server_name 164.90.155.58;
+
+ #   location = /favicon.ico { access_log off; log_not_found off; }
+  #  location /static/ {
+   #     root /home/clinton/formizy;
+   # }
+
+   # location /media/ {
+   #     root /home/clinton/formizy;
+   # }
+
+    #location / {
+    #    include proxy_params;
+    #    proxy_pass http://unix:/home/clinton/mysite.sock;
+    #}
+#}
+
+
+
+#server {
+#    listen 80;
+ #   server_name 164.90.155.58;
+#
+ #   location = /favicon.ico { access_log off; log_not_found off; }
+  #  location /static/ {
+  #      root /home/clinton/formizy;
+  #  }
+
+   # location /media/ {
+    #    root /home/clinton/formizy;
+    #}
+
+  #  location / {
+   #     include proxy_params;
+    #    proxy_pass http://unix:/home/clinton/mysite.sock;
+    #}
+#}
