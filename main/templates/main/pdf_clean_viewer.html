@@ -327,25 +327,26 @@
 
            <!-- 🔝 Toolbar -->
            <div class="viewer-toolbar">
-               <div class="viewer-toolbar-left">
-                   PDF-Vorschau
-               </div>
-               <div class="viewer-toolbar-right">
-                   <button type="button" class="toolbar-btn" onclick="zoomOut()">−</button>
-                   <span id="zoom-label">100%</span>
-                   <button type="button" class="toolbar-btn" onclick="zoomIn()">+</button>
-
-                   {% if not user.is_authenticated %}
-                     <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="openAuthModal()">
-                       PDF herunterladen
-                     </button>
-                   {% else %}
-                     <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="downloadFilledPDF()">
-                       PDF herunterladen
-                     </button>
-                   {% endif %}
-               </div>
-           </div>
+            <div class="viewer-toolbar-left">
+                PDF-Vorschau
+            </div>
+            <div class="viewer-toolbar-right">
+                <button type="button" class="toolbar-btn" onclick="zoomOut()">−</button>
+                <span id="zoom-label">100%</span>
+                <button type="button" class="toolbar-btn" onclick="zoomIn()">+</button>
+         
+                {% if not user.is_authenticated %}
+                  <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="openAuthModal()">
+                    PDF herunterladen
+                  </button>
+                {% else %}
+                  <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="handleDownloadClick()">
+                    PDF herunterladen
+                  </button>
+                {% endif %}
+            </div>
+         </div>
+         
 
            <!-- 📄 FIXED-HEIGHT SCROLL BOX -->
            <div id="pdf-scroll">
@@ -657,6 +658,41 @@
       });
     })();
   </script>
+
+<script>
+    async function handleDownloadClick() {
+        const country = "{{ country_code }}";
+        const slug = "{{ form_info.slug }}";
+    
+        // Ask backend if user already paid
+        const res = await fetch(`/${country}/${slug}/has-paid/`);
+        const data = await res.json();
+    
+        if (data.has_paid) {
+            // User already paid → allow normal download
+            downloadFilledPDF();
+        } else {
+            // User must pay → start Stripe Checkout
+            startStripeCheckout(country, slug);
+        }
+    }
+    
+    async function startStripeCheckout(country, slug) {
+        const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            }
+        });
+    
+        const data = await res.json();
+    
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}"); // Inject from Django
+    
+        await stripe.redirectToCheckout({ sessionId: data.id });
+    }
+    </script>
+    
   
    </main>
 

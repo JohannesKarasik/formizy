@@ -371,5 +371,92 @@ def stripe_webhook(request):
         session = event["data"]["object"]
         print("Payment successful:", session)
 
+        user_id = session["metadata"]["user_id"]
+        form_slug = session["metadata"]["form_slug"]
+
+        from .models import PaidForm
+        PaidForm.objects.get_or_create(
+            user_id=user_id,
+            form_slug=form_slug
+        )
+
     return HttpResponse(status=200)
+
+
+@login_required
+def create_checkout_session(request, country_code, form_slug):
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
+
+    # Important: metadata to identify which form was paid
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        mode="payment",
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": form_info.title},
+                    "unit_amount": 299,  # €2.99 example
+                },
+                "quantity": 1,
+            }
+        ],
+
+        # Metadata used by webhook
+        metadata={
+            "user_id": request.user.id,
+            "form_slug": form_slug,
+        },
+
+        success_url=request.build_absolute_uri(
+            f"/{country_code}/{form_slug}/success/"
+        ),
+        cancel_url=request.build_absolute_uri(
+            f"/{country_code}/{form_slug}/"
+        ),
+    )
+
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def payment_success(request, country_code, form_slug):
+    return render(request, "main/payment_success.html", {
+        "country_code": country_code,
+        "form_slug": form_slug
+    })
+
+
+from .models import PaidForm
+
+@login_required
+def download_pdf(request, country_code, form_slug):
+
+    # Check if user paid
+    has_paid = PaidForm.objects.filter(
+        user=request.user,
+        form_slug=form_slug
+    ).exists()
+
+    if not has_paid:
+        # Redirect back to form with flag “payment required”
+        return redirect(f"/{country_code}/{form_slug}/?payment_required=1")
+
+    # ---- CALL YOUR EXISTING FILL_PDF LOGIC ----
+    return fill_pdf(request, country_code, form_slug)
+
+
+@login_required
+def has_paid(request, country_code, form_slug):
+    from .models import PaidForm
+
+    paid = PaidForm.objects.filter(
+        user=request.user,
+        form_slug=form_slug
+    ).exists()
+
+    return JsonResponse({"has_paid": paid})
 
