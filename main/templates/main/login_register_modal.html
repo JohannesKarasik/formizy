@@ -1,225 +1,227 @@
 <style>
-    /* =======================
-       AUTH MODAL (FULL)
-    ======================= */
-    #auth-modal.auth-modal-hidden {
-      display: none;
-    }
-    
-    #auth-modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 9999;
-    }
-    
-    .auth-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(3px);
-    }
-    
-    .auth-box {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 420px;
-      padding: 28px;
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-      animation: fadeInScale .25s ease-out;
-    }
-    
-    @keyframes fadeInScale {
-      from {opacity: 0; transform: translate(-50%, -48%) scale(0.95);}
-      to   {opacity: 1; transform: translate(-50%, -50%) scale(1);}
-    }
-    
-    .auth-close {
-      position: absolute;
-      top: 12px; right: 12px;
-      background: none;
-      border: none;
-      font-size: 28px;
-      cursor: pointer;
-    }
-    
-    .auth-box h2 {
-      margin-bottom: 18px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    
-    #auth-modal input {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #d4d7e2;
-      font-size: 15px;
-    }
-    
-    .auth-btn-primary {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: #2563eb;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    
-    .auth-switch {
-      text-align: center;
-      margin-top: 14px;
-      color: #555;
-    }
-    
-    .auth-switch-btn {
-      background: none;
-      border: none;
-      color: #2563eb;
-      cursor: pointer;
-      font-weight: 600;
-      margin-left: 6px;
-    }
-    </style>
-    
-    
-    <div id="auth-modal" class="auth-modal-hidden">
-        <div class="auth-backdrop" onclick="closeAuthModal()"></div>
-    
-        <div class="auth-box">
-          <button class="auth-close" onclick="closeAuthModal()">×</button>
-    
-          <h2 id="auth-title">Log in</h2>
-    
-          <!-- LOGIN FORM -->
-          <form id="login-form" onsubmit="handleLogin(event)">
-            <input type="email" id="login-email" placeholder="Email" required>
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button type="submit" class="auth-btn-primary">Log in</button>
-          </form>
-    
-          <!-- REGISTER FORM -->
-          <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
-            <input type="email" id="register-email" placeholder="Email" required>
-            <input type="password" id="register-password" placeholder="Create password" required>
-            <button type="submit" class="auth-btn-primary">Create account</button>
-          </form>
-    
-          <p class="auth-switch">
-            <span id="switch-text">No account?</span>
-            <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
-          </p>
-        </div>
-    </div>
-    
-    <script>
-    function openAuthModal() {
-        document.getElementById("auth-modal").classList.remove("auth-modal-hidden");
-    }
-    
-    function closeAuthModal() {
-        document.getElementById("auth-modal").classList.add("auth-modal-hidden");
-    }
-    
-    function toggleAuth() {
-        const login = document.getElementById("login-form");
-        const reg = document.getElementById("register-form");
-        const title = document.getElementById("auth-title");
-        const switchText = document.getElementById("switch-text");
-        const switchBtn = document.querySelector(".auth-switch-btn");
-    
-        if (login.style.display !== "none") {
-            login.style.display = "none";
-            reg.style.display = "block";
-            title.textContent = "Create account";
-            switchText.textContent = "Already have an account?";
-            switchBtn.textContent = "Log in";
-        } else {
-            login.style.display = "block";
-            reg.style.display = "none";
-            title.textContent = "Log in";
-            switchText.textContent = "No account?";
-            switchBtn.textContent = "Create one";
-        }
-    }
-    </script>
-
-<script>
-  async function handleLogin(event) {
-      event.preventDefault();
-  
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-  
-      const res = await fetch("/login/", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-CSRFToken": getCSRF(),
-          },
-          body: new URLSearchParams({
-              email: email,
-              password: password,
-              next: window.location.pathname
-          })
-      });
-  
-      if (res.redirected) {
-          window.location = res.url;   
-          return;
-      }
-  
-      alert("Login failed. Check your email or password.");
+  /* =======================
+     AUTH MODAL (FULL)
+  ======================= */
+  #auth-modal.auth-modal-hidden {
+    display: none;
   }
   
-  async function handleRegister(event) {
-    event.preventDefault();
+  #auth-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+  }
+  
+  .auth-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+  }
+  
+  .auth-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    padding: 28px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    animation: fadeInScale .25s ease-out;
+  }
+  
+  @keyframes fadeInScale {
+    from {opacity: 0; transform: translate(-50%, -48%) scale(0.95);}
+    to   {opacity: 1; transform: translate(-50%, -50%) scale(1);}
+  }
+  
+  .auth-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+  }
+  
+  .auth-box h2 {
+    margin-bottom: 18px;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  
+  #auth-modal input {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d4d7e2;
+    font-size: 15px;
+  }
+  
+  .auth-btn-primary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .auth-switch {
+    text-align: center;
+    margin-top: 14px;
+    color: #555;
+  }
+  
+  .auth-switch-btn {
+    background: none;
+    border: none;
+    color: #2563eb;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+</style>
 
-    const email = document.getElementById("register-email").value;
-    const password = document.getElementById("register-password").value;
 
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("next", window.location.pathname);
+<div id="auth-modal" class="auth-modal-hidden">
+  <div class="auth-backdrop" onclick="closeAuthModal()"></div>
 
-    const res = await fetch("/register/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCSRF(),
-        },
-        body: formData
-    });
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuthModal()">×</button>
 
-    const text = await res.text(); // <- read raw response
+    <!-- 🔥 HIDDEN CSRF TOKEN (required for Django) -->
+    <form style="display:none;">
+        {% csrf_token %}
+    </form>
 
-    console.log("RAW RESPONSE:", text);
+    <h2 id="auth-title">Log in</h2>
 
-    try {
-        const data = JSON.parse(text);
-        if (!res.ok) {
-            alert("Registration failed: " + data.error);
-            return;
-        }
-        window.location = data.next;
-    } catch (err) {
-        console.error("JSON parse error:", err);
-        alert("Server returned HTML instead of JSON. Check backend.");
-    }
+    <!-- LOGIN FORM -->
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit" class="auth-btn-primary">Log in</button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+      <input type="email" id="register-email" placeholder="Email" required>
+      <input type="password" id="register-password" placeholder="Create password" required>
+      <button type="submit" class="auth-btn-primary">Create account</button>
+    </form>
+
+    <p class="auth-switch">
+      <span id="switch-text">No account?</span>
+      <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
+    </p>
+  </div>
+</div>
+
+<script>
+function openAuthModal() {
+  document.getElementById("auth-modal").classList.remove("auth-modal-hidden");
+}
+
+function closeAuthModal() {
+  document.getElementById("auth-modal").classList.add("auth-modal-hidden");
+}
+
+function toggleAuth() {
+  const login = document.getElementById("login-form");
+  const reg = document.getElementById("register-form");
+  const title = document.getElementById("auth-title");
+  const switchText = document.getElementById("switch-text");
+  const switchBtn = document.querySelector(".auth-switch-btn");
+
+  if (login.style.display !== "none") {
+      login.style.display = "none";
+      reg.style.display = "block";
+      title.textContent = "Create account";
+      switchText.textContent = "Already have an account?";
+      switchBtn.textContent = "Log in";
+  } else {
+      login.style.display = "block";
+      reg.style.display = "none";
+      title.textContent = "Log in";
+      switchText.textContent = "No account?";
+      switchBtn.textContent = "Create one";
+  }
+}
+</script>
+
+<script>
+async function handleLogin(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  const res = await fetch("/login/", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": getCSRF(),
+      },
+      body: new URLSearchParams({
+          email: email,
+          password: password,
+          next: window.location.pathname
+      })
+  });
+
+  if (res.redirected) {
+      window.location = res.url;   
+      return;
+  }
+
+  alert("Login failed. Check your email or password.");
 }
 
 
-  
-  function getCSRF() {
-      return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+async function handleRegister(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("password", password);
+  formData.append("next", window.location.pathname);
+
+  const res = await fetch("/register/", {
+      method: "POST",
+      headers: {
+          "X-CSRFToken": getCSRF(),
+      },
+      body: formData
+  });
+
+  const text = await res.text();
+  console.log("RAW RESPONSE:", text);
+
+  try {
+      const data = JSON.parse(text);
+      if (!res.ok) {
+          alert("Registration failed: " + data.error);
+          return;
+      }
+      window.location = data.next;
+  } catch (err) {
+      console.error("JSON parse error:", err);
+      alert("Server returned HTML instead of JSON. Check backend.");
   }
-  </script>
-  
-    
+}
+
+
+function getCSRF() {
+  return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+}
+</script>
