@@ -24,6 +24,5 @@ urlpatterns = [
     path('<str:country_code>/<str:form_slug>/download/', download_pdf, name='download_pdf'),
     path('<str:country_code>/<str:form_slug>/has-paid/', has_paid, name='has_paid'),
     path('<str:country_code>/<str:form_slug>/create-checkout-session/', create_checkout_session, name='create_checkout_session'),
-    path("<str:country_code>/<str:form_slug>/save-fields/", views.save_fields, name="save_fields"),
 
 ]

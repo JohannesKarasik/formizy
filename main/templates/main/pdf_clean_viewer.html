@@ -784,34 +784,14 @@
     let pendingPaymentCountry = null;
     let pendingPaymentSlug = null;
 
-    // NEW — collect all field values (text + checkboxes)
-    function collectFields() {
-        const fields = {};
 
-        document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
-            fields[input.dataset.name] = input.value || "";
-        });
-
-        document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
-            fields[box.dataset.name] = box.classList.contains("checked") ? "1" : "0";
-        });
-
-        return fields;
-    }
     
     async function handleDownloadClick() {
         const country = "{{ country_code }}";
         const slug = "{{ form_info.slug }}";
 
         // NEW — save fields BEFORE checking payment or opening the modal
-        await fetch(`/${country}/${slug}/save-fields/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            },
-            body: JSON.stringify({ fields_data: collectFields() })
-        });
+
 
         const res = await fetch(`/${country}/${slug}/has-paid/`);
         const data = await res.json();

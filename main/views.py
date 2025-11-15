@@ -520,34 +520,31 @@ def create_checkout_session(request, country_code, form_slug):
 
 from .models import PaidForm
 
+from django.http import FileResponse, Http404, HttpResponse
+from .models import PaidForm, Form
+
 @login_required
 def download_pdf(request, country_code, form_slug):
-    from .models import PaidForm
+    try:
+        paid_obj = PaidForm.objects.get(
+            user=request.user,
+            form_slug=form_slug
+        )
+    except PaidForm.DoesNotExist:
+        raise Http404("No payment found.")
 
-    # 1️⃣ User must have paid
-    paid_obj = PaidForm.objects.filter(
-        user=request.user,
-        form_slug=form_slug
-    ).first()
-
-    if not paid_obj:
-        return redirect(f"/{country_code}/{form_slug}/?payment_required=1")
-
-    # 2️⃣ If webhook has already built the PDF → instant download
+    # If the final filled PDF exists → download it immediately
     if paid_obj.filled_pdf:
         return FileResponse(
             paid_obj.filled_pdf.open("rb"),
-            filename=f"{form_slug}_filled.pdf",
             as_attachment=True,
-            content_type="application/pdf"
+            filename=f"{form_slug}_filled.pdf"
         )
 
-    # 3️⃣ If webhook hasn’t run yet → fallback to slow fill_pdf POST logic
-    # (rare case, only if user returns before webhook finishes)
-    return HttpResponse(
-        "Your PDF is still being prepared. Please wait a few seconds and try again.",
-        status=202
-    )
+    # ❌ REMOVE the "still preparing…" message completely  
+    # Instead, just generate the PDF *right now* the old way
+    return generate_pdf_synchronously(request, form_slug)
+
 
 
 @login_required
@@ -562,22 +559,3 @@ def has_paid(request, country_code, form_slug):
     return JsonResponse({"has_paid": paid})
 
 
-
-@login_required
-@require_POST
-def save_fields(request, country_code, form_slug):
-    body = json.loads(request.body.decode("utf-8"))
-    fields = body.get("fields_data")
-
-    if not fields:
-        return JsonResponse({"error": "no fields"}, status=400)
-
-    paid_obj, created = PaidForm.objects.get_or_create(
-        user=request.user,
-        form_slug=form_slug
-    )
-
-    paid_obj.fields_json = fields
-    paid_obj.save()
-
-    return JsonResponse({"saved": True})
