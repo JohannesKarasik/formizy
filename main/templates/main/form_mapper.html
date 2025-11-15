@@ -496,6 +496,17 @@ function restoreSavedLayout() {
     box.dataset.checked = f.checked === "1" ? "1" : "0";
     box.textContent = f.checked === "1" ? "✓" : "";
 
+    // ✅ restore BLUE BACKGROUND + STYLING
+    Object.assign(box.style, {
+        background: "rgba(37, 99, 235, 0.08)",  // BLUE
+        border: "none",
+        borderRadius: "4px",
+        cursor: "pointer",
+        fontSize: "20px",
+        fontWeight: "bold",
+        userSelect: "none",
+    });
+
     // click toggles check state
     box.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -504,6 +515,7 @@ function restoreSavedLayout() {
         box.textContent = isChecked ? "" : "✓";
     });
 }
+
 
         else if (f.type === "signature") {
             box.classList.add("signature-field");
