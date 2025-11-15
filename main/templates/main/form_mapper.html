@@ -175,12 +175,12 @@ document.addEventListener("mousemove", (e) => {
     const relLeft = mouseX - cRect.left;
     const relTop  = mouseY - cRect.top;
 
-    Object.assign(box.style, {
+Object.assign(box.style, {
     position: "absolute",
     left: relLeft + "px",
     top: relTop + "px",
     width: "260px",          // ⭐ longer
-    height: "20px",          // ⭐ thinner
+    height: "15px",          // ⭐ thinner
     background: "rgba(255,255,255,0.8)",
     border: "2px dashed #0071e3",
     borderRadius: "4px",
