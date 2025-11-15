@@ -410,17 +410,20 @@ document.querySelectorAll(".draggable").forEach(el => {
     const ph = height   / window.mapperScale;
 
     items.push({
-        name: el.dataset.name,
-        type: el.dataset.type || "text",
+    name: el.dataset.name,
+    type: el.dataset.type || "text",
 
-        pixel_x: px,
-        pixel_y: py,
-        pixel_width: pw,
-        pixel_height: ph,
+    pixel_x: px,
+    pixel_y: py,
+    pixel_width: pw,
+    pixel_height: ph,
 
-        mapper_scale: window.mapperScale,
-        page: parseInt(pageCanvas.dataset.page)
-    });
+    mapper_scale: window.mapperScale,
+    page: parseInt(pageCanvas.dataset.page),
+
+    checked: el.dataset.checked || "0"   // ✅ SAVE CHECKED STATE
+});
+
 });
 
 console.log("FINAL MAPPED FIELDS:", items);
@@ -487,10 +490,21 @@ function restoreSavedLayout() {
         });
 
         if (f.type === "checkbox") {
-            box.classList.add("checkbox-field");
-            box.dataset.checked = "0";
-            box.textContent = "";
-        }
+    box.classList.add("checkbox-field");
+
+    // restore state
+    box.dataset.checked = f.checked === "1" ? "1" : "0";
+    box.textContent = f.checked === "1" ? "✓" : "";
+
+    // click toggles check state
+    box.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isChecked = box.dataset.checked === "1";
+        box.dataset.checked = isChecked ? "0" : "1";
+        box.textContent = isChecked ? "" : "✓";
+    });
+}
+
         else if (f.type === "signature") {
             box.classList.add("signature-field");
             box.textContent = "Signature";
