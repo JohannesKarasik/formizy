@@ -109,34 +109,33 @@
         {% csrf_token %}
     </form>
 
-    <h2 id="auth-title">Log in</h2>
+    <h2 id="auth-title">Einloggen</h2>
 
     <!-- LOGIN FORM -->
     <form id="login-form" onsubmit="handleLogin(event)" 
     style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;">
     
-  <input type="email" id="login-email" placeholder="Email" required style="width:100%;">
-  <input type="password" id="login-password" placeholder="Password" required style="width:100%;">
-  
-  <button type="submit" class="auth-btn-primary">Log in</button>
-</form>
-
-
+    <input type="email" id="login-email" placeholder="E-Mail" required style="width:100%;">
+    <input type="password" id="login-password" placeholder="Passwort" required style="width:100%;">
+    
+    <button type="submit" class="auth-btn-primary">Einloggen</button>
+    </form>
+    
     <!-- REGISTER FORM -->
     <form id="register-form" style="display:none; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;" 
     onsubmit="handleRegister(event)">
-  
-  <input type="email" id="register-email" placeholder="Email" required style="width:95%;">
-  <input type="password" id="register-password" placeholder="Create password" required style="width:95%;">
-
-  <button type="submit" class="auth-btn-primary">Create account</button>
-</form>
-
-
+    
+    <input type="email" id="register-email" placeholder="E-Mail" required style="width:95%;">
+    <input type="password" id="register-password" placeholder="Passwort erstellen" required style="width:95%;">
+    
+    <button type="submit" class="auth-btn-primary">Konto erstellen</button>
+    </form>
+    
     <p class="auth-switch">
-      <span id="switch-text">No account?</span>
-      <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
+      <span id="switch-text">Noch kein Konto?</span>
+      <button class="auth-switch-btn" onclick="toggleAuth()">Konto erstellen</button>
     </p>
+    
   </div>
 </div>
 
