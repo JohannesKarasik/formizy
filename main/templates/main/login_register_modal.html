@@ -1,258 +1,411 @@
+<!-- =======================
+     AUTH MODAL (ACCESSIBLE, POLISHED)
+======================= -->
 <style>
-  /* =======================
-     AUTH MODAL (FULL)
-  ======================= */
-  #auth-modal.auth-modal-hidden {
-    display: none;
+  :root{
+    /* Type scale (Major Third-ish) */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --fs-900: clamp(22px, 2.2vw, 24px);
+    --fs-800: 18px;           /* labels / small headings */
+    --fs-700: 16px;           /* body */
+    --fs-600: 14px;           /* meta */
+    --lh-1: 1.2;
+    --lh-2: 1.45;
+
+    /* Spacing scale (8px base) */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 24px;
+    --sp-7: 28px;
+    --sp-8: 32px;
+
+    /* Colors */
+    --bg: #ffffff;
+    --text: #0f172a;          /* slate-900 */
+    --muted: #475569;         /* slate-600 */
+    --border: #e2e8f0;        /* slate-200 */
+    --ring: #94a3b8;          /* slate-400 */
+    --primary: #2563eb;       /* blue-600 */
+    --primary-600:#1d4ed8;
+    --danger: #dc2626;
+    --success:#16a34a;
+    --backdrop: rgba(15, 23, 42, 0.55);
+
+    /* Shadows & radius */
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --shadow-lg: 0 20px 60px rgba(2,8,23,0.25);
+    --shadow-md: 0 12px 32px rgba(2,8,23,0.18);
   }
-  
-  #auth-modal {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 9999;
+
+  @media (prefers-color-scheme: dark) {
+    :root{
+      --bg: #0b1220;
+      --text: #eef2ff;
+      --muted:#cbd5e1;
+      --border:#1f2937;
+      --ring:#475569;
+      --backdrop: rgba(0,0,0,0.6);
+      --shadow-lg: 0 18px 50px rgba(0,0,0,0.6);
+      --shadow-md: 0 12px 28px rgba(0,0,0,0.5);
+    }
   }
-  
-  .auth-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
+
+  /* ========== Container states ========== */
+  #auth-modal.auth-modal-hidden { display: none; }
+
+  #auth-modal{
+    position: fixed; inset: 0; z-index: 9999;
+    font-family: var(--font-sans);
+  }
+
+  .auth-backdrop{
+    position:absolute; inset:0;
+    background: var(--backdrop);
+    -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
   }
-  
-  .auth-box {
-    position: absolute;
-    top: 50%; left: 50%;
+
+  /* ========== Dialog ========== */
+  .auth-box{
+    position:absolute; top:50%; left:50%;
     transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 420px;
-    padding: 28px;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-    animation: fadeInScale .25s ease-out;
+    width: min(92vw, 440px);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: clamp(22px, 3.5vw, 28px);
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--sp-6);
+    animation: fadeInScale .22s ease-out;
+  }
 
-    /* 🔥 NEW: vertically center everything inside modal */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;  
-    align-items: center;
-    min-height: 380px;  /* tweak to your perfect size */
-}
+  @keyframes fadeInScale{
+    from{opacity:0; transform: translate(-50%, -48%) scale(.98);}
+    to{opacity:1; transform: translate(-50%, -50%) scale(1);}
+  }
 
-  
-  @keyframes fadeInScale {
-    from {opacity: 0; transform: translate(-50%, -48%) scale(0.95);}
-    to   {opacity: 1; transform: translate(-50%, -50%) scale(1);}
+  /* Header */
+  .auth-header{
+    display:flex; align-items:center; justify-content: space-between;
   }
-  
-  .auth-close {
-    position: absolute;
-    top: 12px; right: 12px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
+
+  .auth-title{
+    font-size: var(--fs-900);
+    line-height: var(--lh-1);
+    margin: 0;
+    letter-spacing: -0.015em;
   }
-  
-  .auth-box h2 {
-    margin-bottom: 18px;
-    text-align: center;
-    font-size: 1.5rem;
+
+  .auth-close{
+    appearance:none; border:none; background:transparent;
+    color: var(--muted); font-size: 22px; line-height: 1;
+    padding: var(--sp-2); border-radius: 8px; cursor: pointer;
   }
-  
-  #auth-modal input {
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #d4d7e2;
-    font-size: 15px;
+  .auth-close:focus-visible{ outline: 2px solid var(--ring); outline-offset: 2px; }
+
+  /* Tabs (login/register toggle) */
+  .auth-tabs{
+    display:flex; gap: var(--sp-2);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--sp-2);
   }
-  
-  .auth-btn-primary {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    background: #2563eb;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 16px;
+  .auth-tab{
+    flex:1; text-align:center; cursor:pointer;
+    padding: var(--sp-3) var(--sp-4);
+    font-size: var(--fs-700); font-weight: 600;
+    color: var(--muted);
+    border-radius: 8px; border:none; background: transparent;
   }
-  
-  .auth-switch {
-    text-align: center;
-    margin-top: 14px;
-    color: #555;
+  .auth-tab[aria-selected="true"]{
+    background: color-mix(in lab, var(--primary) 10%, transparent);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px color-mix(in lab, var(--primary) 35%, var(--border));
   }
-  
-  .auth-switch-btn {
-    background: none;
-    border: none;
-    color: #2563eb;
-    cursor: pointer;
-    font-weight: 600;
-    margin-left: 6px;
+
+  /* Forms */
+  .auth-form{
+    display:grid; gap: var(--sp-5);
+  }
+  .field{
+    display:grid; gap: var(--sp-2);
+  }
+  .label-row{
+    display:flex; justify-content: space-between; align-items: baseline;
+  }
+  label{ font-size: var(--fs-800); font-weight: 600; }
+  .hint{ font-size: var(--fs-600); color: var(--muted); }
+
+  .input{
+    width:100%; padding: 12px 14px;
+    font-size: var(--fs-700);
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .input:focus{
+    outline: none;
+    border-color: color-mix(in lab, var(--primary) 55%, var(--border));
+    box-shadow: 0 0 0 3px color-mix(in lab, var(--primary) 22%, transparent);
+  }
+  .input.error{ border-color: color-mix(in lab, var(--danger) 70%, var(--border)); }
+
+  .password-wrap{ position: relative; }
+  .toggle-pass{
+    position:absolute; right:8px; top:50%; transform: translateY(-50%);
+    border:none; background:transparent; cursor:pointer;
+    padding: 6px; color: var(--muted); border-radius: 6px;
+  }
+  .toggle-pass:focus-visible{ outline: 2px solid var(--ring); outline-offset: 2px; }
+
+  .auth-btn-primary{
+    width:100%; padding: 12px 16px;
+    border-radius: 10px; border: none; cursor: pointer;
+    background: linear-gradient(180deg, var(--primary), var(--primary-600));
+    color: #fff; font-weight: 700; font-size: var(--fs-700);
+    letter-spacing: .01em; box-shadow: var(--shadow-md);
+    transition: filter .15s ease, transform .02s ease-in;
+  }
+  .auth-btn-primary:active{ transform: translateY(1px); }
+  .auth-btn-primary:focus-visible{ outline: 2px solid #fff; outline-offset: 2px; }
+
+  .auth-switch{
+    text-align:center; color: var(--muted); font-size: var(--fs-700);
+  }
+  .auth-switch-btn{
+    background:none; border:none; color: var(--primary);
+    cursor:pointer; font-weight: 700; margin-left: var(--sp-2);
+  }
+
+  .divider{
+    display:flex; align-items:center; gap: var(--sp-3); color: var(--muted);
+    font-size: var(--fs-600);
+  }
+  .divider::before, .divider::after{
+    content:""; height:1px; flex:1; background: var(--border);
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce){
+    .auth-box{ animation:none; }
+    *{ transition:none !important; }
   }
 </style>
 
+<div id="auth-modal" class="auth-modal-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-desc">
+  <div class="auth-backdrop" data-close></div>
 
-<div id="auth-modal" class="auth-modal-hidden">
-  <div class="auth-backdrop" onclick="closeAuthModal()"></div>
+  <div class="auth-box" id="auth-dialog">
+    <div class="auth-header">
+      <h2 class="auth-title" id="auth-title">Create account</h2>
+      <button class="auth-close" type="button" aria-label="Close" data-close>&times;</button>
+    </div>
 
-  <div class="auth-box">
-    <button class="auth-close" onclick="closeAuthModal()">×</button>
+    <p id="auth-desc" class="hint">Sign up or log in to continue.</p>
 
-    <!-- 🔥 HIDDEN CSRF TOKEN (required for Django) -->
-    <form style="display:none;">
-        {% csrf_token %}
+    <!-- Toggle tabs -->
+    <div class="auth-tabs" role="tablist" aria-label="Authentication Tabs">
+      <button class="auth-tab" id="tab-register" role="tab" aria-selected="true" aria-controls="panel-register">Create account</button>
+      <button class="auth-tab" id="tab-login" role="tab" aria-selected="false" aria-controls="panel-login">Log in</button>
+    </div>
+
+    <!-- Hidden CSRF for Django -->
+    <form style="display:none;">{% csrf_token %}</form>
+
+    <!-- REGISTER -->
+    <form id="panel-register" class="auth-form" role="tabpanel" aria-labelledby="tab-register">
+      <div class="field">
+        <div class="label-row">
+          <label for="register-email">Email</label>
+          <span class="hint">We’ll never share it.</span>
+        </div>
+        <input type="email" id="register-email" class="input" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="register-password">Create password</label>
+          <span class="hint">8+ characters</span>
+        </div>
+        <div class="password-wrap">
+          <input type="password" id="register-password" class="input" placeholder="••••••••" autocomplete="new-password" minlength="8" required>
+          <button class="toggle-pass" type="button" aria-label="Show password" data-toggle-pass="register-password">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" class="auth-btn-primary">Create account</button>
     </form>
 
-    <h2 id="auth-title">Log in</h2>
+    <!-- LOGIN -->
+    <form id="panel-login" class="auth-form" role="tabpanel" aria-labelledby="tab-login" hidden>
+      <div class="field">
+        <div class="label-row">
+          <label for="login-email">Email</label>
+        </div>
+        <input type="email" id="login-email" class="input" placeholder="you@example.com" autocomplete="email" required>
+      </div>
 
-    <!-- LOGIN FORM -->
-    <form id="login-form" onsubmit="handleLogin(event)" 
-    style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;">
-    
-  <input type="email" id="login-email" placeholder="Email" required style="width:100%;">
-  <input type="password" id="login-password" placeholder="Password" required style="width:100%;">
-  
-  <button type="submit" class="auth-btn-primary">Log in</button>
-</form>
+      <div class="field">
+        <div class="label-row">
+          <label for="login-password">Password</label>
+          <a class="hint" href="/reset-password/">Forgot?</a>
+        </div>
+        <div class="password-wrap">
+          <input type="password" id="login-password" class="input" placeholder="••••••••" autocomplete="current-password" required>
+          <button class="toggle-pass" type="button" aria-label="Show password" data-toggle-pass="login-password">👁</button>
+        </div>
+      </div>
 
+      <button type="submit" class="auth-btn-primary">Log in</button>
+    </form>
 
-    <!-- REGISTER FORM -->
-    <form id="register-form" style="display:none; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;" 
-    onsubmit="handleRegister(event)">
-  
-  <input type="email" id="register-email" placeholder="Email" required style="width:100%;">
-  <input type="password" id="register-password" placeholder="Create password" required style="width:100%;">
-
-  <button type="submit" class="auth-btn-primary">Create account</button>
-</form>
-
+    <div class="divider" aria-hidden="true">or</div>
 
     <p class="auth-switch">
-      <span id="switch-text">No account?</span>
-      <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
+      <span id="switch-text">Prefer the other option?</span>
+      <button class="auth-switch-btn" type="button" id="switch-btn">Switch</button>
     </p>
   </div>
 </div>
 
 <script>
-function openAuthModal() {
-    const modal = document.getElementById("auth-modal");
-    modal.classList.remove("auth-modal-hidden");
+  // --- Utilities ---
+  const qs = (sel, el=document) => el.querySelector(sel);
+  const qsa = (sel, el=document)=>[...el.querySelectorAll(sel)];
+  const getCSRF = () => document.querySelector("[name=csrfmiddlewaretoken]")?.value;
 
-    // 🔥 Always show REGISTER by default
-    const login = document.getElementById("login-form");
-    const reg = document.getElementById("register-form");
-    const title = document.getElementById("auth-title");
-    const switchText = document.getElementById("switch-text");
-    const switchBtn = document.querySelector(".auth-switch-btn");
-
-    login.style.display = "none";
-    reg.style.display = "flex";   // keep centering
-    title.textContent = "Create account";
-    switchText.textContent = "Already have an account?";
-    switchBtn.textContent = "Log in";
-}
-
-
-function closeAuthModal() {
-  document.getElementById("auth-modal").classList.add("auth-modal-hidden");
-}
-
-function toggleAuth() {
-  const login = document.getElementById("login-form");
-  const reg = document.getElementById("register-form");
-  const title = document.getElementById("auth-title");
-  const switchText = document.getElementById("switch-text");
-  const switchBtn = document.querySelector(".auth-switch-btn");
-
-  if (login.style.display !== "none") {
-      login.style.display = "none";
-      reg.style.display = "block";
-      title.textContent = "Create account";
-      switchText.textContent = "Already have an account?";
-      switchBtn.textContent = "Log in";
-  } else {
-      login.style.display = "block";
-      reg.style.display = "none";
-      title.textContent = "Log in";
-      switchText.textContent = "No account?";
-      switchBtn.textContent = "Create one";
-  }
-}
-</script>
-
-<script>
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-
-  const res = await fetch("/login/", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRFToken": getCSRF(),
-      },
-      body: new URLSearchParams({
-          email: email,
-          password: password,
-          next: window.location.pathname
-      })
-  });
-
-  if (res.redirected) {
-      window.location = res.url;   
-      return;
-  }
-
-  alert("Login failed. Check your email or password.");
-}
-
-
-async function handleRegister(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("register-email").value;
-  const password = document.getElementById("register-password").value;
-
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("password", password);
-  formData.append("next", window.location.pathname);
-
-  const res = await fetch("/register/", {
-      method: "POST",
-      headers: {
-          "X-CSRFToken": getCSRF(),
-      },
-      body: formData
-  });
-
-  const text = await res.text();
-  console.log("RAW RESPONSE:", text);
-
-  try {
-      const data = JSON.parse(text);
-      if (!res.ok) {
-          alert("Registration failed: " + data.error);
-          return;
+  // Focus trap
+  let lastActiveEl = null;
+  function trapFocus(container){
+    const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusables = qsa(FOCUSABLE, container).filter(n=>!n.hasAttribute('hidden'));
+    if(!focusables.length) return;
+    const [first, last] = [focusables[0], focusables[focusables.length-1]];
+    function onKey(e){
+      if(e.key === 'Tab'){
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      } else if(e.key === 'Escape'){
+        closeAuthModal();
       }
+    }
+    container.addEventListener('keydown', onKey);
+    container._untrap = ()=> container.removeEventListener('keydown', onKey);
+    first.focus();
+  }
+
+  // Password visibility
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-toggle-pass]');
+    if(!btn) return;
+    const id = btn.getAttribute('data-toggle-pass');
+    const input = document.getElementById(id);
+    const shown = input.type === 'text';
+    input.type = shown ? 'password' : 'text';
+    btn.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
+  });
+
+  // Tabs + switch
+  function showPanel(which){
+    const isRegister = which === 'register';
+    const tabReg = qs('#tab-register'), tabLog = qs('#tab-login');
+    const panelReg = qs('#panel-register'), panelLog = qs('#panel-login');
+    tabReg.setAttribute('aria-selected', String(isRegister));
+    tabLog.setAttribute('aria-selected', String(!isRegister));
+    panelReg.hidden = !isRegister;
+    panelLog.hidden = isRegister;
+    qs('#auth-title').textContent = isRegister ? 'Create account' : 'Log in';
+  }
+
+  qsa('.auth-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      showPanel(tab.id.includes('register') ? 'register' : 'login');
+    });
+  });
+
+  qs('#switch-btn').addEventListener('click', ()=>{
+    const loginHidden = qs('#panel-login').hidden;
+    showPanel(loginHidden ? 'login' : 'register');
+  });
+
+  // Open / Close API
+  function openAuthModal(defaultTab='register'){
+    const modal = qs('#auth-modal');
+    modal.classList.remove('auth-modal-hidden');
+    showPanel(defaultTab);
+    lastActiveEl = document.activeElement;
+    trapFocus(qs('#auth-dialog'));
+  }
+
+  function closeAuthModal(){
+    const modal = qs('#auth-modal');
+    modal.classList.add('auth-modal-hidden');
+    const dialog = qs('#auth-dialog');
+    dialog._untrap && dialog._untrap();
+    lastActiveEl && lastActiveEl.focus();
+  }
+
+  // Close on backdrop or [x]
+  document.addEventListener('click', (e)=>{
+    if(e.target.matches('[data-close]')) closeAuthModal();
+  });
+
+  // Expose globally if you already call these
+  window.openAuthModal = openAuthModal;
+  window.closeAuthModal = closeAuthModal;
+
+  // --- Submit handlers ---
+  qs('#panel-login').addEventListener('submit', async (event)=>{
+    event.preventDefault();
+    const email = qs('#login-email').value.trim();
+    const password = qs('#login-password').value;
+
+    const res = await fetch("/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": getCSRF(),
+      },
+      body: new URLSearchParams({ email, password, next: window.location.pathname })
+    });
+
+    if (res.redirected) { window.location = res.url; return; }
+    alert("Login failed. Check your email or password.");
+  });
+
+  qs('#panel-register').addEventListener('submit', async (event)=>{
+    event.preventDefault();
+    const email = qs('#register-email').value.trim();
+    const password = qs('#register-password').value;
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("next", window.location.pathname);
+
+    const res = await fetch("/register/", {
+      method: "POST",
+      headers: {"X-CSRFToken": getCSRF()},
+      body: formData
+    });
+
+    const text = await res.text();
+    try{
+      const data = JSON.parse(text);
+      if(!res.ok){ alert("Registration failed: " + data.error); return; }
       window.location = data.next;
-  } catch (err) {
+    }catch(err){
       console.error("JSON parse error:", err);
       alert("Server returned HTML instead of JSON. Check backend.");
-  }
-}
-
-
-function getCSRF() {
-  return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
-}
+    }
+  });
 </script>
