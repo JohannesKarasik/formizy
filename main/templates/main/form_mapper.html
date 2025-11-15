@@ -142,6 +142,9 @@ document.addEventListener("mousemove", (e) => {
                  canvasContext: pageCanvas.getContext("2d"),
                  viewport: scaledViewport
              }).promise;
+             if (pageNum === pdf.numPages) {
+            restoreSavedLayout();
+        }
          }
      });
 
@@ -439,6 +442,68 @@ if ((e.metaKey || e.ctrlKey) && e.key === "f") {
     addCheckbox();
 }
 });
+
+
+function restoreSavedLayout() {
+    const saved = {{ form_info.fields_schema|safe }};
+    if (!saved || saved.length === 0) {
+        console.log("No saved fields to restore.");
+        return;
+    }
+
+    console.log("Restoring saved fields…", saved);
+
+    saved.forEach(f => {
+        const box = document.createElement("div");
+        box.className = "draggable";
+        box.dataset.name = f.name;
+        box.dataset.type = f.type;
+
+        // Convert stored PDF coords back to viewer coords
+        const px = f.pixel_x * window.mapperScale;
+        const py = f.pixel_y * window.mapperScale;
+        const pw = f.pixel_width * window.mapperScale;
+        const ph = f.pixel_height * window.mapperScale;
+
+        Object.assign(box.style, {
+            position: "absolute",
+            left: `${px}px`,
+            top: `${py}px`,
+            width: `${pw}px`,
+            height: `${ph}px`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 20,
+        });
+
+        if (f.type === "checkbox") {
+            box.classList.add("checkbox-field");
+            box.dataset.checked = "0";
+            box.textContent = "";
+        }
+        else if (f.type === "signature") {
+            box.classList.add("signature-field");
+            box.textContent = "Signature";
+            box.style.border = "2px dashed #6b21a8";
+        }
+        else {
+            box.textContent = f.name;
+            box.style.border = "2px dashed #0071e3";
+            box.style.background = "rgba(255,255,255,0.8)";
+        }
+
+        // ADD DELETE BUTTON
+        const del = document.createElement("div");
+        del.className = "delete-btn";
+        del.textContent = "×";
+        del.onclick = () => box.remove();
+        box.appendChild(del);
+
+        document.getElementById("pdf-container").appendChild(box);
+        enableDrag(box);
+    });
+}
 
 
    </script>
