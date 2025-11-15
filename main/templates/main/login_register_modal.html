@@ -138,120 +138,120 @@
     
   </div>
 </div>
-
 <script>
-function openAuthModal() {
-    const modal = document.getElementById("auth-modal");
-    modal.classList.remove("auth-modal-hidden");
-
-    // 🔥 Always show REGISTER by default
+  function openAuthModal() {
+      const modal = document.getElementById("auth-modal");
+      modal.classList.remove("auth-modal-hidden");
+  
+      // 🔥 Immer REGISTRIEREN zuerst anzeigen
+      const login = document.getElementById("login-form");
+      const reg = document.getElementById("register-form");
+      const title = document.getElementById("auth-title");
+      const switchText = document.getElementById("switch-text");
+      const switchBtn = document.querySelector(".auth-switch-btn");
+  
+      login.style.display = "none";
+      reg.style.display = "flex";   // keep centering
+      title.textContent = "Konto erstellen";
+      switchText.textContent = "Schon ein Konto?";
+      switchBtn.textContent = "Einloggen";
+  }
+  
+  
+  function closeAuthModal() {
+    document.getElementById("auth-modal").classList.add("auth-modal-hidden");
+  }
+  
+  function toggleAuth() {
     const login = document.getElementById("login-form");
     const reg = document.getElementById("register-form");
     const title = document.getElementById("auth-title");
     const switchText = document.getElementById("switch-text");
     const switchBtn = document.querySelector(".auth-switch-btn");
-
-    login.style.display = "none";
-    reg.style.display = "flex";   // keep centering
-    title.textContent = "Create account";
-    switchText.textContent = "Already have an account?";
-    switchBtn.textContent = "Log in";
-}
-
-
-function closeAuthModal() {
-  document.getElementById("auth-modal").classList.add("auth-modal-hidden");
-}
-
-function toggleAuth() {
-  const login = document.getElementById("login-form");
-  const reg = document.getElementById("register-form");
-  const title = document.getElementById("auth-title");
-  const switchText = document.getElementById("switch-text");
-  const switchBtn = document.querySelector(".auth-switch-btn");
-
-  if (login.style.display !== "none") {
-      login.style.display = "none";
-      reg.style.display = "block";
-      title.textContent = "Create account";
-      switchText.textContent = "Already have an account?";
-      switchBtn.textContent = "Log in";
-  } else {
-      login.style.display = "block";
-      reg.style.display = "none";
-      title.textContent = "Log in";
-      switchText.textContent = "No account?";
-      switchBtn.textContent = "Create one";
+  
+    if (login.style.display !== "none") {
+        login.style.display = "none";
+        reg.style.display = "block";
+        title.textContent = "Konto erstellen";
+        switchText.textContent = "Schon ein Konto?";
+        switchBtn.textContent = "Einloggen";
+    } else {
+        login.style.display = "block";
+        reg.style.display = "none";
+        title.textContent = "Einloggen";
+        switchText.textContent = "Noch kein Konto?";
+        switchBtn.textContent = "Konto erstellen";
+    }
   }
-}
-</script>
-
-<script>
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-
-  const res = await fetch("/login/", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRFToken": getCSRF(),
-      },
-      body: new URLSearchParams({
-          email: email,
-          password: password,
-          next: window.location.pathname
-      })
-  });
-
-  if (res.redirected) {
-      window.location = res.url;   
-      return;
+  </script>
+  
+  <script>
+  async function handleLogin(event) {
+    event.preventDefault();
+  
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+  
+    const res = await fetch("/login/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRF(),
+        },
+        body: new URLSearchParams({
+            email: email,
+            password: password,
+            next: window.location.pathname
+        })
+    });
+  
+    if (res.redirected) {
+        window.location = res.url;   
+        return;
+    }
+  
+    alert("Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.");
   }
-
-  alert("Login failed. Check your email or password.");
-}
-
-
-async function handleRegister(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("register-email").value;
-  const password = document.getElementById("register-password").value;
-
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("password", password);
-  formData.append("next", window.location.pathname);
-
-  const res = await fetch("/register/", {
-      method: "POST",
-      headers: {
-          "X-CSRFToken": getCSRF(),
-      },
-      body: formData
-  });
-
-  const text = await res.text();
-  console.log("RAW RESPONSE:", text);
-
-  try {
-      const data = JSON.parse(text);
-      if (!res.ok) {
-          alert("Registration failed: " + data.error);
-          return;
-      }
-      window.location = data.next;
-  } catch (err) {
-      console.error("JSON parse error:", err);
-      alert("Server returned HTML instead of JSON. Check backend.");
+  
+  
+  async function handleRegister(event) {
+    event.preventDefault();
+  
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+  
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("next", window.location.pathname);
+  
+    const res = await fetch("/register/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRF(),
+        },
+        body: formData
+    });
+  
+    const text = await res.text();
+    console.log("RAW RESPONSE:", text);
+  
+    try {
+        const data = JSON.parse(text);
+        if (!res.ok) {
+            alert("Registrierung fehlgeschlagen: " + data.error);
+            return;
+        }
+        window.location = data.next;
+    } catch (err) {
+        console.error("JSON parse error:", err);
+        alert("Serverfehler: Unerwartete Antwort vom Server.");
+    }
   }
-}
-
-
-function getCSRF() {
-  return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
-}
-</script>
+  
+  
+  function getCSRF() {
+    return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+  }
+  </script>
+  
