@@ -63,6 +63,29 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
+
+   <style>
+    .delete-btn {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 18px;
+        height: 18px;
+        background: #e11d48;
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        cursor: pointer;
+        z-index: 9999;
+        display: none;
+    }
+    .draggable:hover .delete-btn {
+        display: block;
+    }
+    </style>
+    
    <script>
 
 let mouseX = 200;
@@ -135,6 +158,12 @@ document.addEventListener("mousemove", (e) => {
     box.dataset.name = "field_" + fieldCount;
     box.textContent = "Field " + fieldCount;
 
+    const del = document.createElement("div");
+    del.className = "delete-btn";
+    del.textContent = "×";
+    del.onclick = () => box.remove();
+    box.appendChild(del);
+
     const container = document.getElementById("pdf-container");
     const cRect = container.getBoundingClientRect();
     const relLeft = mouseX - cRect.left;
@@ -172,6 +201,13 @@ box.dataset.type = "checkbox";
 box.dataset.name = "checkbox_" + fieldCount;
 box.dataset.checked = "0";
 box.textContent = ""; // starts empty (unchecked)
+
+
+const del = document.createElement("div");
+del.className = "delete-btn";
+del.textContent = "×";
+del.onclick = () => box.remove();
+box.appendChild(del);
 
 const container = document.getElementById("pdf-container");
 const cRect = container.getBoundingClientRect();
@@ -224,6 +260,13 @@ function addSignature() {
     box.dataset.type = "signature";                 // 🔑 important
     box.dataset.name = "signature_" + fieldCount;
     box.textContent = "Signature " + fieldCount;
+
+
+    const del = document.createElement("div");
+    del.className = "delete-btn";
+    del.textContent = "×";
+    del.onclick = () => box.remove();
+    box.appendChild(del);
 
     const container = document.getElementById("pdf-container");
     const cRect = container.getBoundingClientRect();
