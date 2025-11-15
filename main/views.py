@@ -564,12 +564,8 @@ def save_fields(request, country_code, form_slug):
     if not fields:
         return JsonResponse({"error": "no fields"}, status=400)
 
-    paid_obj, created = PaidForm.objects.get_or_create(
-        user=request.user,
-        form_slug=form_slug
-    )
-
-    paid_obj.fields_json = fields
-    paid_obj.save()
+    # ONLY store temporarily in session — do NOT create PaidForm yet
+    request.session[f"fields_{form_slug}"] = fields
+    request.session.modified = True
 
     return JsonResponse({"saved": True})
