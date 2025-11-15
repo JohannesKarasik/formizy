@@ -979,9 +979,7 @@ function restoreFieldsFromStorage() {
             box.classList.add("checked");
             box.textContent = "✓";
         } else {
-            box.dataset.checked = "0";
             box.classList.remove("checked");
-            box.textContent = "";
         }
     });
 }
@@ -994,6 +992,29 @@ function restoreFieldsFromStorage() {
 </script>
 
         
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
+    
+            // Toggle checkbox on click
+            box.addEventListener("click", (e) => {
+                e.stopPropagation();
+    
+                const isChecked = box.dataset.checked === "1";
+    
+                if (isChecked) {
+                    box.dataset.checked = "0";
+                    box.classList.remove("checked");
+                    box.textContent = "";
+                } else {
+                    box.dataset.checked = "1";
+                    box.classList.add("checked");
+                    box.textContent = "✓";
+                }
+            });
+        });
+    });
+    </script>
     
   
    </main>
