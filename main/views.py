@@ -560,41 +560,30 @@ def has_paid(request, country_code, form_slug):
 
 
 
+from .models import SavedForm  # you may want a separate model, but for now:
+
 @login_required
 @require_POST
 def save_fields(request, country_code, form_slug):
-    print("🟦 save_fields() HIT")
-    print("🟦 user:", request.user.id, request.user.username)
-    print("🟦 URL args:", country_code, form_slug)
 
     try:
-        raw = request.body.decode("utf-8")
-        print("🟦 RAW BODY:", raw)
-        body = json.loads(raw)
-    except Exception as e:
-        print("🟥 JSON decode error in save_fields:", e)
+        body = json.loads(request.body.decode("utf-8"))
+    except:
         return JsonResponse({"error": "invalid JSON"}, status=400)
 
     fields = body.get("fields_data")
-    print("🟨 Parsed fields:", fields)
 
     if not fields:
-        print("🟥 save_fields: no fields provided")
         return JsonResponse({"error": "no fields"}, status=400)
 
-    # Get or create PaidForm
-    paid_obj, created = PaidForm.objects.get_or_create(
-        user=request.user,
-        form_slug=form_slug
-    )
-    print("🟩 PaidForm fetched:", paid_obj, "created?", created)
+    # ❌ DO NOT CREATE PaidForm HERE
+    # Only save to user's session, or store in a different model
 
-    # Save fields
-    paid_obj.fields_json = fields
-    paid_obj.save()
-    print("✅ save_fields: fields_json saved!")
+    request.session["saved_fields"] = fields
+    request.session.modified = True
 
     return JsonResponse({"saved": True})
+
 
 
 
