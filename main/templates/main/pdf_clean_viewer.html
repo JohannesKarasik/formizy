@@ -488,165 +488,163 @@
         }
         return token.value;
     }
-    </script>
-    
+</script>
 
+<script>
+    const pdfUrl = "{{ pdf_url }}";
+    const FIXED_WIDTH = 833;
+    const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
 
-       <script>
-         const pdfUrl = "{{ pdf_url }}";
-         const FIXED_WIDTH = 833;
-         const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
+    const pagesContainer = document.getElementById("pdf-pages");
 
-         const pagesContainer = document.getElementById("pdf-pages");
+    pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
+        const pageCanvases = [];
 
-         pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
-             const pageCanvases = [];
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1 });
 
-             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                 const page = await pdf.getPage(pageNum);
-                 const viewport = page.getViewport({ scale: 1 });
+            const scale = FIXED_WIDTH / viewport.width;
+            const scaledViewport = page.getViewport({ scale });
 
-                 const scale = FIXED_WIDTH / viewport.width;
-                 const scaledViewport = page.getViewport({ scale });
+            const canvas = document.createElement("canvas");
+            canvas.width = FIXED_WIDTH;
+            canvas.height = scaledViewport.height;
+            canvas.style.width = FIXED_WIDTH + "px";
+            canvas.style.height = scaledViewport.height + "px";
+            canvas.style.marginBottom = "20px";
+            canvas.dataset.page = pageNum;
 
-                 const canvas = document.createElement("canvas");
-                 canvas.width = FIXED_WIDTH;
-                 canvas.height = scaledViewport.height;
-                 canvas.style.width = FIXED_WIDTH + "px";
-                 canvas.style.height = scaledViewport.height + "px";
-                 canvas.style.marginBottom = "20px";
-                 canvas.dataset.page = pageNum;
+            pagesContainer.appendChild(canvas);
 
-                 pagesContainer.appendChild(canvas);
+            await page.render({
+                canvasContext: canvas.getContext("2d"),
+                viewport: scaledViewport
+            }).promise;
 
-                 await page.render({
-                     canvasContext: canvas.getContext("2d"),
-                     viewport: scaledViewport
-                 }).promise;
+            pageCanvases.push(canvas);
+        }
 
-                 pageCanvases.push(canvas);
-             }
+        positionOverlays(pageCanvases);
 
-             positionOverlays(pageCanvases);
-         });
+        // 🔁 After overlays exist, restore any saved field values
+        restoreFieldsFromStorage();
+    });
 
-         function positionOverlays(pageCanvases) {
-             const pageOffsets = {};
-             pageCanvases.forEach(canvas => {
-                 const pageNum = canvas.dataset.page;
-                 pageOffsets[pageNum] = canvas.offsetTop;
-             });
+    function positionOverlays(pageCanvases) {
+        const pageOffsets = {};
+        pageCanvases.forEach(canvas => {
+            const pageNum = canvas.dataset.page;
+            pageOffsets[pageNum] = canvas.offsetTop;
+        });
 
-             const scale = VIEWER_SCALE;
+        const scale = VIEWER_SCALE;
 
-             document.querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
-               .forEach(el => {
-                   const page = el.dataset.page || "1";
-                   const px = parseFloat(el.dataset.px || "0");
-                   const py = parseFloat(el.dataset.py || "0");
-                   const pw = parseFloat(el.dataset.pw || "0");
-                   const ph = parseFloat(el.dataset.ph || "0");
+        document.querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
+          .forEach(el => {
+              const page = el.dataset.page || "1";
+              const px = parseFloat(el.dataset.px || "0");
+              const py = parseFloat(el.dataset.py || "0");
+              const pw = parseFloat(el.dataset.pw || "0");
+              const ph = parseFloat(el.dataset.ph || "0");
 
-                   const pageTop = pageOffsets[page] || 0;
+              const pageTop = pageOffsets[page] || 0;
 
-                   el.style.left   = (px * scale) + "px";
-                   el.style.top    = (pageTop + py * scale) + "px";
-                   el.style.width  = (pw * scale) + "px";
-                   el.style.height = (ph * scale) + "px";
-               });
-         }
-       </script>
+              el.style.left   = (px * scale) + "px";
+              el.style.top    = (pageTop + py * scale) + "px";
+              el.style.width  = (pw * scale) + "px";
+              el.style.height = (ph * scale) + "px";
+          });
+    }
+</script>
 
-       <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
-                box.dataset.checked = "0";
-                box.textContent = "";
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
+            box.dataset.checked = "0";
+            box.textContent = "";
 
-                box.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    const isChecked = box.dataset.checked === "1";
+            box.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const isChecked = box.dataset.checked === "1";
 
-                    if (isChecked) {
-                        box.dataset.checked = "0";
-                        box.classList.remove("checked");
-                        box.textContent = "";
-                    } else {
-                        box.dataset.checked = "1";
-                        box.classList.add("checked");
-                        box.textContent = "✓";
-                    }
-                });
+                if (isChecked) {
+                    box.dataset.checked = "0";
+                    box.classList.remove("checked");
+                    box.textContent = "";
+                } else {
+                    box.dataset.checked = "1";
+                    box.classList.add("checked");
+                    box.textContent = "✓";
+                }
             });
         });
-       </script>
+    });
+</script>
 
-       <script>
-         async function downloadFilledPDF() {
-             const textFields = {};
-             document.querySelectorAll('#pdf-pages input[type="text"]').forEach((input) => {
-                 const name = input.dataset.name;
-                 textFields[name] = input.value || "";
-             });
+<script>
+    async function downloadFilledPDF() {
+        const textFields = {};
+        document.querySelectorAll('#pdf-pages input[type="text"]').forEach((input) => {
+            const name = input.dataset.name;
+            textFields[name] = input.value || "";
+        });
 
-             const checkboxFields = {};
-             document.querySelectorAll('#pdf-pages .checkbox').forEach((box) => {
-                 const name = box.dataset.name;
-                 checkboxFields[name] = box.classList.contains("checked") ? "1" : "0";
-             });
+        const checkboxFields = {};
+        document.querySelectorAll('#pdf-pages .checkbox').forEach((box) => {
+            const name = box.dataset.name;
+            checkboxFields[name] = box.classList.contains("checked") ? "1" : "0";
+        });
 
-             const allFields = { ...textFields, ...checkboxFields };
+        const allFields = { ...textFields, ...checkboxFields };
 
-             console.log("VIEWER SENDING FIELDS_DATA:", allFields);
+        console.log("VIEWER SENDING FIELDS_DATA:", allFields);
 
-             const res = await fetch(
-                 "{% url 'fill_pdf' country_code=country_code form_slug=form_info.slug %}",
-                 {
-                     method: "POST",
-                     headers: {
-                         "X-CSRFToken": "{{ csrf_token }}",
-                         "Content-Type": "application/json"
-                     },
-                     body: JSON.stringify({ fields_data: allFields })
-                 }
-             );
+        const res = await fetch(
+            "{% url 'fill_pdf' country_code=country_code form_slug=form_info.slug %}",
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ fields_data: allFields })
+            }
+        );
 
-             if (!res.ok) {
-                 const errorText = await res.text();
-                 console.error("Backend error:", errorText);
-                 alert("PDF error:\n" + errorText);
-                 return;
-             }
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error("Backend error:", errorText);
+            alert("PDF error:\n" + errorText);
+            return;
+        }
 
-             const blob = await res.blob();
-             const link = document.createElement("a");
-             link.href = URL.createObjectURL(blob);
-             link.download = "{{ form_info.slug }}_filled.pdf";
-             link.click();
-         }
+        const blob = await res.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "{{ form_info.slug }}_filled.pdf";
+        link.click();
+    }
 
-         // 🔍 Zoom logic (scales the whole viewer container)
-         let currentZoom = 1.0;
-         function applyZoom(){
-             const container = document.getElementById("pdf-container");
-             if (!container) return;
-             container.style.transform = `scale(${currentZoom})`;
-             const label = document.getElementById("zoom-label");
-             if (label) label.textContent = Math.round(currentZoom * 100) + "%";
-         }
-         function zoomIn(){
-             currentZoom = Math.min(currentZoom + 0.1, 2.0);
-             applyZoom();
-         }
-         function zoomOut(){
-             currentZoom = Math.max(currentZoom - 0.1, 0.5);
-             applyZoom();
-         }
-         document.addEventListener("DOMContentLoaded", applyZoom);
-
-         
-       </script>
-
+    // 🔍 Zoom logic (scales the whole viewer container)
+    let currentZoom = 1.0;
+    function applyZoom(){
+        const container = document.getElementById("pdf-container");
+        if (!container) return;
+        container.style.transform = `scale(${currentZoom})`;
+        const label = document.getElementById("zoom-label");
+        if (label) label.textContent = Math.round(currentZoom * 100) + "%";
+    }
+    function zoomIn(){
+        currentZoom = Math.min(currentZoom + 0.1, 2.0);
+        applyZoom();
+    }
+    function zoomOut(){
+        currentZoom = Math.max(currentZoom - 0.1, 0.5);
+        applyZoom();
+    }
+    document.addEventListener("DOMContentLoaded", applyZoom);
+</script>
 
 {% if form_info.seo_sections %}
 <div style="max-width:800px;margin:40px auto;padding:20px;background:white;border-radius:12px;border:1px solid #e6eaf2;line-height:1.6;">
@@ -681,9 +679,9 @@
         <button type="button" class="sig-btn primary" id="sig-apply-btn">Apply signature</button>
       </div>
     </div>
-  </div>
-  
-  <script>
+</div>
+
+<script>
     function collectFields() {
         const fields = {};
     
@@ -697,11 +695,9 @@
     
         return fields;
     }
-    </script>
-    
+</script>
 
-
-  <script>
+<script>
     (function(){
       let currentSignatureInput = null;
   
@@ -769,7 +765,7 @@
         });
       });
     })();
-  </script>
+</script>
 
 <script>
     function openSuccessModal() {
@@ -779,13 +775,9 @@
     function closeSuccessModal() {
         document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
     }
-    </script>
-    
-
+</script>
 
 <script>
-
-    
     async function startStripeCheckout(country, slug) {
         const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
             method: "POST",
@@ -800,7 +792,7 @@
     
         await stripe.redirectToCheckout({ sessionId: data.id });
     }
-    </script>
+</script>
 
 <script>
 async function handleDownloadClick() {
@@ -809,6 +801,11 @@ async function handleDownloadClick() {
 
     // ALWAYS collect fields
     const fields = collectFields();
+
+    // 🔑 Use per-form key so we can restore after redirect
+    const storageKey = `pending_fields_${country}_${slug}`;
+    sessionStorage.setItem(storageKey, JSON.stringify(fields));
+    // fallback legacy key
     sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
     // USER NOT LOGGED IN → Save to Django session + open modal
@@ -820,7 +817,7 @@ async function handleDownloadClick() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                "X-CSRFToken": getCSRF(),
             },
             body: JSON.stringify({
                 fields_data: fields,
@@ -837,8 +834,6 @@ async function handleDownloadClick() {
             console.log("📌 Could not parse JSON:", e);
         }
 
-
-
         openAuthModal();
         return;
     }
@@ -853,7 +848,6 @@ async function handleDownloadClick() {
         body: JSON.stringify({ fields_data: fields })
     });
 
-
     const res = await fetch(`/${country}/${slug}/has-paid/`);
     const data = await res.json();
 
@@ -865,10 +859,7 @@ async function handleDownloadClick() {
         openPaymentModal();
     }
 }
-
-
 </script>
-
 
 <script>
     async function proceedPayment() {
@@ -890,7 +881,7 @@ async function handleDownloadClick() {
     
         await stripe.redirectToCheckout({ sessionId: data.id });
     }
-    </script>
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -907,32 +898,91 @@ async function handleDownloadClick() {
             openSuccessModal();
         }
     });
-    </script>
+</script>
     
-    <script>
-        function downloadWithSpinner() {
-            const btn = document.getElementById("success-download-btn");
-        
-            // Save original label
-            const originalHTML = btn.innerHTML;
-        
-            // Show spinner + message
-            btn.innerHTML = `
-                <span class="download-spinner"></span> &nbsp; Wird vorbereitet...
-            `;
-            btn.disabled = true;
-        
-            // Trigger real PDF download
-            downloadFilledPDF();
-        
-            // Keep spinner for 30 seconds
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-            }, 30000); // 30,000 ms = 30 seconds
+<script>
+    function downloadWithSpinner() {
+        const btn = document.getElementById("success-download-btn");
+    
+        // Save original label
+        const originalHTML = btn.innerHTML;
+    
+        // Show spinner + message
+        btn.innerHTML = `
+            <span class="download-spinner"></span> &nbsp; Wird vorbereitet...
+        `;
+        btn.disabled = true;
+    
+        // Trigger real PDF download
+        downloadFilledPDF();
+    
+        // Keep spinner for 30 seconds
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }, 30000); // 30,000 ms = 30 seconds
+    }
+</script>
+
+<!-- 🔁 Restore fields function (used after PDF/overlays are ready) -->
+<script>
+function restoreFieldsFromStorage() {
+    const country = "{{ country_code }}";
+    const slug = "{{ form_info.slug }}";
+    const storageKey = `pending_fields_${country}_${slug}`;
+
+    let raw = sessionStorage.getItem(storageKey);
+
+    if (!raw) {
+        // fallback to legacy key if used earlier
+        raw = sessionStorage.getItem("pending_fields");
+    }
+
+    if (!raw) {
+        console.log("ℹ️ No pending fields in sessionStorage");
+        return;
+    }
+
+    let fields = {};
+    try {
+        fields = JSON.parse(raw);
+    } catch (e) {
+        console.log("⚠️ Could not parse pending fields from sessionStorage:", e);
+        return;
+    }
+
+    console.log("🔁 Restoring fields from sessionStorage:", fields);
+
+    // Text inputs (including signature)
+    document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+        const name = input.dataset.name;
+        if (!name) return;
+        if (Object.prototype.hasOwnProperty.call(fields, name)) {
+            input.value = fields[name] || "";
         }
-        </script>
-        
+    });
+
+    // Checkboxes
+    document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+        const name = box.dataset.name;
+        if (!name) return;
+
+        const val = fields[name];
+        const checked = (val === "1" || val === 1 || val === true);
+
+        if (checked) {
+            box.dataset.checked = "1";
+            box.classList.add("checked");
+            box.textContent = "✓";
+        } else {
+            box.dataset.checked = "0";
+            box.classList.remove("checked");
+            box.textContent = "";
+        }
+    });
+}
+</script>
+
         
     
   
