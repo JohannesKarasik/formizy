@@ -814,17 +814,29 @@ async function handleDownloadClick() {
     // USER NOT LOGGED IN → Save to Django session + open modal
     if (!{{ user.is_authenticated|yesno:"true,false" }}) {
 
-        await fetch(`/${country}/${slug}/store-pending-fields/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRF(),
-                },
-                body: JSON.stringify({
-                    fields_data: fields,
-                    form_slug: slug
-                })
-            });
+        console.log("📌 SENDING pending_fields TO SERVER:", fields);
+
+        const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            },
+            body: JSON.stringify({
+                fields_data: fields,
+                form_slug: slug
+            })
+        });
+
+        console.log("📌 SERVER RESPONSE store-pending:", resp.status);
+
+        try {
+            const data = await resp.json();
+            console.log("📌 SERVER JSON store-pending:", data);
+        } catch (e) {
+            console.log("📌 Could not parse JSON:", e);
+        }
+
 
 
         openAuthModal();
