@@ -771,6 +771,24 @@
     }
     </script>
     
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+        
+            // If Stripe redirected with ?paid=1 → auto-download
+            if (urlParams.get("paid") === "1") {
+        
+                console.log("Stripe payment complete → auto-download starting…");
+        
+                // Remove ?paid=1 so it doesn’t repeat
+                window.history.replaceState({}, "", window.location.pathname);
+        
+                // Call your existing PDF download function
+                downloadFilledPDF();
+            }
+        });
+        </script>
+        
     
   
    </main>

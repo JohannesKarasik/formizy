@@ -425,7 +425,7 @@ def create_checkout_session(request, country_code, form_slug):
         },
 
         success_url=request.build_absolute_uri(
-            f"/{country_code}/{form_slug}/success/"
+            f"/{country_code}/{form_slug}/?paid=1"
         ),
         cancel_url=request.build_absolute_uri(
             f"/{country_code}/{form_slug}/"
@@ -436,12 +436,6 @@ def create_checkout_session(request, country_code, form_slug):
 
 
 
-@login_required
-def payment_success(request, country_code, form_slug):
-    return render(request, "main/payment_success.html", {
-        "country_code": country_code,
-        "form_slug": form_slug
-    })
 
 
 from .models import PaidForm
