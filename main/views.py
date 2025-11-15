@@ -542,3 +542,13 @@ def save_fields(request, country_code, form_slug):
     paid_obj.save()
 
     return JsonResponse({"saved": True})
+
+
+@require_POST
+def store_pending_fields(request, country_code, form_slug):
+    body = json.loads(request.body.decode("utf-8"))
+
+    request.session["pending_fields"] = json.dumps(body.get("fields_data", {}))
+    request.session["pending_form_slug"] = form_slug
+
+    return JsonResponse({"stored": True})

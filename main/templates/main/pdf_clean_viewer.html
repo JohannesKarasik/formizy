@@ -775,46 +775,34 @@
     </script>
 
 <script>
-    function openPaymentModal() {
-        document.getElementById("payment-modal").classList.remove("auth-modal-hidden");
-    }
-    
-    function closePaymentModal() {
-        document.getElementById("payment-modal").classList.add("auth-modal-hidden");
-    }
-    
-    let pendingPaymentCountry = null;
-    let pendingPaymentSlug = null;
-
-    // NEW — collect all field values (text + checkboxes)
-    function collectFields() {
-        const fields = {};
-
-        document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
-            fields[input.dataset.name] = input.value || "";
-        });
-
-        document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
-            fields[box.dataset.name] = box.classList.contains("checked") ? "1" : "0";
-        });
-
-        return fields;
-    }
-    
-    async function handleDownloadClick() {
+async function handleDownloadClick() {
     const country = "{{ country_code }}";
     const slug = "{{ form_info.slug }}";
 
-    // Save fields ALWAYS — even when logged out (session)
+    // ALWAYS collect fields
     const fields = collectFields();
     sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
+    // USER NOT LOGGED IN → Save to Django session + open modal
     if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+
+        await fetch(`/${country}/${slug}/store-pending-fields/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            },
+            body: JSON.stringify({
+                fields_data: fields,
+                form_slug: slug
+            })
+        });
+
         openAuthModal();
         return;
     }
 
-    // If logged in, save directly to backend
+    // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
         method: "POST",
         headers: {
@@ -835,6 +823,7 @@
         openPaymentModal();
     }
 }
+
 
 </script>
 
