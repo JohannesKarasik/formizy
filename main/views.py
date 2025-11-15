@@ -20,36 +20,17 @@ from .models import Form
 from django.views.decorators.http import require_POST
 import json
 
-@require_POST
-def store_pending_fields(request, country_code, form_slug):
-    print("\n\n🟦 STORE_PENDING_FIELDS HIT")
-    print("➡ URL:", request.path)
-    print("➡ SESSION KEY BEFORE:", request.session.session_key)
+from django.http import JsonResponse
 
-    try:
-        body_raw = request.body.decode("utf-8")
-        print("➡ RAW BODY:", body_raw)
-        body = json.loads(body_raw)
-    except Exception as e:
-        print("🟥 JSON PARSE ERROR:", e)
-        return JsonResponse({"error": "invalid json"}, status=400)
+def store_pending_fields(request, country, slug):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=400)
 
-    fields = body.get("fields_data", {})
-    print("➡ fields_data:", fields)
-    print("➡ form_slug (from URL):", form_slug)
+    data = json.loads(request.body)
+    request.session["pending_fields"] = data.get("fields_data", {})
 
-    # Save into Django session
-    request.session["pending_fields"] = json.dumps(fields)
-    request.session["pending_form_slug"] = form_slug
-    request.session.modified = True
+    return JsonResponse({"ok": True})
 
-    print("✅ STORED INTO SESSION")
-    print("⭕ SESSION pending_fields:", request.session.get("pending_fields"))
-    print("⭕ SESSION pending_form_slug:", request.session.get("pending_form_slug"))
-    print("🟩 SESSION KEYS NOW:", list(request.session.keys()))
-    print("➡ SESSION KEY AFTER:", request.session.session_key)
-
-    return JsonResponse({"stored": True})
 
 
 def home(request):
