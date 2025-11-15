@@ -401,22 +401,21 @@ def create_checkout_session(request, country_code, form_slug):
 
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
-    # Important: metadata to identify which form was paid
+    # Your Stripe Price ID (replace with your actual one)
+    PRICE_ID = "price_1STWUeL5aHEScFcdkpAMSuaw"   # <-- put your Stripe price ID here
+
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         mode="payment",
+
+        # Use your predefined product pricing
         line_items=[
             {
-                "price_data": {
-                    "currency": "eur",
-                    "product_data": {"name": form_info.title},
-                    "unit_amount": 299,  # €2.99 example
-                },
+                "price": PRICE_ID,
                 "quantity": 1,
             }
         ],
 
-        # Metadata used by webhook
         metadata={
             "user_id": request.user.id,
             "form_slug": form_slug,
@@ -431,6 +430,7 @@ def create_checkout_session(request, country_code, form_slug):
     )
 
     return JsonResponse({"id": session.id})
+
 
 
 @login_required
