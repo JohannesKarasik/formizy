@@ -22,6 +22,22 @@ from .models import Form
 # BASIC PAGES
 # ===========================
 
+@require_POST
+def store_pending_fields(request, country_code, form_slug):
+    print("🔥 store_pending_fields HIT")
+    print("RAW BODY:", request.body)
+
+    body = json.loads(request.body.decode("utf-8"))
+    print("PARSED BODY:", body)
+
+    request.session["pending_fields"] = json.dumps(body.get("fields_data", {}))
+    request.session["pending_form_slug"] = form_slug
+
+    print("🔥 STORED pending_fields:", request.session.get("pending_fields"))
+    print("🔥 STORED pending_form_slug:", request.session.get("pending_form_slug"))
+
+    return JsonResponse({"stored": True})
+
 
 def home(request):
    countries = [
@@ -285,18 +301,25 @@ from django.contrib.auth import login
 
 def register_view(request):
     if request.method != "POST":
+        print("❌ register_view hit with GET")
         return JsonResponse({"error": "method not allowed"}, status=405)
 
-    print("REGISTER POST:", request.POST)
+    print("🟦 REGISTER VIEW HIT — POST DATA:", dict(request.POST))
 
     email = request.POST.get("email")
     password = request.POST.get("password")
     next_url = request.POST.get("next", "/")
 
+    print("🟦 email:", email)
+    print("🟦 password length:", len(password) if password else 0)
+    print("🟦 next_url:", next_url)
+
     if not email or not password:
+        print("❌ missing email or password")
         return JsonResponse({"error": "missing fields"}, status=400)
 
     if User.objects.filter(username=email).exists():
+        print("❌ user already exists:", email)
         return JsonResponse({"error": "exists"}, status=400)
 
     try:
@@ -306,41 +329,59 @@ def register_view(request):
             password=password
         )
         login(request, user)
-        print("REGISTER SUCCESS — user id:", user.id)
+        print("✅ REGISTER SUCCESS — user id:", user.id)
 
         # ---------------------------------------------------
-        # RESTORE PENDING FIELD DATA AFTER REGISTRATION
+        #  RESTORE PENDING FIELD DATA AFTER REGISTRATION
         # ---------------------------------------------------
         pending = request.session.get("pending_fields")
         form_slug = request.session.get("pending_form_slug")
 
+        print("🟨 SESSION pending_fields:", pending)
+        print("🟨 SESSION pending_form_slug:", form_slug)
+
         if pending and form_slug:
             try:
                 from .models import PaidForm
-                fields_json = json.loads(pending)
 
-                paid_obj, _ = PaidForm.objects.get_or_create(
+                # Debug parse
+                print("🟩 Parsing pending_fields JSON…")
+                fields_json = json.loads(pending)
+                print("🟩 Parsed fields_json:", fields_json)
+
+                paid_obj, created = PaidForm.objects.get_or_create(
                     user=user,
                     form_slug=form_slug
                 )
+
+                print("🟩 PaidForm object:", paid_obj, "created?", created)
+
+                # Save fields
                 paid_obj.fields_json = fields_json
                 paid_obj.save()
 
-                print("Restored fields into PaidForm (register)!")
-            except Exception as e:
-                print("Restore fields error (register):", e)
+                print("✅ Restored fields into PaidForm (register)!")
 
-            # Clean session storage
-            del request.session["pending_fields"]
-            del request.session["pending_form_slug"]
+            except Exception as e:
+                print("🟥 Restore fields error (register):", e)
+
+            # Clean session
+            try:
+                del request.session["pending_fields"]
+                del request.session["pending_form_slug"]
+                print("🟦 Cleared session pending fields")
+            except Exception as e:
+                print("⚠ Session cleanup error:", e)
+
+        else:
+            print("⚠ No pending fields found in session")
 
     except Exception as e:
+        print("🟥 REGISTER EXCEPTION:", e)
         return JsonResponse({"error": str(e)}, status=400)
 
+    print("✅ Registration completed — redirecting to:", next_url)
     return JsonResponse({"success": True, "next": next_url})
-
-
-
 
 
 from django.contrib.auth import authenticate, login
@@ -527,28 +568,63 @@ def has_paid(request, country_code, form_slug):
 @login_required
 @require_POST
 def save_fields(request, country_code, form_slug):
-    body = json.loads(request.body.decode("utf-8"))
+    print("🟦 save_fields() HIT")
+    print("🟦 user:", request.user.id, request.user.username)
+    print("🟦 URL args:", country_code, form_slug)
+
+    try:
+        raw = request.body.decode("utf-8")
+        print("🟦 RAW BODY:", raw)
+        body = json.loads(raw)
+    except Exception as e:
+        print("🟥 JSON decode error in save_fields:", e)
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+
     fields = body.get("fields_data")
+    print("🟨 Parsed fields:", fields)
 
     if not fields:
+        print("🟥 save_fields: no fields provided")
         return JsonResponse({"error": "no fields"}, status=400)
 
+    # Get or create PaidForm
     paid_obj, created = PaidForm.objects.get_or_create(
         user=request.user,
         form_slug=form_slug
     )
+    print("🟩 PaidForm fetched:", paid_obj, "created?", created)
 
+    # Save fields
     paid_obj.fields_json = fields
     paid_obj.save()
+    print("✅ save_fields: fields_json saved!")
 
     return JsonResponse({"saved": True})
 
 
+
 @require_POST
 def store_pending_fields(request, country_code, form_slug):
-    body = json.loads(request.body.decode("utf-8"))
+    print("🟦 store_pending_fields() HIT")
+    print("🟦 URL args:", country_code, form_slug)
 
-    request.session["pending_fields"] = json.dumps(body.get("fields_data", {}))
+    try:
+        raw = request.body.decode("utf-8")
+        print("🟦 RAW BODY:", raw)
+        body = json.loads(raw)
+    except Exception as e:
+        print("🟥 JSON decode error in store_pending_fields:", e)
+        return JsonResponse({"error": "invalid"}, status=400)
+
+    fields = body.get("fields_data", {})
+    print("🟨 fields_data parsed:", fields)
+
+    # Save into session
+    request.session["pending_fields"] = json.dumps(fields)
     request.session["pending_form_slug"] = form_slug
+
+    print("🟩 Stored into session:")
+    print("    pending_fields:", request.session.get("pending_fields"))
+    print("    pending_form_slug:", request.session.get("pending_form_slug"))
 
     return JsonResponse({"stored": True})
