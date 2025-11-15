@@ -402,7 +402,7 @@ def create_checkout_session(request, country_code, form_slug):
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
     # Your Stripe Price ID (replace with your actual one)
-    PRICE_ID = "price_1STWUeL5aHEScFcdkpAMSuaw"   # <-- put your Stripe price ID here
+    PRICE_ID = "price_1STXUlL5aHEScFcdpdISRojS"   # <-- put your Stripe price ID here
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
