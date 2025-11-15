@@ -361,13 +361,11 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
 def stripe_webhook(request):
-    # Stripe sends ONLY POST
     if request.method != "POST":
-        return HttpResponse("Webhook endpoint", status=200)
+        return HttpResponse("Webhook OK", status=200)
 
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-    event = None
 
     try:
         event = stripe.Webhook.construct_event(
@@ -375,108 +373,66 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except Exception:
         return HttpResponse(status=400)
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        print("Payment successful:", session)
 
         user_id = session["metadata"]["user_id"]
         form_slug = session["metadata"]["form_slug"]
 
-        # -------------------------
-        # 1️⃣ Mark as paid
-        # -------------------------
         from .models import PaidForm, Form
+
+        # Load PaidForm entry (it contains fields_json)
         paid_obj, created = PaidForm.objects.get_or_create(
             user_id=user_id,
             form_slug=form_slug
         )
 
-        # -------------------------
-        # 2️⃣ Load saved field data
-        # -------------------------
-        fields = paid_obj.saved_fields or {}
-
+        fields = paid_obj.fields_json
         if not fields:
-            print("⚠ No saved fields found — cannot pre-generate PDF.")
+            print("⚠️ No fields saved before payment — cannot generate PDF")
             return HttpResponse(status=200)
 
-        # -------------------------
-        # 3️⃣ Generate PDF in background
-        # -------------------------
+        form_info = Form.objects.get(slug=form_slug)
 
-        try:
-            form_info = Form.objects.get(slug=form_slug)
-        except Form.DoesNotExist:
-            print("❌ Form not found:", form_slug)
-            return HttpResponse(status=200)
-
-        import fitz, io, os
-        from django.conf import settings
+        # ================================
+        #  📄 Generate the filled PDF
+        # ================================
+        import fitz
+        from django.core.files.base import ContentFile
 
         pdf = fitz.open(form_info.pdf_file.path)
 
-        font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
-        FONT_NAME = "ArialUnicode"
-        CHECKMARK = "\u2713"
-        OFFSET_X = 0
-        OFFSET_Y = 8
-        FONT_SIZE = 10
-
+        # Loop over PDF pages and fields
         for field in form_info.fields_schema:
-            name = field.get("name")
-            value = fields.get(name, "")
+            name = field["name"]
 
-            page_index = int(field.get("page", 1)) - 1
-            if not (0 <= page_index < len(pdf)):
+            if name not in fields:
                 continue
 
-            page = pdf[page_index]
-            page.insert_font(fontfile=font_path, fontname=FONT_NAME)
-
-            x = float(field.get("pixel_x", 0)) + OFFSET_X
-            y = float(field.get("pixel_y", 0)) + OFFSET_Y
-
-            if field.get("type") == "checkbox":
-                if str(value) == "1":
-                    page.insert_text(
-                        (x, y),
-                        CHECKMARK,
-                        fontsize=14,
-                        fontname=FONT_NAME,
-                        color=(0, 0, 0),
-                        overlay=True,
-                    )
+            value = fields[name]
+            if not value:
                 continue
 
-            if value:
-                page.insert_text(
-                    (x, y),
-                    str(value),
-                    fontsize=FONT_SIZE,
-                    fontname=FONT_NAME,
-                    color=(0, 0, 0),
-                    overlay=True,
-                )
+            page_index = (field.get("page", 1) - 1)
+            x = field["pixel_x"]
+            y = field["pixel_y"]
 
-        # -------------------------
-        # 4️⃣ Save final pre-filled PDF
-        # -------------------------
-        output = io.BytesIO()
-        pdf.save(output)
-        output.seek(0)
-        pdf.close()
+            try:
+                page = pdf[page_index]
+                page.insert_text((x, y), value, fontsize=10)
+            except Exception as e:
+                print("Error inserting field:", name, e)
 
-        # Save into PaidForm.pdf_file
-        filename = f"{form_slug}_filled_ready.pdf"
-        paid_obj.pdf_file.save(filename, output)
-        paid_obj.save()
-
-        print("✅ Pre-generated PDF saved:", filename)
+        # Save PDF to PaidForm
+        pdf_bytes = pdf.tobytes()
+        paid_obj.filled_pdf.save(
+            f"{form_slug}_{user_id}.pdf",
+            ContentFile(pdf_bytes),
+            save=True
+        )
 
     return HttpResponse(status=200)
 
@@ -527,19 +483,20 @@ from .models import PaidForm
 
 @login_required
 def download_pdf(request, country_code, form_slug):
-
-    # Check if user paid
-    has_paid = PaidForm.objects.filter(
+    paid_obj = PaidForm.objects.filter(
         user=request.user,
         form_slug=form_slug
-    ).exists()
+    ).first()
 
-    if not has_paid:
-        # Redirect back to form with flag “payment required”
-        return redirect(f"/{country_code}/{form_slug}/?payment_required=1")
+    if not paid_obj or not paid_obj.filled_pdf:
+        return HttpResponse("PDF not ready", status=404)
 
-    # ---- CALL YOUR EXISTING FILL_PDF LOGIC ----
-    return fill_pdf(request, country_code, form_slug)
+    return FileResponse(
+        open(paid_obj.filled_pdf.path, "rb"),
+        as_attachment=True,
+        filename=f"{form_slug}_filled.pdf"
+    )
+
 
 
 @login_required

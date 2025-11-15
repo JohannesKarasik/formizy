@@ -802,7 +802,7 @@
         const data = await res.json();
     
         if (data.has_paid) {
-            downloadFilledPDF();
+            window.location.href = "/{{ country_code }}/{{ form_info.slug }}/download/";
         } else {
             pendingPaymentCountry = country;
             pendingPaymentSlug = slug;
