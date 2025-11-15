@@ -198,15 +198,21 @@
         body: formData
     });
 
-    const data = await res.json();
+    const text = await res.text(); // <- read raw response
 
-    if (!res.ok) {
-        alert("Registration failed: " + data.error);
-        return;
+    console.log("RAW RESPONSE:", text);
+
+    try {
+        const data = JSON.parse(text);
+        if (!res.ok) {
+            alert("Registration failed: " + data.error);
+            return;
+        }
+        window.location = data.next;
+    } catch (err) {
+        console.error("JSON parse error:", err);
+        alert("Server returned HTML instead of JSON. Check backend.");
     }
-
-    // success!
-    window.location = data.next;
 }
 
 

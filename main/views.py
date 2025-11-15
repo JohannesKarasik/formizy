@@ -278,33 +278,37 @@ def map_form(request, country_code, form_slug):
 # AUTH
 # ===========================
 
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+
 def register_view(request):
-    if request.method == "POST":
-        print("REGISTERING:", request.POST)
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
 
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        next_url = request.POST.get("next", "/")
+    print("REGISTER POST:", request.POST)
 
-        if not email or not password:
-            print("REGISTER ERROR: missing fields")
-            return JsonResponse({"error": "missing"}, status=400)
+    email = request.POST.get("email")
+    password = request.POST.get("password")
+    next_url = request.POST.get("next", "/")
 
-        if User.objects.filter(username=email).exists():
-            print("REGISTER ERROR: email exists")
-            return JsonResponse({"error": "exists"}, status=400)
+    if not email or not password:
+        return JsonResponse({"error": "missing fields"}, status=400)
 
-        try:
-            user = User.objects.create_user(username=email, email=email, password=password)
-            login(request, user)
-        except Exception as e:
-            print("REGISTER ERROR:", e)
-            return JsonResponse({"error": str(e)}, status=400)
+    if User.objects.filter(username=email).exists():
+        return JsonResponse({"error": "exists"}, status=400)
 
-        print("REGISTER SUCCESS:", user.id)
-        return JsonResponse({"success": True, "next": next_url})
+    try:
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password
+        )
+        login(request, user)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
-    return JsonResponse({"error": "method not allowed"}, status=405)
+    return JsonResponse({"success": True, "next": next_url})
 
 
 
