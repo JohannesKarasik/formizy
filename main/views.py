@@ -523,27 +523,90 @@ from .models import PaidForm
 from django.http import FileResponse, Http404, HttpResponse
 from .models import PaidForm, Form
 
+from django.http import FileResponse, Http404
+import io
+import fitz
+import os
+from django.conf import settings
+
 @login_required
 def download_pdf(request, country_code, form_slug):
+    from .models import Form, PaidForm
+
     try:
-        paid_obj = PaidForm.objects.get(
-            user=request.user,
-            form_slug=form_slug
-        )
-    except PaidForm.DoesNotExist:
-        raise Http404("No payment found.")
+        form_info = Form.objects.get(slug=form_slug, country__code=country_code)
+    except Form.DoesNotExist:
+        raise Http404("Form not found")
 
-    # If the final filled PDF exists → download it immediately
-    if paid_obj.filled_pdf:
-        return FileResponse(
-            paid_obj.filled_pdf.open("rb"),
-            as_attachment=True,
-            filename=f"{form_slug}_filled.pdf"
-        )
+    # Check if user paid
+    paid = PaidForm.objects.filter(user=request.user, form_slug=form_slug).exists()
+    if not paid:
+        return HttpResponse("Not paid", status=402)
 
-    # ❌ REMOVE the "still preparing…" message completely  
-    # Instead, just generate the PDF *right now* the old way
-    return generate_pdf_synchronously(request, form_slug)
+    # Get fields from POSTed form (viewer)
+    # (You are downloading from GET, so fields must be regenerated from viewer if needed)
+    fields_data = request.session.get("fields_data", {})
+
+    # Open original PDF
+    pdf = fitz.open(form_info.pdf_file.path)
+
+    font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
+    FONT_NAME = "ArialUnicode"
+    CHECKMARK = "\u2713"
+    OFFSET_Y = 8
+    FONT_SIZE = 10
+
+    for field in form_info.fields_schema:
+        name = field.get("name")
+        value = fields_data.get(name, "")
+
+        page_index = int(field.get("page", 1)) - 1
+        if not (0 <= page_index < len(pdf)):
+            continue
+
+        page = pdf[page_index]
+        page.insert_font(fontfile=font_path, fontname=FONT_NAME)
+
+        x = float(field.get("pixel_x", 0))
+        y = float(field.get("pixel_y", 0)) + OFFSET_Y
+
+        if field.get("type") == "checkbox":
+            if str(value) == "1":
+                page.insert_text(
+                    (x, y),
+                    CHECKMARK,
+                    fontsize=14,
+                    fontname=FONT_NAME,
+                    color=(0, 0, 0),
+                    overlay=True,
+                )
+            continue
+
+        if value:
+            page.insert_text(
+                (x, y),
+                str(value),
+                fontsize=FONT_SIZE,
+                fontname=FONT_NAME,
+                color=(0, 0, 0),
+                overlay=True,
+            )
+
+    # Return the filled PDF
+    output = io.BytesIO()
+    pdf.save(output)
+    pdf.close()
+    output.seek(0)
+
+    filename = f"{form_slug}_filled.pdf"
+
+    return FileResponse(
+        output,
+        as_attachment=True,
+        filename=filename,
+        content_type="application/pdf"
+    )
+
 
 
 
