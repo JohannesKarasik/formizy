@@ -188,6 +188,7 @@
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
+    formData.append("next", window.location.pathname);
 
     const res = await fetch("/register/", {
         method: "POST",
@@ -197,13 +198,17 @@
         body: formData
     });
 
-    if (!res.redirected && !res.ok) {
-        alert("Registration failed. Try another email.");
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert("Registration failed: " + data.error);
         return;
     }
 
-    window.location.reload();
+    // success!
+    window.location = data.next;
 }
+
 
   
   function getCSRF() {

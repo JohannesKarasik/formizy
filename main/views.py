@@ -279,36 +279,32 @@ def map_form(request, country_code, form_slug):
 # ===========================
 
 def register_view(request):
-    if request.method == 'POST':
-        print("REGISTER HIT — DATA:", request.POST)
+    if request.method == "POST":
+        print("REGISTERING:", request.POST)
 
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        print("REGISTER email:", email)
-        print("REGISTER password length:", len(password) if password else "NO PASSWORD")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        next_url = request.POST.get("next", "/")
 
         if not email or not password:
-            print("REGISTER ERROR — Missing fields")
-            return JsonResponse({"error": "missing fields"}, status=400)
+            print("REGISTER ERROR: missing fields")
+            return JsonResponse({"error": "missing"}, status=400)
 
         if User.objects.filter(username=email).exists():
-            print("REGISTER ERROR — email already exists")
+            print("REGISTER ERROR: email exists")
             return JsonResponse({"error": "exists"}, status=400)
 
         try:
             user = User.objects.create_user(username=email, email=email, password=password)
-            print("REGISTER SUCCESS — user id:", user.id)
+            login(request, user)
         except Exception as e:
-            print("REGISTER ERROR:", str(e))
+            print("REGISTER ERROR:", e)
             return JsonResponse({"error": str(e)}, status=400)
 
-        login(request, user)
-        print("REGISTER LOGIN SUCCESS")
+        print("REGISTER SUCCESS:", user.id)
+        return JsonResponse({"success": True, "next": next_url})
 
-        return redirect(request.POST.get('next', '/'))
-
-    return JsonResponse({"error": "GET not allowed"}, status=405)
+    return JsonResponse({"error": "method not allowed"}, status=405)
 
 
 
