@@ -484,6 +484,9 @@
 
 
 <script>
+
+
+
     function getCSRF() {
         const token = document.querySelector("input[name='csrfmiddlewaretoken']");
         if (!token) {
@@ -799,50 +802,24 @@ function saveFieldsAndDownload() {
 </script>
 
 <script>
+let pendingPaymentCountry = null;
+let pendingPaymentSlug = null;
+
 async function handleDownloadClick() {
     const country = "{{ country_code }}";
     const slug = "{{ form_info.slug }}";
 
-    // ALWAYS collect fields
     const fields = collectFields();
 
-    // 🔑 Use per-form key so we can restore after redirect
     const storageKey = `pending_fields_${country}_${slug}`;
     sessionStorage.setItem(storageKey, JSON.stringify(fields));
-    // fallback legacy key
     sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
-    // USER NOT LOGGED IN → Save to Django session + open modal
     if (!{{ user.is_authenticated|yesno:"true,false" }}) {
-
-        console.log("📌 SENDING pending_fields TO SERVER:", fields);
-
-        const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF(),
-            },
-            body: JSON.stringify({
-                fields_data: fields,
-                form_slug: slug
-            })
-        });
-
-        console.log("📌 SERVER RESPONSE store-pending:", resp.status);
-
-        try {
-            const data = await resp.json();
-            console.log("📌 SERVER JSON store-pending:", data);
-        } catch (e) {
-            console.log("📌 Could not parse JSON:", e);
-        }
-
         openAuthModal();
         return;
     }
 
-    // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
         method: "POST",
         headers: {
@@ -858,11 +835,12 @@ async function handleDownloadClick() {
     if (data.has_paid) {
         downloadFilledPDF();
     } else {
-        pendingPaymentCountry = country;
+        pendingPaymentCountry = country;   // <-- THESE MUST EXIST
         pendingPaymentSlug = slug;
         openPaymentModal();
     }
 }
+
 </script>
 
 <script>
