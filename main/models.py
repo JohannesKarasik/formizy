@@ -43,10 +43,17 @@ class Form(models.Model):
 class PaidForm(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     form_slug = models.CharField(max_length=200)
-    paid_at = models.DateTimeField(auto_now_add=True)
+
+    # NEW: store user-entered field values
+    fields_json = models.JSONField(null=True, blank=True)
+
+    # NEW: store the generated filled PDF file
+    filled_pdf = models.FileField(upload_to="filled_pdfs/", null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("user", "form_slug")
 
     def __str__(self):
-        return f"{self.user.username} - {self.form_slug}"
+        return f"{self.user} — {self.form_slug}"
