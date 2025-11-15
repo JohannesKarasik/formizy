@@ -30,7 +30,15 @@
     background: #fff;
     box-shadow: 0 8px 40px rgba(0,0,0,0.15);
     animation: fadeInScale .25s ease-out;
-  }
+
+    /* 🔥 NEW: vertically center everything inside modal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  
+    align-items: center;
+    min-height: 380px;  /* tweak to your perfect size */
+}
+
   
   @keyframes fadeInScale {
     from {opacity: 0; transform: translate(-50%, -48%) scale(0.95);}
