@@ -164,7 +164,10 @@ document.addEventListener("mousemove", (e) => {
     const del = document.createElement("div");
     del.className = "delete-btn";
     del.textContent = "×";
-    del.onclick = () => box.remove();
+    del.onclick = () => {
+    box.dataset.deleted = "1";   // mark as deleted
+    box.remove();                // remove from screen
+};
     box.appendChild(del);
 
     const container = document.getElementById("pdf-container");
@@ -209,7 +212,10 @@ box.textContent = ""; // starts empty (unchecked)
 const del = document.createElement("div");
 del.className = "delete-btn";
 del.textContent = "×";
-del.onclick = () => box.remove();
+del.onclick = () => {
+    box.dataset.deleted = "1";   // mark as deleted
+    box.remove();                // remove from screen
+};
 box.appendChild(del);
 
 const container = document.getElementById("pdf-container");
@@ -268,7 +274,10 @@ function addSignature() {
     const del = document.createElement("div");
     del.className = "delete-btn";
     del.textContent = "×";
-    del.onclick = () => box.remove();
+    del.onclick = () => {
+    box.dataset.deleted = "1";   // mark as deleted
+    box.remove();                // remove from screen
+};
     box.appendChild(del);
 
     const container = document.getElementById("pdf-container");
@@ -497,7 +506,10 @@ function restoreSavedLayout() {
         const del = document.createElement("div");
         del.className = "delete-btn";
         del.textContent = "×";
-        del.onclick = () => box.remove();
+del.onclick = () => {
+    box.dataset.deleted = "1";   // mark as deleted
+    box.remove();                // remove from screen
+};
         box.appendChild(del);
 
         document.getElementById("pdf-container").appendChild(box);
