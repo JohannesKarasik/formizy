@@ -134,26 +134,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
-import os
-
 # Which environment to use: "test" or "live"
-STRIPE_MODE = os.getenv("STRIPE_MODE", "test")  # default = test
+STRIPE_MODE = os.getenv("STRIPE_MODE", "test")
 
-
-# Choose correct keys based on mode
 if STRIPE_MODE == "live":
-    STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY_LIVE")
-    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY_LIVE")
-    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET_LIVE")
+    STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 else:
     STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY_TEST")
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY_TEST")
     STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET_TEST")
-
-
-# Debug print (optional)
-print("💳 Stripe Mode Loaded:", STRIPE_MODE)
-print("🔑 Public Key:", STRIPE_PUBLIC_KEY)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
