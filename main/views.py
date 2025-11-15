@@ -387,11 +387,96 @@ def stripe_webhook(request):
         user_id = session["metadata"]["user_id"]
         form_slug = session["metadata"]["form_slug"]
 
-        from .models import PaidForm
-        PaidForm.objects.get_or_create(
+        # -------------------------
+        # 1️⃣ Mark as paid
+        # -------------------------
+        from .models import PaidForm, Form
+        paid_obj, created = PaidForm.objects.get_or_create(
             user_id=user_id,
             form_slug=form_slug
         )
+
+        # -------------------------
+        # 2️⃣ Load saved field data
+        # -------------------------
+        fields = paid_obj.saved_fields or {}
+
+        if not fields:
+            print("⚠ No saved fields found — cannot pre-generate PDF.")
+            return HttpResponse(status=200)
+
+        # -------------------------
+        # 3️⃣ Generate PDF in background
+        # -------------------------
+
+        try:
+            form_info = Form.objects.get(slug=form_slug)
+        except Form.DoesNotExist:
+            print("❌ Form not found:", form_slug)
+            return HttpResponse(status=200)
+
+        import fitz, io, os
+        from django.conf import settings
+
+        pdf = fitz.open(form_info.pdf_file.path)
+
+        font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
+        FONT_NAME = "ArialUnicode"
+        CHECKMARK = "\u2713"
+        OFFSET_X = 0
+        OFFSET_Y = 8
+        FONT_SIZE = 10
+
+        for field in form_info.fields_schema:
+            name = field.get("name")
+            value = fields.get(name, "")
+
+            page_index = int(field.get("page", 1)) - 1
+            if not (0 <= page_index < len(pdf)):
+                continue
+
+            page = pdf[page_index]
+            page.insert_font(fontfile=font_path, fontname=FONT_NAME)
+
+            x = float(field.get("pixel_x", 0)) + OFFSET_X
+            y = float(field.get("pixel_y", 0)) + OFFSET_Y
+
+            if field.get("type") == "checkbox":
+                if str(value) == "1":
+                    page.insert_text(
+                        (x, y),
+                        CHECKMARK,
+                        fontsize=14,
+                        fontname=FONT_NAME,
+                        color=(0, 0, 0),
+                        overlay=True,
+                    )
+                continue
+
+            if value:
+                page.insert_text(
+                    (x, y),
+                    str(value),
+                    fontsize=FONT_SIZE,
+                    fontname=FONT_NAME,
+                    color=(0, 0, 0),
+                    overlay=True,
+                )
+
+        # -------------------------
+        # 4️⃣ Save final pre-filled PDF
+        # -------------------------
+        output = io.BytesIO()
+        pdf.save(output)
+        output.seek(0)
+        pdf.close()
+
+        # Save into PaidForm.pdf_file
+        filename = f"{form_slug}_filled_ready.pdf"
+        paid_obj.pdf_file.save(filename, output)
+        paid_obj.save()
+
+        print("✅ Pre-generated PDF saved:", filename)
 
     return HttpResponse(status=200)
 
@@ -468,3 +553,23 @@ def has_paid(request, country_code, form_slug):
 
     return JsonResponse({"has_paid": paid})
 
+
+
+@login_required
+@require_POST
+def save_fields(request, country_code, form_slug):
+    body = json.loads(request.body.decode("utf-8"))
+    fields = body.get("fields_data")
+
+    if not fields:
+        return JsonResponse({"error": "no fields"}, status=400)
+
+    paid_obj, created = PaidForm.objects.get_or_create(
+        user=request.user,
+        form_slug=form_slug
+    )
+
+    paid_obj.fields_json = fields
+    paid_obj.save()
+
+    return JsonResponse({"saved": True})
