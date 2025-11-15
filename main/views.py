@@ -8,6 +8,8 @@ from django.conf import settings
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 
+from django.contrib.auth import logout
+
 
 import json, io, os
 import fitz  # PyMuPDF
