@@ -309,21 +309,6 @@
     display: none;
 }
 
-
-.download-spinner {
-  border: 3px solid #ffffff55;
-  border-top: 3px solid white;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 0.6s linear infinite;
-  display: inline-block;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
    </style>
 {% endblock %}
 
@@ -471,7 +456,7 @@
             Sie können das ausgefüllte PDF jetzt herunterladen.
         </p>
 
-        <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
+        <button class="auth-btn-primary" onclick="downloadFilledPDF()">
             PDF herunterladen
         </button>
     </div>
@@ -784,20 +769,40 @@
     let pendingPaymentCountry = null;
     let pendingPaymentSlug = null;
 
+    // NEW — collect all field values (text + checkboxes)
+    function collectFields() {
+        const fields = {};
 
+        document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+            fields[input.dataset.name] = input.value || "";
+        });
+
+        document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+            fields[box.dataset.name] = box.classList.contains("checked") ? "1" : "0";
+        });
+
+        return fields;
+    }
     
     async function handleDownloadClick() {
         const country = "{{ country_code }}";
         const slug = "{{ form_info.slug }}";
 
         // NEW — save fields BEFORE checking payment or opening the modal
-
+        await fetch(`/${country}/${slug}/save-fields/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            },
+            body: JSON.stringify({ fields_data: collectFields() })
+        });
 
         const res = await fetch(`/${country}/${slug}/has-paid/`);
         const data = await res.json();
     
         if (data.has_paid) {
-            window.location.href = "/{{ country_code }}/{{ form_info.slug }}/download/";
+            downloadFilledPDF();
         } else {
             pendingPaymentCountry = country;
             pendingPaymentSlug = slug;
@@ -846,32 +851,6 @@
     });
     </script>
     
-
-    <script>
-        async function downloadWithSpinner() {
-            const btn = document.getElementById("success-download-btn");
-        
-            // Save original label
-            const originalHTML = btn.innerHTML;
-        
-            // Show spinner
-            btn.innerHTML = `
-                <span class="download-spinner"></span>
-                &nbsp;&nbsp;Preparing your document…
-            `;
-            btn.disabled = true;
-        
-            // Trigger the actual download redirect
-            window.location.href = "/{{ country_code }}/{{ form_info.slug }}/download/";
-        
-            // Restore button after short delay (doesn't block download)
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-            }, 2000);
-        }
-        </script>
-        
         
     
   
