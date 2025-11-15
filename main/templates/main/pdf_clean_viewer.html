@@ -802,30 +802,40 @@
     }
     
     async function handleDownloadClick() {
-        const country = "{{ country_code }}";
-        const slug = "{{ form_info.slug }}";
+    const country = "{{ country_code }}";
+    const slug = "{{ form_info.slug }}";
 
-        // NEW — save fields BEFORE checking payment or opening the modal
-        await fetch(`/${country}/${slug}/save-fields/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            },
-            body: JSON.stringify({ fields_data: collectFields() })
-        });
+    // Save fields ALWAYS — even when logged out (session)
+    const fields = collectFields();
+    sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
-        const res = await fetch(`/${country}/${slug}/has-paid/`);
-        const data = await res.json();
-    
-        if (data.has_paid) {
-            downloadFilledPDF();
-        } else {
-            pendingPaymentCountry = country;
-            pendingPaymentSlug = slug;
-            openPaymentModal();
-        }
+    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+        openAuthModal();
+        return;
     }
+
+    // If logged in, save directly to backend
+    await fetch(`/${country}/${slug}/save-fields/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        },
+        body: JSON.stringify({ fields_data: fields })
+    });
+
+    const res = await fetch(`/${country}/${slug}/has-paid/`);
+    const data = await res.json();
+
+    if (data.has_paid) {
+        downloadFilledPDF();
+    } else {
+        pendingPaymentCountry = country;
+        pendingPaymentSlug = slug;
+        openPaymentModal();
+    }
+}
+
 </script>
 
 
@@ -881,16 +891,17 @@
             `;
             btn.disabled = true;
         
-            // Trigger the actual download
+            // Trigger real PDF download
             downloadFilledPDF();
         
-            // Restore button label after a delay (download continues)
+            // Keep spinner for 30 seconds
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
-            }, 2500);
+            }, 30000); // 30,000 ms = 30 seconds
         }
         </script>
+        
         
     
   

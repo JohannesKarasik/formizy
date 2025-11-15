@@ -306,6 +306,34 @@ def register_view(request):
             password=password
         )
         login(request, user)
+        print("REGISTER SUCCESS — user id:", user.id)
+
+        # ---------------------------------------------------
+        # RESTORE PENDING FIELD DATA AFTER REGISTRATION
+        # ---------------------------------------------------
+        pending = request.session.get("pending_fields")
+        form_slug = request.session.get("pending_form_slug")
+
+        if pending and form_slug:
+            try:
+                from .models import PaidForm
+                fields_json = json.loads(pending)
+
+                paid_obj, _ = PaidForm.objects.get_or_create(
+                    user=user,
+                    form_slug=form_slug
+                )
+                paid_obj.fields_json = fields_json
+                paid_obj.save()
+
+                print("Restored fields into PaidForm (register)!")
+            except Exception as e:
+                print("Restore fields error (register):", e)
+
+            # Clean session storage
+            del request.session["pending_fields"]
+            del request.session["pending_form_slug"]
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
@@ -314,10 +342,10 @@ def register_view(request):
 
 
 
+
 from django.contrib.auth import authenticate, login
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect, render
-
 def login_view(request):
     next_url = request.GET.get("next", "/")
     print("LOGIN VIEW — METHOD:", request.method)
@@ -338,6 +366,33 @@ def login_view(request):
         if user:
             login(request, user)
             print("LOGIN SUCCESS — user id:", user.id)
+
+            # -------------------------------
+            # RESTORE PENDING FIELDS FROM SESSION
+            # -------------------------------
+            pending = request.session.get("pending_fields")
+            form_slug = request.session.get("pending_form_slug")
+
+            if pending and form_slug:
+                try:
+                    from .models import PaidForm
+                    fields_json = json.loads(pending)
+
+                    paid_obj, _ = PaidForm.objects.get_or_create(
+                        user=user,
+                        form_slug=form_slug
+                    )
+                    paid_obj.fields_json = fields_json
+                    paid_obj.save()
+
+                    print("Restored fields into PaidForm!")
+                except Exception as e:
+                    print("Restore fields error:", e)
+
+                # Clean up
+                del request.session["pending_fields"]
+                del request.session["pending_form_slug"]
+
             return redirect(next_url)
 
         print("LOGIN FAILED — wrong credentials")
@@ -348,7 +403,6 @@ def login_view(request):
 
     print("LOGIN VIEW GET")
     return render(request, "auth/login.html", {"next": next_url})
-
 
 
 
