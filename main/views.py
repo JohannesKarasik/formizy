@@ -361,13 +361,11 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
 def stripe_webhook(request):
-    # Stripe sends ONLY POST
     if request.method != "POST":
         return HttpResponse("Webhook endpoint", status=200)
 
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-    event = None
 
     try:
         event = stripe.Webhook.construct_event(
@@ -375,11 +373,12 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except Exception:
         return HttpResponse(status=400)
 
+    # ================================
+    # PAYMENT COMPLETED
+    # ================================
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         print("Payment successful:", session)
@@ -387,40 +386,37 @@ def stripe_webhook(request):
         user_id = session["metadata"]["user_id"]
         form_slug = session["metadata"]["form_slug"]
 
-        # -------------------------
-        # 1️⃣ Mark as paid
-        # -------------------------
         from .models import PaidForm, Form
+
+        # 1️⃣ Mark as paid OR fetch existing SavedForm
         paid_obj, created = PaidForm.objects.get_or_create(
             user_id=user_id,
             form_slug=form_slug
         )
 
-        # -------------------------
-        # 2️⃣ Load saved field data
-        # -------------------------
-        fields = paid_obj.saved_fields or {}
+        # 2️⃣ Get previously saved user input
+        fields = paid_obj.fields_json or {}
 
         if not fields:
-            print("⚠ No saved fields found — cannot pre-generate PDF.")
+            print("⚠ No saved fields to generate PDF")
             return HttpResponse(status=200)
 
-        # -------------------------
-        # 3️⃣ Generate PDF in background
-        # -------------------------
-
+        # 3️⃣ Load form info
         try:
             form_info = Form.objects.get(slug=form_slug)
         except Form.DoesNotExist:
             print("❌ Form not found:", form_slug)
             return HttpResponse(status=200)
 
+        # 4️⃣ Generate PDF
         import fitz, io, os
         from django.conf import settings
 
         pdf = fitz.open(form_info.pdf_file.path)
 
-        font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
+        font_path = os.path.join(
+            settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf"
+        )
         FONT_NAME = "ArialUnicode"
         CHECKMARK = "\u2713"
         OFFSET_X = 0
@@ -441,6 +437,7 @@ def stripe_webhook(request):
             x = float(field.get("pixel_x", 0)) + OFFSET_X
             y = float(field.get("pixel_y", 0)) + OFFSET_Y
 
+            # Checkbox
             if field.get("type") == "checkbox":
                 if str(value) == "1":
                     page.insert_text(
@@ -453,6 +450,7 @@ def stripe_webhook(request):
                     )
                 continue
 
+            # Normal fields
             if value:
                 page.insert_text(
                     (x, y),
@@ -463,23 +461,19 @@ def stripe_webhook(request):
                     overlay=True,
                 )
 
-        # -------------------------
-        # 4️⃣ Save final pre-filled PDF
-        # -------------------------
+        # 5️⃣ Save to PaidForm.filled_pdf
         output = io.BytesIO()
         pdf.save(output)
         output.seek(0)
         pdf.close()
 
-        # Save into PaidForm.pdf_file
         filename = f"{form_slug}_filled_ready.pdf"
-        paid_obj.pdf_file.save(filename, output)
+        paid_obj.filled_pdf.save(filename, output)
         paid_obj.save()
 
         print("✅ Pre-generated PDF saved:", filename)
 
     return HttpResponse(status=200)
-
 
 @login_required
 def create_checkout_session(request, country_code, form_slug):
