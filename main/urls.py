@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from .views import login_view, register_view
 from .views import download_pdf, create_checkout_session, has_paid
+from .views import login_view, register_view
+from .views import download_pdf, create_checkout_session, has_paid
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -24,7 +26,9 @@ urlpatterns = [
     path('<str:country_code>/<str:form_slug>/download/', download_pdf, name='download_pdf'),
     path('<str:country_code>/<str:form_slug>/has-paid/', has_paid, name='has_paid'),
     path('<str:country_code>/<str:form_slug>/create-checkout-session/', create_checkout_session, name='create_checkout_session'),
-    path('<country_code>/<form_slug>/store-pending-fields/', views.store_pending_fields),
 
-
+    # ✅ FIXED HERE
+    path('<str:country_code>/<str:form_slug>/store-pending-fields/', 
+         views.store_pending_fields,
+         name="store_pending_fields"),
 ]
