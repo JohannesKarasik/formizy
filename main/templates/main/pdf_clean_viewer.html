@@ -362,14 +362,15 @@
                 <button type="button" class="toolbar-btn" onclick="zoomIn()">+</button>
          
                 {% if not user.is_authenticated %}
-                  <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="openAuthModal()">
-                    PDF herunterladen
-                  </button>
-                {% else %}
-                  <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="handleDownloadClick()">
-                    PDF herunterladen
-                  </button>
-                {% endif %}
+                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndOpenAuth()">
+                  PDF herunterladen
+                </button>
+              {% else %}
+                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndDownload()">
+                  PDF herunterladen
+                </button>
+              {% endif %}
+              
             </div>
          </div>
          
@@ -495,6 +496,25 @@
 
 <script>
 
+function saveFields() {
+    const country = "{{ country_code }}";
+    const slug = "{{ form_info.slug }}";
+    const fields = collectFields();
+
+    const storageKey = `pending_fields_${country}_${slug}`;
+    sessionStorage.setItem(storageKey, JSON.stringify(fields));
+    sessionStorage.setItem("pending_fields", JSON.stringify(fields));
+}
+
+function saveFieldsAndOpenAuth() {
+    saveFields();
+    openAuthModal();
+}
+
+function saveFieldsAndDownload() {
+    saveFields();      // ensure saved before login check
+    handleDownloadClick();
+}
 
 
 
