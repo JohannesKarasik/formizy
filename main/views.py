@@ -17,6 +17,34 @@ from .models import Form
 
 
 
+@require_POST
+def store_pending_fields(request, country_code, form_slug):
+    print("\n\n🟦 STORE_PENDING_FIELDS HIT")
+    print("➡ URL:", request.path)
+
+    try:
+        body_raw = request.body.decode("utf-8")
+        print("➡ RAW BODY:", body_raw)
+        body = json.loads(body_raw)
+    except Exception as e:
+        print("🟥 JSON PARSE ERROR:", e)
+        return JsonResponse({"error": "invalid json"}, status=400)
+
+    fields = body.get("fields_data", {})
+    print("➡ fields_data:", fields)
+    print("➡ form_slug:", form_slug)
+
+    # Save into Django session
+    request.session["pending_fields"] = json.dumps(fields)
+    request.session["pending_form_slug"] = form_slug
+    request.session.modified = True
+
+    print("✅ STORED INTO SESSION")
+    print("⭕ SESSION pending_fields:", request.session.get("pending_fields"))
+    print("⭕ SESSION pending_form_slug:", request.session.get("pending_form_slug"))
+    print("🟩 SESSION KEYS NOW:", list(request.session.keys()))
+
+    return JsonResponse({"stored": True})
 
 # ===========================
 # BASIC PAGES
@@ -588,28 +616,4 @@ def save_fields(request, country_code, form_slug):
 
 
 
-@require_POST
-def store_pending_fields(request, country_code, form_slug):
-    print("🟦 store_pending_fields() HIT")
-    print("🟦 METHOD:", request.method)
-    print("🟦 SESSION BEFORE:", request.session.items())
 
-    try:
-        body_raw = request.body.decode("utf-8")
-        print("🟦 RAW BODY:", body_raw)
-
-        body = json.loads(body_raw)
-    except Exception as e:
-        print("❌ JSON ERROR:", e)
-        return JsonResponse({"error": "invalid json"}, status=400)
-
-    fields = body.get("fields_data", {})
-    print("🟦 FIELDS RECEIVED:", fields)
-
-    request.session["pending_fields"] = json.dumps(fields)
-    request.session["pending_form_slug"] = form_slug
-
-    request.session.save()
-    print("🟩 SESSION AFTER:", request.session.items())
-
-    return JsonResponse({"stored": True})
