@@ -495,7 +495,7 @@ def create_checkout_session(request, country_code, form_slug):
 
     # Pick correct Price ID based on Stripe mode
     if settings.STRIPE_MODE == "live":
-        PRICE_ID = "price_1STXUlL5aHEScFcdpdISRojS"   # LIVE price
+        PRICE_ID = "price_1STc0oL5aHEScFcdbcdX3o0j"   # LIVE price
     else:
         PRICE_ID = "price_1STXpBL5aHEScFcdhakCN4R0"  # TEST price (replace with yours)
 
