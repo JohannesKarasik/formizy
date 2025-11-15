@@ -521,19 +521,32 @@ from .models import PaidForm
 
 @login_required
 def download_pdf(request, country_code, form_slug):
+    from .models import PaidForm
 
-    # Check if user paid
-    has_paid = PaidForm.objects.filter(
+    # 1️⃣ User must have paid
+    paid_obj = PaidForm.objects.filter(
         user=request.user,
         form_slug=form_slug
-    ).exists()
+    ).first()
 
-    if not has_paid:
-        # Redirect back to form with flag “payment required”
+    if not paid_obj:
         return redirect(f"/{country_code}/{form_slug}/?payment_required=1")
 
-    # ---- CALL YOUR EXISTING FILL_PDF LOGIC ----
-    return fill_pdf(request, country_code, form_slug)
+    # 2️⃣ If webhook has already built the PDF → instant download
+    if paid_obj.filled_pdf:
+        return FileResponse(
+            paid_obj.filled_pdf.open("rb"),
+            filename=f"{form_slug}_filled.pdf",
+            as_attachment=True,
+            content_type="application/pdf"
+        )
+
+    # 3️⃣ If webhook hasn’t run yet → fallback to slow fill_pdf POST logic
+    # (rare case, only if user returns before webhook finishes)
+    return HttpResponse(
+        "Your PDF is still being prepared. Please wait a few seconds and try again.",
+        status=202
+    )
 
 
 @login_required
