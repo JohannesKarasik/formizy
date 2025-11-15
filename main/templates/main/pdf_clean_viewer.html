@@ -565,29 +565,6 @@
     }
 </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
-            box.dataset.checked = "0";
-            box.textContent = "";
-
-            box.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const isChecked = box.dataset.checked === "1";
-
-                if (isChecked) {
-                    box.dataset.checked = "0";
-                    box.classList.remove("checked");
-                    box.textContent = "";
-                } else {
-                    box.dataset.checked = "1";
-                    box.classList.add("checked");
-                    box.textContent = "✓";
-                }
-            });
-        });
-    });
-</script>
 
 <script>
     async function downloadFilledPDF() {
@@ -991,57 +968,7 @@ function restoreFieldsFromStorage() {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const downloadBtn = document.getElementById("download-btn");
 
-  if (!downloadBtn) return;
-
-  downloadBtn.addEventListener("click", () => {
-    const fields = [];
-
-    // adjust selector to match your inputs
-    document.querySelectorAll("input, textarea, select").forEach(el => {
-      if (!el.name) return;
-      fields.push({
-        name: el.name,
-        value: el.value
-      });
-    });
-
-    // save in this tab’s session storage
-    sessionStorage.setItem("pendingFields", JSON.stringify(fields));
-    // then the normal click continues (form submit / redirect to register)
-  });
-});
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const raw = sessionStorage.getItem("pendingFields");
-
-  if (!raw) {
-    console.info("ℹ️ No pending fields in sessionStorage");
-    return;
-  }
-
-  let fields;
-  try {
-    fields = JSON.parse(raw);
-  } catch (e) {
-    console.warn("Failed to parse pendingFields", e);
-    return;
-  }
-
-  fields.forEach(field => {
-    const el = document.querySelector(`[name="${field.name}"]`);
-    if (el) {
-      el.value = field.value;
-    }
-  });
-
-  // optional: clear after successful restore
-  // sessionStorage.removeItem("pendingFields");
-});
 
 
 </script>
