@@ -555,8 +555,11 @@ function saveFieldsAndDownload() {
         positionOverlays(pageCanvases);
 
         // 🔁 After overlays exist, restore any saved field values
-        restoreFieldsFromStorage();
-    });
+        setTimeout(() => {
+    console.log("Trying delayed restore...");
+    restoreFieldsFromStorage();
+}, 300);    });
+
 
     function positionOverlays(pageCanvases) {
         const pageOffsets = {};
