@@ -309,6 +309,21 @@
     display: none;
 }
 
+
+.download-spinner {
+  border: 3px solid #ffffff55;
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
    </style>
 {% endblock %}
 
@@ -456,7 +471,7 @@
             Sie können das ausgefüllte PDF jetzt herunterladen.
         </p>
 
-        <button class="auth-btn-primary" onclick="downloadFilledPDF()">
+        <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
             PDF herunterladen
         </button>
     </div>
@@ -851,6 +866,32 @@
     });
     </script>
     
+
+    <script>
+        async function downloadWithSpinner() {
+            const btn = document.getElementById("success-download-btn");
+        
+            // Save original label
+            const originalHTML = btn.innerHTML;
+        
+            // Show spinner
+            btn.innerHTML = `
+                <span class="download-spinner"></span>
+                &nbsp;&nbsp;Preparing your document…
+            `;
+            btn.disabled = true;
+        
+            // Trigger the actual download redirect
+            window.location.href = "/{{ country_code }}/{{ form_info.slug }}/download/";
+        
+            // Restore button after short delay (doesn't block download)
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+        }
+        </script>
+        
         
     
   
