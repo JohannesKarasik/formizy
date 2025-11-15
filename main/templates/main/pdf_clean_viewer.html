@@ -404,25 +404,34 @@
 
 
        <!-- === PAYMENT MODAL === -->
-<div id="payment-modal" class="auth-modal-hidden">
-    <div class="auth-backdrop" onclick="closePaymentModal()"></div>
-
-    <div class="auth-box">
-        <button class="auth-close" onclick="closePaymentModal()">×</button>
-
-        <h2 style="text-align:center;margin-bottom:10px;">
-            Download PDF – €4.99
-        </h2>
-
-        <p style="text-align:center;color:#555;margin-bottom:20px;">
-            FillThatForm requires a one-time payment to download the completed PDF.
-        </p>
-
-        <button class="auth-btn-primary" onclick="proceedPayment()">
-            Pay €4.99
-        </button>
+       <div id="payment-modal" class="auth-modal-hidden">
+        <div class="auth-backdrop" onclick="closePaymentModal()"></div>
+    
+        <div class="auth-box">
+            <button class="auth-close" onclick="closePaymentModal()">×</button>
+    
+            <h2 style="text-align:center;margin-bottom:10px;">
+                Download PDF – €4.99
+            </h2>
+    
+            <p style="text-align:center;color:#555;margin-bottom:20px;">
+                FillThatForm requires a one-time payment to download the completed PDF.
+            </p>
+    
+            <button class="auth-btn-primary" onclick="proceedPayment()">
+                Pay €4.99
+            </button>
+    
+            <!-- 💳 Secure Stripe Payment message -->
+            <div style="text-align:center;margin-top:18px;opacity:0.85;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span>Sicher bezahlen mit</span>
+                <img src="https://stripe.com/img/v3/home/twitter.png"
+                     alt="Stripe"
+                     style="height:22px;opacity:0.9;">
+            </div>
+        </div>
     </div>
-</div>
+    
 
 
 
