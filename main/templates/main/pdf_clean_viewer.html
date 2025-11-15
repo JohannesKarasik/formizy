@@ -979,7 +979,9 @@ function restoreFieldsFromStorage() {
             box.classList.add("checked");
             box.textContent = "✓";
         } else {
+            box.dataset.checked = "0";
             box.classList.remove("checked");
+            box.textContent = "";
         }
     });
 }
