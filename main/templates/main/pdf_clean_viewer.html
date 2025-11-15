@@ -994,6 +994,20 @@ function restoreFieldsFromStorage() {
     });
     </script>
     
+    <script>
+        function openPaymentModal() {
+            const modal = document.getElementById("payment-modal");
+            if (!modal) return;
+            modal.classList.remove("auth-modal-hidden");
+        }
+        
+        function closePaymentModal() {
+            const modal = document.getElementById("payment-modal");
+            if (!modal) return;
+            modal.classList.add("auth-modal-hidden");
+        }
+        </script>
+        
   
    </main>
 
