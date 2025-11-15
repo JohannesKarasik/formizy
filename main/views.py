@@ -677,3 +677,14 @@ def download_prepared_pdf(request, country_code, form_slug):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+
+from django.http import HttpResponse
+from django.conf import settings
+
+def debug_stripe(request):
+    return HttpResponse(f"""
+        MODE={settings.STRIPE_MODE}<br>
+        PK={settings.STRIPE_PUBLIC_KEY}<br>
+        SK={settings.STRIPE_SECRET_KEY}<br>
+    """)
