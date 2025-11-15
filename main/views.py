@@ -587,3 +587,87 @@ def save_fields(request, country_code, form_slug):
 
 
 
+@login_required
+@require_POST
+def pre_generate_pdf(request, country_code, form_slug):
+    form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
+
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+        fields_data = body.get("fields_data", {})
+    except:
+        return JsonResponse({"error": "invalid JSON"}, status=400)
+
+    # Use your existing fill logic
+    output = io.BytesIO()
+    doc = fitz.open(form_info.pdf_file.path)
+
+    font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
+    FONT_NAME = "ArialUnicode"
+    FONT_SIZE = 10
+    OFFSET_X = 0
+    OFFSET_Y = 8
+    CHECKMARK = "\u2713"
+
+    # Fill the PDF once
+    for field in form_info.fields_schema:
+        name = field.get("name")
+        value = str(fields_data.get(name, ""))
+
+        page_index = max(0, int(field.get("page", 1)) - 1)
+        page = doc[page_index]
+
+        page.insert_font(fontfile=font_path, fontname=FONT_NAME)
+
+        x = float(field["pixel_x"]) + OFFSET_X
+        y = float(field["pixel_y"]) + OFFSET_Y
+
+        if field.get("type") == "checkbox":
+            if value == "1":
+                page.insert_text((x, y), CHECKMARK, fontsize=14, fontname=FONT_NAME)
+        else:
+            if value.strip():
+                page.insert_text((x, y), value, fontsize=FONT_SIZE, fontname=FONT_NAME)
+
+    doc.save(output)
+    output.seek(0)
+    doc.close()
+
+    # Save into generated_pdfs/
+    filename = f"{form_slug}_filled_{request.user.id}.pdf"
+    path = f"generated_pdfs/{filename}"
+
+    from django.core.files.base import ContentFile
+    from .models import GeneratedPDF
+
+    # Delete old PDF for this user + form
+    GeneratedPDF.objects.filter(user=request.user, form_slug=form_slug).delete()
+
+    record = GeneratedPDF.objects.create(
+        user=request.user,
+        form_slug=form_slug,
+        pdf_file=ContentFile(output.getvalue(), name=filename)
+    )
+
+    return JsonResponse({"ok": True})
+
+
+@login_required
+def download_prepared_pdf(request, country_code, form_slug):
+    from .models import GeneratedPDF
+
+    pdf = GeneratedPDF.objects.filter(
+        user=request.user,
+        form_slug=form_slug
+    ).first()
+
+    if not pdf:
+        return HttpResponse("No generated PDF found", status=404)
+
+    return FileResponse(
+        pdf.pdf_file.open("rb"),
+        filename=f"{form_slug}_filled.pdf",
+        as_attachment=True,
+        content_type="application/pdf"
+    )
+

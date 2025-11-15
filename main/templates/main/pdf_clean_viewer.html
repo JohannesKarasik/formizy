@@ -876,12 +876,23 @@ async function handleDownloadClick() {
 
 
     if (data.has_paid) {
-        downloadFilledPDF();
-    } else {
-        pendingPaymentCountry = country;
-        pendingPaymentSlug = slug;
-        openPaymentModal();
-    }
+    downloadFilledPDF();
+} else {
+    // NEW: generate the PDF now
+    await fetch(`/${country}/${slug}/pre-generate-pdf/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRF()
+        },
+        body: JSON.stringify({ fields_data: fields })
+    });
+
+    pendingPaymentCountry = country;
+    pendingPaymentSlug = slug;
+    openPaymentModal();
+}
+
 }
 </script>
 
