@@ -479,7 +479,17 @@
     </div>
 </div>
 
-
+<script>
+    function getCSRF() {
+        const token = document.querySelector("input[name='csrfmiddlewaretoken']");
+        if (!token) {
+            console.error("❌ CSRF token not found in DOM");
+            return "";
+        }
+        return token.value;
+    }
+    </script>
+    
 
 
        <script>
@@ -805,16 +815,17 @@ async function handleDownloadClick() {
     if (!{{ user.is_authenticated|yesno:"true,false" }}) {
 
         await fetch(`/${country}/${slug}/store-pending-fields/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            },
-            body: JSON.stringify({
-                fields_data: fields,
-                form_slug: slug
-            })
-        });
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRF(),
+                },
+                body: JSON.stringify({
+                    fields_data: fields,
+                    form_slug: slug
+                })
+            });
+
 
         openAuthModal();
         return;
@@ -825,10 +836,11 @@ async function handleDownloadClick() {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            "X-CSRFToken": getCSRF(),
         },
         body: JSON.stringify({ fields_data: fields })
     });
+
 
     const res = await fetch(`/${country}/${slug}/has-paid/`);
     const data = await res.json();
