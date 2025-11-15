@@ -674,6 +674,24 @@
   </div>
   
   <script>
+    function collectFields() {
+        const fields = {};
+    
+        document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+            fields[input.dataset.name] = input.value || "";
+        });
+    
+        document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+            fields[box.dataset.name] = box.classList.contains("checked") ? "1" : "0";
+        });
+    
+        return fields;
+    }
+    </script>
+    
+
+
+  <script>
     (function(){
       let currentSignatureInput = null;
   
