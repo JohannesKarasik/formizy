@@ -852,8 +852,22 @@ async function handleDownloadClick() {
         body: JSON.stringify({ fields_data: fields })
     });
 
-    const res = await fetch(`/${country}/${slug}/has-paid/`);
+        const res = await fetch(`/${country}/${slug}/has-paid/`, {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": getCSRF(),
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        credentials: "include"     // THIS is the key
+    });
+
+    if (!res.ok) {
+        console.error("❌ has-paid request failed:", res.status);
+        return;
+    }
+
     const data = await res.json();
+
 
     if (data.has_paid) {
         downloadFilledPDF();
