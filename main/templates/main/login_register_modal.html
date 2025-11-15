@@ -95,6 +95,16 @@
     font-weight: 600;
     margin-left: 6px;
   }
+
+  .auth-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* vertically center content INSIDE modal */
+    align-items: center;       
+    gap: 12px;
+}
+
 </style>
 
 
@@ -109,27 +119,27 @@
         {% csrf_token %}
     </form>
 
-    <h2 id="auth-title">Log in</h2>
-
-    <!-- LOGIN FORM -->
-    <form id="login-form" onsubmit="handleLogin(event)">
-      <input type="email" id="login-email" placeholder="Email" required>
-      <input type="password" id="login-password" placeholder="Password" required>
-      <button type="submit" class="auth-btn-primary">Log in</button>
-    </form>
-
-    <!-- REGISTER FORM -->
-    <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
-      <input type="email" id="register-email" placeholder="Email" required>
-      <input type="password" id="register-password" placeholder="Create password" required>
-      <button type="submit" class="auth-btn-primary">Create account</button>
-    </form>
-
-    <p class="auth-switch">
-      <span id="switch-text">No account?</span>
-      <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
-    </p>
+    <div class="auth-inner">
+      <h2 id="auth-title">Log in</h2>
+  
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" class="auth-btn-primary">Log in</button>
+      </form>
+  
+      <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="password" id="register-password" placeholder="Create password" required>
+        <button type="submit" class="auth-btn-primary">Create account</button>
+      </form>
+  
+      <p class="auth-switch">
+        <span id="switch-text">No account?</span>
+        <button class="auth-switch-btn" onclick="toggleAuth()">Create one</button>
+      </p>
   </div>
+  
 </div>
 
 <script>
