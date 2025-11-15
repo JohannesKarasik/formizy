@@ -11,6 +11,7 @@ urlpatterns = [
     # AUTH
     path("login/", login_view, name="login"),
     path("register/", register_view, name="register"),
+    path("logout/", views.logout_view, name="logout"),
 
     # MAP
     path("map-form/<str:country_code>/<slug:form_slug>/", 

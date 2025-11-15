@@ -671,3 +671,7 @@ def download_prepared_pdf(request, country_code, form_slug):
         content_type="application/pdf"
     )
 
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')

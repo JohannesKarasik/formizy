@@ -2,6 +2,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17731549545"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-17731549545');
+</script>
     <script src="https://js.stripe.com/v3/"></script>
 
     <meta charset="UTF-8">
@@ -340,7 +349,7 @@
             </a>
     
             <!-- Logout -->
-            <a href="/logout/"
+            <a href="{% url 'logout' %}"
                style="
                 padding:6px 12px;
                 border:1px solid #2563eb;
