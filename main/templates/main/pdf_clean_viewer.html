@@ -435,7 +435,28 @@
     </div>
 </div>
 
-    
+    <!-- === PAYMENT SUCCESS MODAL === -->
+<div id="payment-success-modal" class="auth-modal-hidden">
+    <div class="auth-backdrop" onclick="closeSuccessModal()"></div>
+
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeSuccessModal()">×</button>
+
+        <h2 style="text-align:center;margin-bottom:12px;">
+            Zahlung erfolgreich 🎉
+        </h2>
+
+        <p style="text-align:center;color:#555;margin-bottom:20px;">
+            Vielen Dank! Ihre Zahlung war erfolgreich.  
+            Sie können das ausgefüllte PDF jetzt herunterladen.
+        </p>
+
+        <button class="auth-btn-primary" onclick="downloadFilledPDF()">
+            PDF herunterladen
+        </button>
+    </div>
+</div>
+
 
 
 
@@ -701,6 +722,18 @@
   </script>
 
 <script>
+    function openSuccessModal() {
+        document.getElementById("payment-success-modal").classList.remove("auth-modal-hidden");
+    }
+    
+    function closeSuccessModal() {
+        document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
+    }
+    </script>
+    
+
+
+<script>
 
     
     async function startStripeCheckout(country, slug) {
@@ -770,24 +803,24 @@
         await stripe.redirectToCheckout({ sessionId: data.id });
     }
     </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
     
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-        
-            // If Stripe redirected with ?paid=1 → auto-download
-            if (urlParams.get("paid") === "1") {
-        
-                console.log("Stripe payment complete → auto-download starting…");
-        
-                // Remove ?paid=1 so it doesn’t repeat
-                window.history.replaceState({}, "", window.location.pathname);
-        
-                // Call your existing PDF download function
-                downloadFilledPDF();
-            }
-        });
-        </script>
+        if (urlParams.get("paid") === "1") {
+    
+            console.log("Payment complete → showing success modal");
+    
+            // Remove ?paid=1 so modal does not appear again
+            window.history.replaceState({}, "", window.location.pathname);
+    
+            // Show success modal
+            openSuccessModal();
+        }
+    });
+    </script>
+    
         
     
   
