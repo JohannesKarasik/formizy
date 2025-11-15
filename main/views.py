@@ -405,7 +405,7 @@ def create_checkout_session(request, country_code, form_slug):
     if settings.STRIPE_MODE == "live":
         PRICE_ID = "price_1STXUlL5aHEScFcdpdISRojS"   # LIVE price
     else:
-        PRICE_ID = "price_1STXjJL5aHEScFcdDFoe3F0C"  # TEST price (replace with yours)
+        PRICE_ID = "price_1STXpBL5aHEScFcdhakCN4R0"  # TEST price (replace with yours)
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
