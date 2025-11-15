@@ -92,10 +92,11 @@ def form_detail(request, country_code, form_slug):
 
 
    return render(request, "main/pdf_clean_viewer.html", {
-       "form_info": form_info,
-       "pdf_url": pdf_url,
-       "country_code": country_code,
-       "viewer_scale": viewer_scale,
+    "form_info": form_info,
+    "pdf_url": pdf_url,
+    "country_code": country_code,
+    "viewer_scale": viewer_scale,
+    "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
    })
 
 
