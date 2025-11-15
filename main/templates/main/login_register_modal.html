@@ -123,11 +123,15 @@
 
 
     <!-- REGISTER FORM -->
-    <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
-      <input type="email" id="register-email" placeholder="Email" required>
-      <input type="password" id="register-password" placeholder="Create password" required>
-      <button type="submit" class="auth-btn-primary">Create account</button>
-    </form>
+    <form id="register-form" style="display:none; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;" 
+    onsubmit="handleRegister(event)">
+  
+  <input type="email" id="register-email" placeholder="Email" required style="width:100%;">
+  <input type="password" id="register-password" placeholder="Create password" required style="width:100%;">
+
+  <button type="submit" class="auth-btn-primary">Create account</button>
+</form>
+
 
     <p class="auth-switch">
       <span id="switch-text">No account?</span>
@@ -138,8 +142,23 @@
 
 <script>
 function openAuthModal() {
-  document.getElementById("auth-modal").classList.remove("auth-modal-hidden");
+    const modal = document.getElementById("auth-modal");
+    modal.classList.remove("auth-modal-hidden");
+
+    // 🔥 Always show REGISTER by default
+    const login = document.getElementById("login-form");
+    const reg = document.getElementById("register-form");
+    const title = document.getElementById("auth-title");
+    const switchText = document.getElementById("switch-text");
+    const switchBtn = document.querySelector(".auth-switch-btn");
+
+    login.style.display = "none";
+    reg.style.display = "flex";   // keep centering
+    title.textContent = "Create account";
+    switchText.textContent = "Already have an account?";
+    switchBtn.textContent = "Log in";
 }
+
 
 function closeAuthModal() {
   document.getElementById("auth-modal").classList.add("auth-modal-hidden");
