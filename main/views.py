@@ -488,6 +488,8 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
+import traceback
+
 @login_required
 def create_checkout_session(request, country_code, form_slug):
 
@@ -497,19 +499,24 @@ def create_checkout_session(request, country_code, form_slug):
     if settings.STRIPE_MODE == "live":
         PRICE_ID = "price_1STc0oL5aHEScFcdbcdX3o0j"   # LIVE price
     else:
-        PRICE_ID = "price_1STXpBL5aHEScFcdhakCN4R0"  # TEST price (replace with yours)
+        PRICE_ID = "price_1STXpBL5aHEScFcdhakCN4R0"  # TEST price
+
+    # 🔥 NEW: get current user's email
+    user_email = request.user.email
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         mode="payment",
 
-        # Use your predefined product price
         line_items=[
             {
                 "price": PRICE_ID,
                 "quantity": 1,
             }
         ],
+
+        # 🔥🔥 Pre-fill user’s email in Stripe Checkout
+        customer_email=user_email,
 
         metadata={
             "user_id": request.user.id,
