@@ -684,22 +684,7 @@
   </script>
 
 <script>
-    async function handleDownloadClick() {
-        const country = "{{ country_code }}";
-        const slug = "{{ form_info.slug }}";
-    
-        // Ask backend if user already paid
-        const res = await fetch(`/${country}/${slug}/has-paid/`);
-        const data = await res.json();
-    
-        if (data.has_paid) {
-            // User already paid → allow normal download
-            downloadFilledPDF();
-        } else {
-            // User must pay → start Stripe Checkout
-            startStripeCheckout(country, slug);
-        }
-    }
+
     
     async function startStripeCheckout(country, slug) {
         const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
