@@ -30,7 +30,11 @@ SECRET_KEY = 'django-insecure-+h_!i^_pz7i)frq!fld&r=e&om7rgc1t544erc5k7&==s9$p8w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['formskies.com', 'www.formskies.com', '164.90.155.58']
+=======
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '164.90.155.58']
+>>>>>>> a49a857 (Initial commit)
 
 
 # Application definition
@@ -78,10 +82,22 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'newdb',
+        'USER': 'newuser',
+        'PASSWORD': 'newpassword',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -122,10 +138,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+<<<<<<< HEAD
 # Folder where you keep your development static files (logo.png, CSS, JS)
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+=======
+#STATICFILES_DIRS = [
+#    BASE_DIR / 'main/static',
+#]
+>>>>>>> a49a857 (Initial commit)
 
 # Folder where Django will OUTPUT collected static files (production)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
