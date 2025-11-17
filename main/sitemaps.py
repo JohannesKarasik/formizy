@@ -1,5 +1,5 @@
 from django.contrib.sitemaps import Sitemap
-from .models import Form  # or whatever model you want indexed
+from .models import Form  # Your form model
 
 class FormSitemap(Sitemap):
     changefreq = "weekly"
@@ -8,5 +8,4 @@ class FormSitemap(Sitemap):
     def items(self):
         return Form.objects.all()
 
-    def lastmod(self, obj):
-        return obj.updated_at  # optional if you track updates
+    # lastmod removed because Form does not have updated_at
