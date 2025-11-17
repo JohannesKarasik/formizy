@@ -4,6 +4,8 @@ from .views import login_view, register_view
 from .views import download_pdf, create_checkout_session, has_paid
 from .views import login_view, register_view
 from .views import download_pdf, create_checkout_session, has_paid
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import FormSitemap
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -45,4 +47,13 @@ urlpatterns = [
     path('<str:country_code>/<str:form_slug>/', 
          views.form_detail, 
          name='form_detail'),
+]
+
+
+sitemaps = {
+    'forms': FormSitemap,
+}
+
+urlpatterns += [
+    path("sitemap.xml", sitemap, {'sitemaps': sitemaps}, name="sitemap"),
 ]
