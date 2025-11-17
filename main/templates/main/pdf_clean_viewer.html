@@ -466,15 +466,12 @@
     {% endif %}
 
     {% if form_info.seo_faqs %}
-
+    <div style="margin-top:35px;">
+        <h3 style="font-size:22px; font-weight:700; margin-bottom:15px; color:#0b1220;">FAQ</h3>
 
         {% for faq in form_info.seo_faqs %}
-
             <div style="margin-bottom:20px;">
-
                 <strong style="font-size:17px; color:#111827;">
-                    <div style="margin-top:35px;">
-                        <h3 style="font-size:22px; font-weight:700; margin-bottom:15px; color:#0b1220;">FAQ</h3>
                     {{ faq.question }}
                 </strong>
                 <p style="font-size:15px; color:#4b5563; margin-top:5px; line-height:1.5;">
