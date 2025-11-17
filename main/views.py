@@ -601,9 +601,9 @@ def pre_generate_pdf(request, country_code, form_slug):
     except:
         return JsonResponse({"error": "invalid JSON"}, status=400)
 
-    # Use your existing fill logic
-    output = io.BytesIO()
-    doc = fitz.open(form_info.pdf_file.path)
+    # ❗ READ ORIGINAL PDF AS BYTES — NEVER OPEN FILE DIRECTLY
+    original_bytes = open(form_info.pdf_file.path, "rb").read()
+    doc = fitz.open("pdf", original_bytes)
 
     font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
     FONT_NAME = "ArialUnicode"
@@ -612,7 +612,7 @@ def pre_generate_pdf(request, country_code, form_slug):
     OFFSET_Y = 8
     CHECKMARK = "\u2713"
 
-    # Fill the PDF once
+    # Fill fields
     for field in form_info.fields_schema:
         name = field.get("name")
         value = str(fields_data.get(name, ""))
@@ -632,21 +632,21 @@ def pre_generate_pdf(request, country_code, form_slug):
             if value.strip():
                 page.insert_text((x, y), value, fontsize=FONT_SIZE, fontname=FONT_NAME)
 
-    doc.save(output)
-    output.seek(0)
+    # ALWAYS SAVE TO MEMORY ONLY
+    output = io.BytesIO()
+    doc.save(output, incremental=False)
     doc.close()
+    output.seek(0)
 
-    # Save into generated_pdfs/
+    # Save generated file
     filename = f"{form_slug}_filled_{request.user.id}.pdf"
-    path = f"generated_pdfs/{filename}"
 
     from django.core.files.base import ContentFile
     from .models import GeneratedPDF
 
-    # Delete old PDF for this user + form
     GeneratedPDF.objects.filter(user=request.user, form_slug=form_slug).delete()
 
-    record = GeneratedPDF.objects.create(
+    GeneratedPDF.objects.create(
         user=request.user,
         form_slug=form_slug,
         pdf_file=ContentFile(output.getvalue(), name=filename)
