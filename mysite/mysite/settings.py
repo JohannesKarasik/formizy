@@ -17,7 +17,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = "/home/clinton/formizy/mysite/main/media"
+MEDIA_ROOT = '/home/clinton/formizy/media'
+
 
 
 
