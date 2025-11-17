@@ -156,7 +156,7 @@ def fill_pdf(request, country_code, form_slug):
 
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
-    # Parse JSON
+    # Parse JSON from frontend
     try:
         body = json.loads(request.body.decode("utf-8"))
         fields_data = body.get("fields_data", {})
@@ -166,20 +166,21 @@ def fill_pdf(request, country_code, form_slug):
     if not form_info.fields_schema:
         return JsonResponse({"error": "No field schema defined"}, status=400)
 
-    # Load PDF
-    doc = fitz.open(form_info.pdf_file.path)
+    # ---------------------------------------------------
+    # ❗ NEVER OPEN THE ORIGINAL PDF DIRECTLY FOR WRITING
+    # Instead: create an in-memory clone
+    # ---------------------------------------------------
+    original_pdf_bytes = open(form_info.pdf_file.path, "rb").read()
+    doc = fitz.open("pdf", original_pdf_bytes)
 
-    # Load the good font (✓ supported)
+    # Load font only INSIDE the new PDF
     font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
     FONT_NAME = "ArialUnicode"
     FONT_SIZE = 10
 
     OFFSET_X = 0
     OFFSET_Y = 8
-
-    CHECKMARK = "\u2713"  # real ✓ character
-
-    print("=== FILL_PDF DEBUG START ===")
+    CHECKMARK = "\u2713"
 
     for field in form_info.fields_schema:
 
@@ -187,11 +188,10 @@ def fill_pdf(request, country_code, form_slug):
         if value is None:
             value = ""
 
-        # Skip empty unless text field
+        # skip empty normal text fields
         if field.get("type") != "checkbox" and value == "":
             continue
 
-        # Determine page index
         try:
             page_index = int(field.get("page", 1)) - 1
         except:
@@ -202,20 +202,16 @@ def fill_pdf(request, country_code, form_slug):
 
         page = doc[page_index]
 
-        # Insert font ONCE per page (safe to call multiple times)
         page.insert_font(fontfile=font_path, fontname=FONT_NAME)
 
-        # Coordinates
         px = float(field.get("pixel_x", 0))
         py = float(field.get("pixel_y", 0))
         x = px + OFFSET_X
         y = py + OFFSET_Y
 
-        # -----------------------
-        # CHECKBOX FIELD → draw ✓
-        # -----------------------
+        # Checkbox
         if field.get("type") == "checkbox":
-            if str(value) == "1":  # checked
+            if str(value) == "1":
                 page.insert_text(
                     (x, y),
                     CHECKMARK,
@@ -224,11 +220,9 @@ def fill_pdf(request, country_code, form_slug):
                     color=(0, 0, 0),
                     overlay=True,
                 )
-            continue  # skip text printing for checkboxes
+            continue
 
-        # -----------------------
-        # NORMAL TEXT FIELD
-        # -----------------------
+        # Text field
         page.insert_text(
             (x, y),
             str(value),
@@ -238,11 +232,11 @@ def fill_pdf(request, country_code, form_slug):
             overlay=True,
         )
 
-    print("=== FILL_PDF DEBUG END ===")
-
-    # Output PDF
+    # ---------------------------------------------------
+    # ✔ ALWAYS SAVE TO MEMORY — NEVER SAVE TO DISK
+    # ---------------------------------------------------
     output = io.BytesIO()
-    doc.save(output)
+    doc.save(output, incremental=False)   # important fix
     output.seek(0)
     doc.close()
 
@@ -250,7 +244,7 @@ def fill_pdf(request, country_code, form_slug):
         output,
         filename=f"{form_info.slug}_filled.pdf",
         as_attachment=True,
-        content_type="application/pdf",
+        content_type="application/pdf"
     )
 
 
