@@ -335,15 +335,16 @@
    <main class="content-main">
     <form id="csrf-form">{% csrf_token %}</form>
 
-       <h1 style="text-align:center;margin-bottom:15px;">
-           {{ form_info.seo_h1|default:form_info.title }}
-       </h1>
-
-       {% if form_info.seo_intro %}
-           <p style="text-align:center;margin-bottom:25px;color:#555;max-width:720px;margin:0 auto;">
-               {{ form_info.seo_intro }}
-           </p>
-       {% endif %}
+    <h1 style="font-size:32px; font-weight:700; text-align:center; color:#0b1220; margin-bottom:20px; line-height:1.2;">
+        {{ form_info.seo_h1|default:form_info.title }}
+    </h1>
+    
+    {% if form_info.seo_intro %}
+        <p style="font-size:18px; text-align:center; color:#4b5563; max-width:720px; margin:0 auto 30px auto; line-height:1.6;">
+            {{ form_info.seo_intro }}
+        </p>
+    {% endif %}
+    
 
        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
@@ -447,7 +448,7 @@
     {% endif %}
 
     {% if form_info.seo_intro %}
-    <p style="font-size:16px; color:#555; margin-bottom:25px;">
+    <p style="font-size:16px; color:#555; margin-bottom:25px; line-height:1.6;">
         {{ form_info.seo_intro }}
     </p>
     {% endif %}
@@ -467,13 +468,12 @@
 
     {% if form_info.seo_faqs %}
     <div style="margin-top:35px;">
-
         {% for faq in form_info.seo_faqs %}
             <div style="margin-bottom:20px;">
-                <strong style="font-size:17px; color:#111827;">
+                <strong style="display:block; font-size:17px; color:#111827; margin-bottom:6px;">
                     {{ faq.question }}
                 </strong>
-                <p style="font-size:15px; color:#4b5563; margin-top:5px; line-height:1.5;">
+                <p style="font-size:15px; color:#4b5563; margin-top:0; line-height:1.5;">
                     {{ faq.answer }}
                 </p>
             </div>
@@ -488,6 +488,8 @@
         </p>
     </div>
     {% endif %}
+
+</div>
 
 </div>
 
