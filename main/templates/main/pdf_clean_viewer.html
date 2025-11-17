@@ -457,10 +457,10 @@
         <div style="margin-top:30px;">
             {% for section in form_info.seo_sections %}
                 <h3 style="font-size:20px; font-weight:600; margin-top:25px; color:#0b1220;">
-                    {{ section.heading }}
+                    {{ section.heading|safe }}
                 </h3>
                 <p style="font-size:16px; color:#444; line-height:1.6;">
-                    {{ section.body }}
+                    {{ section.content|safe }}
                 </p>
             {% endfor %}
         </div>
@@ -729,11 +729,11 @@ function saveFieldsAndDownload() {
 
     {% for section in form_info.seo_sections %}
         <h2 style="margin-top:30px;font-size:24px;color:#0b1220;">
-            {{ section.heading }}
+            {{ section.heading|safe }}
         </h2>
 
         <p style="margin-top:10px;color:#444;font-size:16px;">
-            {{ section.body }}
+            {{ section.content|safe }}
         </p>
     {% endfor %}
 
