@@ -36,6 +36,17 @@ class Form(models.Model):
 
     total_pages = models.IntegerField(default=1)
 
+
+        # ✅ ADD THIS METHOD
+    def get_absolute_url(self):
+        return reverse(
+            'form_detail',
+            kwargs={
+                'country_code': self.country.code,
+                'form_slug': self.slug,
+            }
+        )
+
     def __str__(self):
         return self.title
 
