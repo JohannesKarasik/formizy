@@ -85,32 +85,29 @@ def country(request, country_code):
 # FORM DETAIL (PDF viewer)
 # ===========================
 
-
 def form_detail(request, country_code, form_slug):
-   form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
-   pdf_url = form_info.pdf_file.url
+    form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
+    # Force browser to always fetch latest file
+    import time
+    pdf_url = f"{form_info.pdf_file.url}?v={int(time.time())}"
 
-   # Load first page to get original width
-   pdf_path = form_info.pdf_file.path
-   doc = fitz.open(pdf_path)
-   page = doc[0]
-   pdf_original_width = page.rect.width
-   doc.close()
+    pdf_path = form_info.pdf_file.path
+    doc = fitz.open(pdf_path)
+    page = doc[0]
+    pdf_original_width = page.rect.width
+    doc.close()
 
+    FIXED_WIDTH = 833
+    viewer_scale = FIXED_WIDTH / pdf_original_width
 
-   FIXED_WIDTH = 833   # must match mapper EXACTLY
-   viewer_scale = FIXED_WIDTH / pdf_original_width
-
-
-   return render(request, "main/pdf_clean_viewer.html", {
-    "form_info": form_info,
-    "pdf_url": pdf_url,
-    "country_code": country_code,
-    "viewer_scale": viewer_scale,
-    "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-   })
-
+    return render(request, "main/pdf_clean_viewer.html", {
+        "form_info": form_info,
+        "pdf_url": pdf_url,
+        "country_code": country_code,
+        "viewer_scale": viewer_scale,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+    })
 
 
 
