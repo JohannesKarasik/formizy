@@ -425,73 +425,73 @@
        
 
     </div>  {# end .viewer-frame #}
+<!-- ⭐ SEO CONTENT (SAFE ZONE BELOW PDF VIEWER) -->
+<div style="margin-top:40px; padding:20px; background:white; border-radius:12px; border:1px solid #e6eaf2; max-width:800px; margin-left:auto; margin-right:auto;">
 
-    <!-- ⭐ SEO CONTENT (SAFE ZONE BELOW PDF VIEWER) -->
-    <div style="margin-top:40px; padding:20px; background:white; border-radius:12px; border:1px solid #e6eaf2; max-width:800px; margin-left:auto; margin-right:auto;">
-    
-        {% if form_info.seo_title %}
-        <h2 style="font-size:26px; margin-bottom:10px; color:#0b1220;">
-            {{ form_info.seo_title }}
-        </h2>
-        {% endif %}
-    
-        {% if form_info.seo_description %}
-        <p style="font-size:16px; color:#444; margin-bottom:20px; line-height:1.6;">
-            {{ form_info.seo_description }}
-        </p>
-        {% endif %}
-    
-        {% if form_info.seo_h1 %}
-        <h3 style="font-size:22px; margin-top:25px; margin-bottom:10px; color:#0b1220;">
-            {{ form_info.seo_h1 }}
-        </h3>
-        {% endif %}
-    
-        {% if form_info.seo_intro %}
-        <p style="font-size:16px; color:#555; margin-bottom:25px;">
-            {{ form_info.seo_intro }}
-        </p>
-        {% endif %}
-    
-        {% if form_info.seo_sections %}
-        <div style="margin-top:30px;">
-            {% for section in form_info.seo_sections %}
-                <h3 style="font-size:20px; font-weight:600; margin-top:25px; color:#0b1220;">
-                    {{ section.heading|safe }}
-                </h3>
-                <p style="font-size:16px; color:#444; line-height:1.6;">
-                    {{ section.content|safe }}
-                </p>
-            {% endfor %}
-        </div>
-        {% endif %}
-    
-        {% if form_info.seo_faqs %}
-        <div style="margin-top:35px;">
-            <h3 style="font-size:22px; font-weight:700; margin-bottom:15px; color:#0b1220;">FAQ</h3>
-    
-            {% for faq in form_info.seo_faqs %}
-                <div style="margin-bottom:20px;">
-                    <strong style="font-size:17px; color:#111827;">
-                        {{ faq.question }}
-                    </strong>
-                    <p style="font-size:15px; color:#4b5563; margin-top:5px; line-height:1.5;">
-                        {{ faq.answer }}
-                    </p>
-                </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    
-        {% if form_info.seo_ctas %}
-        <div style="margin-top:30px; padding:18px; background:#f9fafb; border-radius:10px; border:1px solid #e5e7eb;">
-            <p style="font-size:16px; color:#1f2937; line-height:1.6; margin:0;">
-                {{ form_info.seo_ctas }}
+    {% if form_info.seo_title %}
+    <h2 style="font-size:26px; margin-bottom:10px; color:#0b1220;">
+        {{ form_info.seo_title }}
+    </h2>
+    {% endif %}
+
+    {% if form_info.seo_description %}
+    <p style="font-size:16px; color:#444; margin-bottom:20px; line-height:1.6;">
+        {{ form_info.seo_description }}
+    </p>
+    {% endif %}
+
+    {% if form_info.seo_h1 %}
+    <h3 style="font-size:22px; margin-top:25px; margin-bottom:10px; color:#0b1220;">
+        {{ form_info.seo_h1 }}
+    </h3>
+    {% endif %}
+
+    {% if form_info.seo_intro %}
+    <p style="font-size:16px; color:#555; margin-bottom:25px;">
+        {{ form_info.seo_intro }}
+    </p>
+    {% endif %}
+
+    {% if form_info.seo_sections %}
+    <div style="margin-top:30px;">
+        {% for section in form_info.seo_sections %}
+            <h3 style="font-size:20px; font-weight:600; margin-top:25px; color:#0b1220;">
+                {{ section.heading|safe }}
+            </h3>
+            <p style="font-size:16px; color:#444; line-height:1.6;">
+                {{ section.content|safe }}
             </p>
-        </div>
-        {% endif %}
-    
+        {% endfor %}
     </div>
+    {% endif %}
+
+    {% if form_info.seo_faqs %}
+    <div style="margin-top:35px;">
+        <h3 style="font-size:22px; font-weight:700; margin-bottom:15px; color:#0b1220;">FAQ</h3>
+
+        {% for faq in form_info.seo_faqs %}
+            <div style="margin-bottom:20px;">
+                <strong style="font-size:17px; color:#111827;">
+                    {{ faq.question }}
+                </strong>
+                <p style="font-size:15px; color:#4b5563; margin-top:5px; line-height:1.5;">
+                    {{ faq.answer }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form_info.seo_ctas %}
+    <div style="margin-top:30px; padding:18px; background:#f9fafb; border-radius:10px; border:1px solid #e5e7eb;">
+        <p style="font-size:16px; color:#1f2937; line-height:1.6; margin:0;">
+            {{ form_info.seo_ctas }}
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
     
 
 <!-- === PAYMENT MODAL === -->
