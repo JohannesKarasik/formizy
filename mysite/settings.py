@@ -31,11 +31,10 @@ SECRET_KEY = 'django-insecure-+h_!i^_pz7i)frq!fld&r=e&om7rgc1t544erc5k7&==s9$p8w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< HEAD
+
 ALLOWED_HOSTS = ['formskies.com', 'www.formskies.com', '164.90.155.58']
-=======
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '164.90.155.58']
->>>>>>> a49a857 (Initial commit)
+
+
 
 
 # Application definition
