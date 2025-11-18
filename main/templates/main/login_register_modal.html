@@ -16,7 +16,7 @@
       login_failed="Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen."
       register_failed="Registrierung fehlgeschlagen"
       server_error="Serverfehler: Unerwartete Antwort vom Server."
-    %}
+    as lang %}
 {% elif country_code == "es" %}
     {% with
       login_title="Iniciar sesión"
@@ -33,7 +33,7 @@
       login_failed="Error al iniciar sesión. Verifica correo o contraseña."
       register_failed="Error en el registro"
       server_error="Error del servidor: respuesta inesperada."
-    %}
+    as lang %}
 {% else %}
     {% with
       login_title="Login"
@@ -50,11 +50,8 @@
       login_failed="Login failed. Check email or password."
       register_failed="Registration failed"
       server_error="Server error: Unexpected response."
-    %}
+    as lang %}
 {% endif %}
-
-
-
 
 
 
