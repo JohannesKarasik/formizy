@@ -48,35 +48,17 @@ def home(request):
 
 
 def country(request, country_code):
-   forms_by_country = {
-       "de": [
-           {"name": "Fragebogen zur steuerlichen Erfassung", "slug": "steuer-erfassung"},
-           {"name": "Gewerbeanmeldung", "slug": "gewerbeanmeldung"},
-       ],
-       "dk": [
-           {"name": "Ansøgning om SU", "slug": "su-application"},
-           {"name": "CPR-registrering", "slug": "cpr-registration"},
-       ],
-       "us": [
-           {"name": "W-9 Form", "slug": "w9"},
-           {"name": "1040 Individual Income Tax Return", "slug": "1040"},
-       ],
-   }
+    # Get matching country object
+    country_obj = get_object_or_404(Country, code=country_code)
 
+    # Get all forms assigned to this country
+    forms = Form.objects.filter(country=country_obj)
 
-   country_names = {
-       "de": "Germany",
-       "dk": "Denmark",
-       "us": "United States",
-       "fr": "France",
-   }
-
-
-   return render(request, 'main/country.html', {
-       "country_code": country_code,
-       "country_name": country_names.get(country_code, "Unknown Country"),
-       "forms": forms_by_country.get(country_code, []),
-   })
+    return render(request, "main/country.html", {
+        "country_code": country_code,
+        "country_name": country_obj.name,
+        "forms": forms,
+    })
 
 
 
