@@ -38,13 +38,11 @@ def store_pending_fields(request, country, slug):
 
 
 def home(request):
-   countries = [
-       {"code": "de", "name": "Germany", "flag": "🇩🇪"},
-       {"code": "dk", "name": "Denmark", "flag": "🇩🇰"},
-       {"code": "us", "name": "United States", "flag": "🇺🇸"},
-       {"code": "fr", "name": "France", "flag": "🇫🇷"},
-   ]
-   return render(request, 'main/home.html', {"countries": countries})
+    countries = Country.objects.all().order_by("name")
+
+    return render(request, "main/home.html", {
+        "countries": countries
+    })
 
 
 
