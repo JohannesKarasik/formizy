@@ -491,6 +491,25 @@
 
 </div>
 
+{% if related_forms %}
+  <div style="margin-top:50px; padding:20px; background:#fff; border-radius:12px; border:1px solid #e6eaf2; max-width:900px; margin:40px auto 0;">
+    <h2 style="font-size:22px; color:#0b1220; margin-bottom:12px;">
+      Andere Formulare in {{ country_code|upper }}:
+    </h2>
+    <ul style="list-style:none; padding:0; margin:0;">
+      {% for form in related_forms %}
+        <li style="margin-bottom:8px;">
+          <a href="/{{ country_code }}/{{ form.slug }}/"
+             style="font-size:16px; color:#2563eb; text-decoration:none;">
+            {{ form.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
 </div>
 
     

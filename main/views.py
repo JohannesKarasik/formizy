@@ -127,17 +127,23 @@ def country(request, country_code):
 # FORM DETAIL (PDF viewer)
 # ===========================
 
+from .models import Form
+
 def form_detail(request, country_code, form_slug):
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
+    # Fetch other forms from the same country, excluding the current one
+    related_forms = Form.objects.filter(
+        country__code=country_code
+    ).exclude(slug=form_slug)
+
+    # Existing logic...
     import time
     pdf_url = f"{form_info.pdf_file.url}?v={int(time.time())}"
-
     pdf_path = form_info.pdf_file.path
     doc = fitz.open(pdf_path)
     width = doc[0].rect.width
     doc.close()
-
     viewer_scale = 833 / width
 
     lang = LANGUAGE_TEXT.get(country_code, LANGUAGE_TEXT["en"])
@@ -149,7 +155,9 @@ def form_detail(request, country_code, form_slug):
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
         "lang": lang,
+        "related_forms": related_forms,  # 👈 new context
     })
+
 
 
 
