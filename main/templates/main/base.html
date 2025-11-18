@@ -475,7 +475,7 @@ if (e.target === modal) {
 });
 </script>
 
-{% include "main/login_register_modal.html" %}
+{% include "main/login_register_modal.html" with country_code=country_code|default:"en" %}
 
 </body>
 </html>

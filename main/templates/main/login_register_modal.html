@@ -1,3 +1,80 @@
+{% comment %}
+===========================================================
+ MULTI-LANG AUTH MODAL
+ Auto-detects language based on `country_code`
+ Supported:
+   - German (de)
+   - Spanish (es)
+   - English (default fallback)
+===========================================================
+{% endcomment %}
+
+
+{# ================================
+    LANGUAGE DICTIONARY
+   ================================ #}
+
+{% if country_code == "de" %}
+  {% with lang={
+    "login_title": "Einloggen",
+    "register_title": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "password_create": "Passwort erstellen",
+    "login_btn": "Einloggen",
+    "register_btn": "Konto erstellen",
+    "no_account": "Noch kein Konto?",
+    "yes_account": "Schon ein Konto?",
+    "switch_login": "Einloggen",
+    "switch_register": "Konto erstellen",
+    "login_failed": "Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.",
+    "register_failed": "Registrierung fehlgeschlagen",
+    "server_error": "Serverfehler: Unerwartete Antwort vom Server."
+  } %}
+
+{% elif country_code == "es" %}
+  {% with lang={
+    "login_title": "Iniciar sesión",
+    "register_title": "Crear cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "password_create": "Crear contraseña",
+    "login_btn": "Iniciar sesión",
+    "register_btn": "Crear cuenta",
+    "no_account": "¿Aún no tienes cuenta?",
+    "yes_account": "¿Ya tienes una cuenta?",
+    "switch_login": "Iniciar sesión",
+    "switch_register": "Crear cuenta",
+    "login_failed": "Error al iniciar sesión. Verifica correo o contraseña.",
+    "register_failed": "Error en el registro",
+    "server_error": "Error del servidor: respuesta inesperada."
+  } %}
+
+{% else %}
+  {% with lang={
+    "login_title": "Login",
+    "register_title": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "password_create": "Create Password",
+    "login_btn": "Login",
+    "register_btn": "Create Account",
+    "no_account": "Don't have an account?",
+    "yes_account": "Already have an account?",
+    "switch_login": "Login",
+    "switch_register": "Create Account",
+    "login_failed": "Login failed. Check email or password.",
+    "register_failed": "Registration failed",
+    "server_error": "Server error: Unexpected response."
+  } %}
+{% endif %}
+
+
+
+
+
+
+
 <style>
   /* =======================
      AUTH MODAL (FULL)
@@ -5,20 +82,20 @@
   #auth-modal.auth-modal-hidden {
     display: none;
   }
-  
+
   #auth-modal {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 9999;
   }
-  
+
   .auth-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(3px);
   }
-  
+
   .auth-box {
     position: absolute;
     top: 50%; left: 50%;
@@ -31,20 +108,18 @@
     box-shadow: 0 8px 40px rgba(0,0,0,0.15);
     animation: fadeInScale .25s ease-out;
 
-    /* 🔥 NEW: vertically center everything inside modal */
     display: flex;
     flex-direction: column;
     justify-content: center;  
     align-items: center;
-    min-height: 320px;  /* tweak to your perfect size */
-}
+    min-height: 320px;
+  }
 
-  
   @keyframes fadeInScale {
     from {opacity: 0; transform: translate(-50%, -48%) scale(0.95);}
     to   {opacity: 1; transform: translate(-50%, -50%) scale(1);}
   }
-  
+
   .auth-close {
     position: absolute;
     top: 12px; right: 12px;
@@ -53,13 +128,7 @@
     font-size: 28px;
     cursor: pointer;
   }
-  
-  .auth-box h2 {
-    margin-bottom: 18px;
-    text-align: center;
-    font-size: 1.5rem;
-  }
-  
+
   #auth-modal input {
     width: 100%;
     margin-bottom: 12px;
@@ -68,7 +137,7 @@
     border: 1px solid #d4d7e2;
     font-size: 15px;
   }
-  
+
   .auth-btn-primary {
     width: 100%;
     padding: 12px;
@@ -80,13 +149,13 @@
     cursor: pointer;
     font-size: 16px;
   }
-  
+
   .auth-switch {
     text-align: center;
     margin-top: 24px !important;
     color: #555;
   }
-  
+
   .auth-switch-btn {
     background: none;
     border: none;
@@ -97,100 +166,112 @@
 </style>
 
 
+
+
 <div id="auth-modal" class="auth-modal-hidden">
   <div class="auth-backdrop" onclick="closeAuthModal()"></div>
 
   <div class="auth-box">
     <button class="auth-close" onclick="closeAuthModal()">×</button>
 
-    <!-- 🔥 HIDDEN CSRF TOKEN (required for Django) -->
-    <form style="display:none;">
-        {% csrf_token %}
-    </form>
+    <form style="display:none;">{% csrf_token %}</form>
 
-    <h2 id="auth-title">Einloggen</h2>
+    <h2 id="auth-title">{{ lang.login_title }}</h2>
 
     <!-- LOGIN FORM -->
-    <form id="login-form" onsubmit="handleLogin(event)" 
-    style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;">
-    
-    <input type="email" id="login-email" placeholder="E-Mail" required style="width:95%;">
-    <input type="password" id="login-password" placeholder="Passwort" required style="width:95%;">
-    
-    <button type="submit" class="auth-btn-primary" style="margin-bottom: 12px;">Einloggen</button>
+    <form id="login-form"
+          onsubmit="handleLogin(event)"
+          style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;">
+
+      <input type="email" id="login-email" placeholder="{{ lang.email }}" required style="width:95%;">
+      <input type="password" id="login-password" placeholder="{{ lang.password }}" required style="width:95%;">
+      <button type="submit" class="auth-btn-primary" style="margin-bottom: 12px;">{{ lang.login_btn }}</button>
     </form>
-    
+
     <!-- REGISTER FORM -->
-    <form id="register-form" style="display:none; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;" 
-    onsubmit="handleRegister(event)">
-    
-    <input type="email" id="register-email" placeholder="E-Mail" required style="width:95%;">
-    <input type="password" id="register-password" placeholder="Passwort erstellen" required style="width:95%;">
-    
-    <button type="submit" class="auth-btn-primary">Konto erstellen</button>
+    <form id="register-form"
+          style="display:none; flex-direction:column; justify-content:center; align-items:center; width:100%; gap:12px;"
+          onsubmit="handleRegister(event)">
+
+      <input type="email" id="register-email" placeholder="{{ lang.email }}" required style="width:95%;">
+      <input type="password" id="register-password" placeholder="{{ lang.password_create }}" required style="width:95%;">
+      <button type="submit" class="auth-btn-primary">{{ lang.register_btn }}</button>
     </form>
-    
+
     <p class="auth-switch">
-      <span id="switch-text">Noch kein Konto?</span>
-      <button class="auth-switch-btn" onclick="toggleAuth()">Konto erstellen</button>
+      <span id="switch-text">{{ lang.no_account }}</span>
+      <button class="auth-switch-btn" onclick="toggleAuth()">{{ lang.switch_register }}</button>
     </p>
-    
+
   </div>
 </div>
+
+
+
+
+
+
 <script>
-  function openAuthModal() {
-      const modal = document.getElementById("auth-modal");
-      modal.classList.remove("auth-modal-hidden");
-  
-      // 🔥 Immer REGISTRIEREN zuerst anzeigen
-      const login = document.getElementById("login-form");
-      const reg = document.getElementById("register-form");
-      const title = document.getElementById("auth-title");
-      const switchText = document.getElementById("switch-text");
-      const switchBtn = document.querySelector(".auth-switch-btn");
-  
-      login.style.display = "none";
-      reg.style.display = "flex";   // keep centering
-      title.textContent = "Konto erstellen";
-      switchText.textContent = "Schon ein Konto?";
-      switchBtn.textContent = "Einloggen";
-  }
-  
-  
-  function closeAuthModal() {
+/* ===============================================
+   OPEN MODAL (defaults to REGISTER view)
+=============================================== */
+function openAuthModal() {
+    const modal = document.getElementById("auth-modal");
+    modal.classList.remove("auth-modal-hidden");
+
+    toggleToRegister();
+}
+
+function closeAuthModal() {
     document.getElementById("auth-modal").classList.add("auth-modal-hidden");
-  }
-  
-  function toggleAuth() {
-    const login = document.getElementById("login-form");
-    const reg = document.getElementById("register-form");
-    const title = document.getElementById("auth-title");
-    const switchText = document.getElementById("switch-text");
-    const switchBtn = document.querySelector(".auth-switch-btn");
-  
-    if (login.style.display !== "none") {
-        login.style.display = "none";
-        reg.style.display = "block";
-        title.textContent = "Konto erstellen";
-        switchText.textContent = "Schon ein Konto?";
-        switchBtn.textContent = "Einloggen";
-    } else {
-        login.style.display = "block";
-        reg.style.display = "none";
-        title.textContent = "Einloggen";
-        switchText.textContent = "Noch kein Konto?";
-        switchBtn.textContent = "Konto erstellen";
-    }
-  }
-  </script>
-  
-  <script>
-  async function handleLogin(event) {
+}
+
+
+
+/* ===============================================
+   TOGGLE LOGIN <-> REGISTER
+=============================================== */
+
+function toggleToRegister() {
+    login.style.display = "none";
+    reg.style.display = "flex";
+
+    title.textContent = "{{ lang.register_title }}";
+    switchText.textContent = "{{ lang.yes_account }}";
+    switchBtn.textContent = "{{ lang.switch_login }}";
+}
+
+function toggleToLogin() {
+    login.style.display = "flex";
+    reg.style.display = "none";
+
+    title.textContent = "{{ lang.login_title }}";
+    switchText.textContent = "{{ lang.no_account }}";
+    switchBtn.textContent = "{{ lang.switch_register }}";
+}
+
+function toggleAuth() {
+    if (login.style.display !== "none") toggleToRegister();
+    else toggleToLogin();
+}
+
+
+
+const login = document.getElementById("login-form");
+const reg = document.getElementById("register-form");
+const title = document.getElementById("auth-title");
+const switchText = document.getElementById("switch-text");
+const switchBtn = document.querySelector(".auth-switch-btn");
+
+/* ===============================================
+   LOGIN
+=============================================== */
+async function handleLogin(event) {
     event.preventDefault();
-  
+
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
-  
+
     const res = await fetch("/login/", {
         method: "POST",
         headers: {
@@ -203,54 +284,58 @@
             next: window.location.pathname
         })
     });
-  
+
     if (res.redirected) {
-        window.location = res.url;   
+        window.location = res.url;
         return;
     }
-  
-    alert("Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.");
-  }
-  
-  
-  async function handleRegister(event) {
+
+    alert("{{ lang.login_failed }}");
+}
+
+
+
+/* ===============================================
+   REGISTER
+=============================================== */
+async function handleRegister(event) {
     event.preventDefault();
-  
+
     const email = document.getElementById("register-email").value;
     const password = document.getElementById("register-password").value;
-  
+
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
     formData.append("next", window.location.pathname);
-  
+
     const res = await fetch("/register/", {
         method: "POST",
-        headers: {
-            "X-CSRFToken": getCSRF(),
-        },
+        headers: {"X-CSRFToken": getCSRF()},
         body: formData
     });
-  
+
     const text = await res.text();
-    console.log("RAW RESPONSE:", text);
-  
+
     try {
         const data = JSON.parse(text);
+
         if (!res.ok) {
-            alert("Registrierung fehlgeschlagen: " + data.error);
+            alert("{{ lang.register_failed }}: " + data.error);
             return;
         }
+
         window.location = data.next;
+
     } catch (err) {
         console.error("JSON parse error:", err);
-        alert("Serverfehler: Unerwartete Antwort vom Server.");
+        alert("{{ lang.server_error }}");
     }
-  }
-  
-  
-  function getCSRF() {
-    return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
-  }
-  </script>
-  
+}
+
+function getCSRF() {
+  return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+}
+</script>
+
+{% endwith %}
