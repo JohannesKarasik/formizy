@@ -9,6 +9,8 @@ import stripe
 from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth import logout
+from .models import Form, Country
+
 
 
 import json, io, os
