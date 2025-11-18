@@ -6,6 +6,8 @@ from .views import login_view, register_view
 from .views import download_pdf, create_checkout_session, has_paid
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import FormSitemap
+from django.urls import path, re_path
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -41,12 +43,13 @@ urlpatterns = [
          create_checkout_session, name='create_checkout_session'),
 
     # COUNTRY PAGE (must be before form_detail)
-    path('<str:country_code>/', views.country, name='country'),
+     re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
 
     # MUST BE LAST
-    path('<str:country_code>/<str:form_slug>/', 
-         views.form_detail, 
-         name='form_detail'),
+re_path(r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/$', 
+        views.form_detail, 
+        name='form_detail'),
+
 ]
 
 
