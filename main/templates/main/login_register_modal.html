@@ -1,59 +1,63 @@
 {% comment %} LANGUAGE SWITCHER {% endcomment %}
 
 {% if country_code == "de" %}
-    {% with
-      login_title="Einloggen"
-      register_title="Konto erstellen"
-      email_label="E-Mail"
-      password_label="Passwort"
-      password_create="Passwort erstellen"
-      login_btn="Einloggen"
-      register_btn="Konto erstellen"
-      no_account="Noch kein Konto?"
-      yes_account="Schon ein Konto?"
-      switch_login="Einloggen"
-      switch_register="Konto erstellen"
-      login_failed="Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen."
-      register_failed="Registrierung fehlgeschlagen"
-      server_error="Serverfehler: Unerwartete Antwort vom Server."
-    as lang %}
+{% with lang=(
+    {
+      "login_title":"Einloggen",
+      "register_title":"Konto erstellen",
+      "email_label":"E-Mail",
+      "password_label":"Passwort",
+      "password_create":"Passwort erstellen",
+      "login_btn":"Einloggen",
+      "register_btn":"Konto erstellen",
+      "no_account":"Noch kein Konto?",
+      "yes_account":"Schon ein Konto?",
+      "switch_login":"Einloggen",
+      "switch_register":"Konto erstellen",
+      "login_failed":"Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.",
+      "register_failed":"Registrierung fehlgeschlagen",
+      "server_error":"Serverfehler: Unerwartete Antwort vom Server."
+    }
+) %}
 {% elif country_code == "es" %}
-    {% with
-      login_title="Iniciar sesión"
-      register_title="Crear cuenta"
-      email_label="Correo electrónico"
-      password_label="Contraseña"
-      password_create="Crear contraseña"
-      login_btn="Iniciar sesión"
-      register_btn="Crear cuenta"
-      no_account="¿Aún no tienes cuenta?"
-      yes_account="¿Ya tienes una cuenta?"
-      switch_login="Iniciar sesión"
-      switch_register="Crear cuenta"
-      login_failed="Error al iniciar sesión. Verifica correo o contraseña."
-      register_failed="Error en el registro"
-      server_error="Error del servidor: respuesta inesperada."
-    as lang %}
+{% with lang=(
+    {
+      "login_title":"Iniciar sesión",
+      "register_title":"Crear cuenta",
+      "email_label":"Correo electrónico",
+      "password_label":"Contraseña",
+      "password_create":"Crear contraseña",
+      "login_btn":"Iniciar sesión",
+      "register_btn":"Crear cuenta",
+      "no_account":"¿Aún no tienes cuenta?",
+      "yes_account":"¿Ya tienes una cuenta?",
+      "switch_login":"Iniciar sesión",
+      "switch_register":"Crear cuenta",
+      "login_failed":"Error al iniciar sesión. Verifica correo o contraseña.",
+      "register_failed":"Error en el registro",
+      "server_error":"Error del servidor: respuesta inesperada."
+    }
+) %}
 {% else %}
-    {% with
-      login_title="Login"
-      register_title="Create Account"
-      email_label="Email"
-      password_label="Password"
-      password_create="Create Password"
-      login_btn="Login"
-      register_btn="Create Account"
-      no_account="Don't have an account?"
-      yes_account="Already have an account?"
-      switch_login="Login"
-      switch_register="Create Account"
-      login_failed="Login failed. Check email or password."
-      register_failed="Registration failed"
-      server_error="Server error: Unexpected response."
-    as lang %}
+{% with lang=(
+    {
+      "login_title":"Login",
+      "register_title":"Create Account",
+      "email_label":"Email",
+      "password_label":"Password",
+      "password_create":"Create Password",
+      "login_btn":"Login",
+      "register_btn":"Create Account",
+      "no_account":"Don't have an account?",
+      "yes_account":"Already have an account?",
+      "switch_login":"Login",
+      "switch_register":"Create Account",
+      "login_failed":"Login failed. Check email or password.",
+      "register_failed":"Registration failed",
+      "server_error":"Server error: Unexpected response."
+    }
+) %}
 {% endif %}
-
-
 
 
 <style>
