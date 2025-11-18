@@ -26,6 +26,62 @@ import json
 
 from django.http import JsonResponse
 
+
+
+LANGUAGE_TEXT = {
+    "en": {
+        "login_title": "Login",
+        "register_title": "Create Account",
+        "email": "Email",
+        "password": "Password",
+        "password_create": "Create Password",
+        "login_btn": "Login",
+        "register_btn": "Create Account",
+        "no_account": "Don't have an account?",
+        "yes_account": "Already have an account?",
+        "switch_login": "Login",
+        "switch_register": "Create Account",
+        "login_failed": "Login failed. Check email or password.",
+        "register_failed": "Registration failed",
+        "server_error": "Server error: Unexpected response."
+    },
+
+    "de": {
+        "login_title": "Einloggen",
+        "register_title": "Konto erstellen",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "password_create": "Passwort erstellen",
+        "login_btn": "Einloggen",
+        "register_btn": "Konto erstellen",
+        "no_account": "Noch kein Konto?",
+        "yes_account": "Schon ein Konto?",
+        "switch_login": "Einloggen",
+        "switch_register": "Konto erstellen",
+        "login_failed": "Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.",
+        "register_failed": "Registrierung fehlgeschlagen",
+        "server_error": "Serverfehler: Unerwartete Antwort vom Server."
+    },
+
+    "es": {
+        "login_title": "Iniciar sesión",
+        "register_title": "Crear cuenta",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "password_create": "Crear contraseña",
+        "login_btn": "Iniciar sesión",
+        "register_btn": "Crear cuenta",
+        "no_account": "¿Aún no tienes cuenta?",
+        "yes_account": "¿Ya tienes una cuenta?",
+        "switch_login": "Iniciar sesión",
+        "switch_register": "Crear cuenta",
+        "login_failed": "Error al iniciar sesión. Verifica correo o contraseña.",
+        "register_failed": "Error en el registro",
+        "server_error": "Error del servidor: respuesta inesperada."
+    }
+}
+
+
 def store_pending_fields(request, country, slug):
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=400)
@@ -54,10 +110,14 @@ def country(request, country_code):
     # Get all forms assigned to this country
     forms = Form.objects.filter(country=country_obj)
 
+    # Load language (fallback to EN)
+    lang = LANGUAGE_TEXT.get(country_code, LANGUAGE_TEXT["en"])
+
     return render(request, "main/country.html", {
         "country_code": country_code,
         "country_name": country_obj.name,
         "forms": forms,
+        "lang": lang
     })
 
 
@@ -70,18 +130,17 @@ def country(request, country_code):
 def form_detail(request, country_code, form_slug):
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
-    # Force browser to always fetch latest file
     import time
     pdf_url = f"{form_info.pdf_file.url}?v={int(time.time())}"
 
     pdf_path = form_info.pdf_file.path
     doc = fitz.open(pdf_path)
-    page = doc[0]
-    pdf_original_width = page.rect.width
+    width = doc[0].rect.width
     doc.close()
 
-    FIXED_WIDTH = 833
-    viewer_scale = FIXED_WIDTH / pdf_original_width
+    viewer_scale = 833 / width
+
+    lang = LANGUAGE_TEXT.get(country_code, LANGUAGE_TEXT["en"])
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": form_info,
@@ -89,7 +148,9 @@ def form_detail(request, country_code, form_slug):
         "country_code": country_code,
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        "lang": lang,
     })
+
 
 
 
