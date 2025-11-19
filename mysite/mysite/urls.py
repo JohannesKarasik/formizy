@@ -24,15 +24,10 @@ urlpatterns = [
 
     # MAIN ROUTES WITHOUT LANG PREFIX
     # <-- This keeps: /  /de  /es /dk  etc. working
+    
     path('', include('main.urls')),
 ]
 
-# TRANSLATED VERSION OF ROUTES UNDER /lang/
-# This does NOT replace your existing routes
-urlpatterns += i18n_patterns(
-    path('lang/', include('main.urls')),
-    prefix_default_language=False,
-)
 
 # Static (dev mode)
 if settings.DEBUG:
