@@ -880,33 +880,7 @@ function saveFieldsAndDownload() {
 </script>
 
 <script>
-const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
 
-if (!IS_AUTH) {
-    console.log("📌 SENDING pending_fields TO SERVER:", fields);
-
-    const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF(),
-        },
-        body: JSON.stringify({
-            fields_data: fields,
-            form_slug: slug
-        })
-    });
-
-    try {
-        const data = await resp.json();
-        console.log("📌 SERVER JSON store-pending:", data);
-    } catch (e) {
-        console.log("📌 Could not parse JSON:", e);
-    }
-
-    openAuthModal();
-    return;
-}
 
 
 
