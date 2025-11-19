@@ -43,7 +43,9 @@ LANGUAGE_TEXT = {
         "switch_register": "Create Account",
         "login_failed": "Login failed. Check email or password.",
         "register_failed": "Registration failed",
-        "server_error": "Server error: Unexpected response."
+        "server_error": "Server error: Unexpected response.",
+        "other_forms": "Other forms in",
+
     },
 
     "de": {
@@ -60,7 +62,9 @@ LANGUAGE_TEXT = {
         "switch_register": "Konto erstellen",
         "login_failed": "Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.",
         "register_failed": "Registrierung fehlgeschlagen",
-        "server_error": "Serverfehler: Unerwartete Antwort vom Server."
+        "server_error": "Serverfehler: Unerwartete Antwort vom Server.",
+        "other_forms": "Andere Formulare in"
+
     },
 
     "es": {
@@ -77,9 +81,22 @@ LANGUAGE_TEXT = {
         "switch_register": "Crear cuenta",
         "login_failed": "Error al iniciar sesión. Verifica correo o contraseña.",
         "register_failed": "Error en el registro",
-        "server_error": "Error del servidor: respuesta inesperada."
+        "server_error": "Error del servidor: respuesta inesperada.",
+        "other_forms": "Other forms in"
+
+
+    },
+
+
+    "it": {
+        "other_forms": "Altri moduli in",
+
     }
+
+
+
 }
+
 
 
 def store_pending_fields(request, country, slug):
