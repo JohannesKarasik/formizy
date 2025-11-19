@@ -321,75 +321,66 @@
     display: block;
     object-fit: contain;
 }
-/* Footer: no background, brand + links use #303bff */
-/* ===== Modern SaaS Footer (transparent, #303bff text/links) ===== */
-/* ===== Simple SaaS Footer ===== */
-.site-footer{
-  background: transparent;
-  color: #303bff;
-  padding: 40px 0 20px;
-  border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
-}
-.site-footer a{ color:#303bff; text-decoration:none; }
-.site-footer a:hover{ text-decoration:underline; }
-
-/* Top area: brand + simple nav */
-.site-footer__inner{
-  display: grid;
-  align-items: start;
-  gap: 18px 24px;
-}
-.site-footer__brand{
-  text-align: center;
-}
-.brand-title{
-  display:block;
-  font-weight: 800;
-  letter-spacing: -0.2px;
-  font-size: 1.15rem;
-}
-.brand-tagline{
-  margin: 6px 0 0;
-  opacity: .9;
+/* Footer Base */
+.site-footer {
+    padding: 40px 0 10px;
+    color: #303bff;
+    background: transparent;
+    border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
 }
 
-/* Simple inline list */
-.site-footer__nav{ justify-self: center; }
-.site-footer__list{
-  list-style:none; margin:0; padding:0;
-  display:flex; gap: 16px; flex-wrap: wrap; justify-content:center;
-}
-.site-footer__list li a{
-  padding: 2px 0;
+.site-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
-/* Bottom legal */
-.site-footer__bottom{
-  margin-top: 20px;
-  padding-top: 14px;
-  border-top: 1px dashed color-mix(in oklab, #303bff 20%, transparent);
-  display:flex; align-items:center; justify-content:space-between;
-  gap: 12px; flex-wrap: wrap;
-}
-.legal{ opacity:.85; }
-.legal-links{
-  list-style:none; margin:0; padding:0;
-  display:flex; gap:14px; flex-wrap:wrap;
+/* Brand block */
+.site-footer__brand .brand-title {
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
-/* Responsive */
-@media (min-width: 820px){
-  .site-footer__inner{
-    grid-template-columns: 1fr auto;
-    align-items: center;
-  }
-  .site-footer__brand{ text-align: left; }
-  .site-footer__nav{ justify-self: end; }
+.site-footer__brand .brand-tagline {
+    margin-top: 6px;
+    color: #3b4bff;
+    max-width: 240px;
 }
 
+/* Navigation */
+.site-footer__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
+.site-footer__list li {
+    margin-bottom: 6px;
+}
+
+.site-footer__list a {
+    text-decoration: none;
+    color: #303bff;
+    font-weight: 500;
+}
+
+.site-footer__list a:hover {
+    text-decoration: underline;
+}
+
+/* Language Switcher */
 .footer-lang-switcher {
-    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.footer-lang-switcher label {
+    font-size: 14px;
+    margin-bottom: 2px;
+    color: #303bff;
 }
 
 .footer-lang-switcher select {
@@ -397,39 +388,33 @@
     border-radius: 8px;
     border: 1px solid #d0d7ff;
     background: white;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #303bff;
     cursor: pointer;
-    outline: none;
+    font-size: 14px;
+    color: #303bff;
 }
 
-.footer-lang-switcher select:hover {
-    border-color: #303bff;
-}
-.footer-lang-switcher {
-    margin-top: 18px;
+/* Bottom legal */
+.site-footer__bottom {
+    margin-top: 30px;
+    padding-top: 12px;
+    border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
     display: flex;
-    gap: 14px;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
-.footer-lang-switcher a {
+
+.legal-links {
+    list-style: none;
+    padding: 0;
     display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #666;
-    text-decoration: none;
+    gap: 14px;
+}
+
+.legal-links a {
+    color: #303bff;
     font-size: 14px;
 }
-.footer-lang-switcher a:hover {
-    color: #000;
-}
-.flag {
-    width: 20px;
-    height: 14px;
-    border-radius: 2px;
-    object-fit: cover;
-}
+
 
 
     </style>
@@ -517,13 +502,54 @@
 
   {% load i18n %}
 
-  <div class="footer-lang-switcher">
-    <a href="{% url 'switch_lang' 'en' %}">🇬🇧 English</a>
-    <a href="{% url 'switch_lang' 'de' %}">🇩🇪 Deutsch</a>
-    <a href="{% url 'switch_lang' 'es' %}">🇪🇸 Español</a>
-    <a href="{% url 'switch_lang' 'it' %}">🇮🇹 Italiano</a>
-</div>
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer__inner wrap">
 
+        <!-- Brand + pitch -->
+        <div class="site-footer__brand">
+            <span class="brand-title">FormSkies</span>
+            <p class="brand-tagline">
+                {% trans "Build, share, and automate forms in minutes." %}
+            </p>
+        </div>
+
+        <!-- Footer navigation -->
+        <nav class="site-footer__nav" aria-label="Footer">
+            <ul class="site-footer__list">
+                <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                <li><a href="/about/">{% trans "About us" %}</a></li>
+                <li><a href="/contact/">{% trans "Contact" %}</a></li>
+                <li><a href="/blog/">{% trans "Blog" %}</a></li>
+            </ul>
+        </nav>
+
+        <!-- Language switcher -->
+        <form method="post" action="/i18n/setlang/" class="footer-lang-switcher">
+            {% csrf_token %}
+            <label for="lang-select">{% trans "Language" %}</label>
+            <select id="lang-select" name="language" onchange="this.form.submit()">
+                <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                <option value="de" {% if LANGUAGE_CODE == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                <option value="it" {% if LANGUAGE_CODE == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
+            </select>
+        </form>
+
+    </div>
+
+    <!-- Bottom legal area -->
+    <div class="site-footer__bottom wrap">
+        <small class="legal">
+            © {{ now|date:"Y" }} FormSkies — {% trans "All rights reserved." %}
+        </small>
+
+        <ul class="legal-links">
+            <li><a href="/privacy/">{% trans "Privacy" %}</a></li>
+            <li><a href="/terms/">{% trans "Terms" %}</a></li>
+            <li><a href="/cookies/">{% trans "Cookies" %}</a></li>
+        </ul>
+    </div>
+</footer>
 
   
   
