@@ -522,16 +522,17 @@
         <button class="auth-close" onclick="closePaymentModal()">×</button>
 
         <h2 style="text-align:center;margin-bottom:10px;">
-            PDF herunterladen – €4.99
+            {{ lang.pay_modal_title }}
         </h2>
-
+        
         <p style="text-align:center;color:#555;margin-bottom:20px;">
-            Für den Download des ausgefüllten PDFs ist eine einmalige Zahlung erforderlich.
+            {{ lang.pay_modal_description }}
         </p>
-
+        
         <button class="auth-btn-primary" onclick="proceedPayment()">
-            Jetzt bezahlen – €4.99
+            {{ lang.pay_modal_button }}
         </button>
+        
 
         <!-- 💳 Secure Stripe Payment message -->
 <!-- 💳 Secure Stripe Payment message -->
@@ -553,17 +554,17 @@
         <button class="auth-close" onclick="closeSuccessModal()">×</button>
 
         <h2 style="text-align:center;margin-bottom:12px;">
-            Zahlung erfolgreich 🎉
+            {{ lang.pay_modal_success_title }}
         </h2>
-
+        
         <p style="text-align:center;color:#555;margin-bottom:20px;">
-            Vielen Dank! Ihre Zahlung war erfolgreich.  
-            Sie können das ausgefüllte PDF jetzt herunterladen.
+            {{ lang.pay_modal_success_desc }}
         </p>
-
+        
         <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
-            PDF herunterladen
+            {{ lang.pay_modal_success_btn }}
         </button>
+        
         
     </div>
 </div>
@@ -908,6 +909,7 @@ if (!IS_AUTH) {
 }
 
 
+
     // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
         method: "POST",
@@ -996,8 +998,8 @@ if (!IS_AUTH) {
 </script>
     
 <script>
-    function downloadWithSpinner() {
-        const btn = document.getElementById("success-download-btn");
+async function downloadWithSpinner() {
+    const btn = document.getElementById("success-download-btn");
     
         // Save original label
         const originalHTML = btn.innerHTML;

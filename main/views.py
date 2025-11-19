@@ -83,9 +83,17 @@ LANGUAGE_TEXT = {
         "legal_privacy": "Privacy",
         "legal_terms": "Terms",
         "legal_cookies": "Cookies",
-        "legal_rights": "All rights reserved."
+        "legal_rights": "All rights reserved.",
+        "pay_modal_title": "Download PDF – €4.99",
+        "pay_modal_description": "A one-time payment is required to download the completed PDF.",
+        "pay_modal_button": "Pay now – €4.99",
+
+        "pay_modal_success_title": "Payment successful 🎉",
+        "pay_modal_success_desc": "Thank you! Your payment was successful. You can now download the completed PDF.",
+        "pay_modal_success_btn": "Download PDF",
 
     },
+
 
     "de": {
         "login_title": "Einloggen",
@@ -111,7 +119,15 @@ LANGUAGE_TEXT = {
         "legal_privacy": "Datenschutz",
         "legal_terms": "Nutzungsbedingungen",
         "legal_cookies": "Cookies",
-        "legal_rights": "Alle Rechte vorbehalten."
+        "legal_rights": "Alle Rechte vorbehalten.",
+        "pay_modal_title": "PDF herunterladen – €4.99",
+        "pay_modal_description": "Für den Download des ausgefüllten PDFs ist eine einmalige Zahlung erforderlich.",
+        "pay_modal_button": "Jetzt bezahlen – €4.99",
+
+        "pay_modal_success_title": "Zahlung erfolgreich 🎉",
+        "pay_modal_success_desc": "Vielen Dank! Ihre Zahlung war erfolgreich. Sie können das ausgefüllte PDF jetzt herunterladen.",
+        "pay_modal_success_btn": "PDF herunterladen",
+
 
     },
 
@@ -139,7 +155,15 @@ LANGUAGE_TEXT = {
         "legal_privacy": "Privacidad",
         "legal_terms": "Términos",
         "legal_cookies": "Cookies",
-        "legal_rights": "Todos los derechos reservados."
+        "legal_rights": "Todos los derechos reservados.",
+        "pay_modal_title": "Descargar PDF – €4.99",
+        "pay_modal_description": "Se requiere un pago único para descargar el PDF completado.",
+        "pay_modal_button": "Pagar ahora – €4.99",
+
+        "pay_modal_success_title": "Pago exitoso 🎉",
+        "pay_modal_success_desc": "¡Gracias! Tu pago fue exitoso. Ahora puedes descargar el PDF completado.",
+        "pay_modal_success_btn": "Descargar PDF",
+
 
     },
 
@@ -154,7 +178,15 @@ LANGUAGE_TEXT = {
         "legal_privacy": "Privacy",
         "legal_terms": "Termini",
         "legal_cookies": "Cookie",
-        "legal_rights": "Tutti i diritti riservati."
+        "legal_rights": "Tutti i diritti riservati.",
+        "pay_modal_title": "Scarica PDF – €4.99",
+        "pay_modal_description": "È necessario un pagamento una tantum per scaricare il PDF compilato.",
+        "pay_modal_button": "Paga ora – €4.99",
+
+        "pay_modal_success_title": "Pagamento riuscito 🎉",
+        "pay_modal_success_desc": "Grazie! Il pagamento è andato a buon fine. Ora puoi scaricare il PDF compilato.",
+        "pay_modal_success_btn": "Scarica PDF",
+
 
     }
 
