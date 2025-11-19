@@ -27,25 +27,10 @@ import json
 from django.http import JsonResponse
 
 
-def get_ui_language(request, country_code=None):
-    """
-    Priority:
-    1. country_code in URL (auto-select)
-    2. cookie (manual override)
-    3. default: English
-    """
+def get_ui_language(request):
+    code = request.COOKIES.get("site_lang", "en")
+    return LANGUAGE_TEXT.get(code, LANGUAGE_TEXT["en"])
 
-    # 1) Auto-select based on URL country
-    if country_code in LANGUAGE_TEXT:
-        return LANGUAGE_TEXT[country_code], country_code
-
-    # 2) Otherwise try cookie
-    cookie_lang = request.COOKIES.get("site_lang")
-    if cookie_lang in LANGUAGE_TEXT:
-        return LANGUAGE_TEXT[cookie_lang], cookie_lang
-
-    # 3) Fallback
-    return LANGUAGE_TEXT["en"], "en"
 
 def switch_lang(request, lang_code):
     # only allow the languages you have in LANGUAGE_TEXT
