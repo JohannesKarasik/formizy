@@ -893,7 +893,7 @@ async function handleDownloadClick() {
     sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
     // USER NOT LOGGED IN → Save to Django session + open modal
-    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+    const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
 
         console.log("📌 SENDING pending_fields TO SERVER:", fields);
 
