@@ -695,6 +695,9 @@ def create_checkout_session(request, country_code, form_slug):
             "form_slug": form_slug,
         },
 
+        # ✅ NEW: localize Stripe based on URL country code
+        locale=country_code.lower(),
+
         success_url=request.build_absolute_uri(
             f"/{country_code}/{form_slug}/?paid=1"
         ),
@@ -704,8 +707,6 @@ def create_checkout_session(request, country_code, form_slug):
     )
 
     return JsonResponse({"id": session.id})
-
-
 
 
 
