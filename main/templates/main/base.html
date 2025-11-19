@@ -321,157 +321,70 @@
 }
 /* Footer: no background, brand + links use #303bff */
 /* ===== Modern SaaS Footer (transparent, #303bff text/links) ===== */
+/* ===== Simple SaaS Footer ===== */
 .site-footer{
-  background: transparent;             /* keep page background */
-  color: #303bff;                      /* unified text color */
+  background: transparent;
+  color: #303bff;
   padding: 40px 0 20px;
   border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
 }
+.site-footer a{ color:#303bff; text-decoration:none; }
+.site-footer a:hover{ text-decoration:underline; }
 
-.site-footer a{ color: #303bff; text-decoration: none; }
-.site-footer a:hover{ text-decoration: underline; }
-
-/* Layout */
+/* Top area: brand + simple nav */
 .site-footer__inner{
   display: grid;
-  grid-template-columns: 1.2fr 2.8fr;
-  gap: 28px;
   align-items: start;
+  gap: 18px 24px;
 }
-
-.site-footer__brand .brand-link{
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.site-footer__brand{
+  text-align: center;
+}
+.brand-title{
+  display:block;
   font-weight: 800;
   letter-spacing: -0.2px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+}
+.brand-tagline{
+  margin: 6px 0 0;
+  opacity: .9;
 }
 
-.site-footer__brand .brand-logo{
-  height: 28px;
-  width: auto;
-  display: block;
+/* Simple inline list */
+.site-footer__nav{ justify-self: center; }
+.site-footer__list{
+  list-style:none; margin:0; padding:0;
+  display:flex; gap: 16px; flex-wrap: wrap; justify-content:center;
 }
-
-.site-footer__brand .brand-tagline{
-  margin: 10px 0 0;
-  opacity: .9;              /* still blue, slightly softer */
-}
-
-/* Columns */
-.site-footer__cols{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(140px, 1fr));
-  gap: 18px 28px;
-}
-
-.site-footer__col h3{
-  margin: 0 0 10px;
-  font-size: .95rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.site-footer__col ul{
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 8px;
-}
-
-.site-footer__col a{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.site-footer__list li a{
   padding: 2px 0;
 }
 
-/* Subscribe */
-.subscribe{
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.subscribe input{
-  border: 1px solid color-mix(in oklab, #303bff 28%, transparent);
-  color: #303bff;
-  background: transparent;
-  padding: 10px 12px;
-  border-radius: 10px;
-  width: 100%;
-  outline: none;
-}
-.subscribe input::placeholder{ color: color-mix(in oklab, #303bff 60%, white); }
-.subscribe input:focus{ box-shadow: 0 0 0 3px color-mix(in oklab, #303bff 25%, transparent); }
-
-.btn-subscribe{
-  border: 1px solid #303bff;
-  background: transparent;
-  color: #303bff;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.btn-subscribe:hover{ text-decoration: underline; }
-
-/* Social icons */
-.social{
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-.social a{
-  display: inline-flex;
-  width: 36px; height: 36px;
-  align-items: center; justify-content: center;
-  border: 1px solid color-mix(in oklab, #303bff 28%, transparent);
-  border-radius: 10px;
-}
-
-/* Bottom bar */
+/* Bottom legal */
 .site-footer__bottom{
-  margin-top: 22px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 14px;
   border-top: 1px dashed color-mix(in oklab, #303bff 20%, transparent);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 12px; flex-wrap: wrap;
 }
-
-.legal{ opacity: .85; }
+.legal{ opacity:.85; }
 .legal-links{
-  list-style: none; padding: 0; margin: 0;
-  display: inline-flex; gap: 14px; flex-wrap: wrap;
-}
-.legal-links a{ text-decoration: none; }
-.legal-links a:hover{ text-decoration: underline; }
-
-/* Accessibility helpers */
-.sr-only{
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  list-style:none; margin:0; padding:0;
+  display:flex; gap:14px; flex-wrap:wrap;
 }
 
 /* Responsive */
-@media (max-width: 960px){
+@media (min-width: 820px){
   .site-footer__inner{
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
+    align-items: center;
   }
-  .site-footer__cols{
-    grid-template-columns: repeat(2, minmax(160px, 1fr));
-  }
+  .site-footer__brand{ text-align: left; }
+  .site-footer__nav{ justify-self: end; }
 }
-@media (max-width: 560px){
-  .site-footer__cols{
-    grid-template-columns: 1fr;
-  }
-}
+
 
 
     </style>
@@ -560,49 +473,23 @@
   <footer class="site-footer" role="contentinfo">
     <div class="site-footer__inner wrap">
       <!-- Brand + short pitch -->
-      <div class="site-footer__block site-footer__brand">
-        <a class="brand-link" href="{% url 'home' %}" aria-label="FormSkies home">
-          <img src="{% static 'logo.png' %}" alt="" class="brand-logo" />
-          <span>FormSkies</span>
-        </a>
+      <div class="site-footer__brand">
+        <span class="brand-title">FormSkies</span>
         <p class="brand-tagline">Build, share, and automate forms in minutes.</p>
       </div>
   
-      <!-- Columns -->
-      <nav class="site-footer__cols" aria-label="Footer">
-        <section class="site-footer__col" aria-label="Product">
-          <h3>Product</h3>
-          <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="">Other forms</a></li>
-            <li><a href="">Blog</a></li>
-          </ul>
-        </section>
-  
-        <section class="site-footer__col" aria-label="Company">
-          <h3>Company</h3>
-          <ul>
-            <li><a href="">About</a></li>
-            <li><a href="">Contact us</a></li>
-            {% if user.is_authenticated %}
-              <li><a href="">Logout</a></li>
-            {% endif %}
-          </ul>
-        </section>
-  
-        <section class="site-footer__col" aria-label="Resources">
-          <h3>Resources</h3>
-          <ul>
-            <li><a href="">Guides</a></li>
-            <li><a href="/status/">Status</a></li>
-            <li><a href="/changelog/">Changelog</a></li>
-          </ul>
-        </section>
-  
-
+      <!-- Simple nav -->
+      <nav class="site-footer__nav" aria-label="Footer">
+        <ul class="site-footer__list">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="/about/">About us</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/blog/">Blog</a></li>
+        </ul>
       </nav>
     </div>
   
+    <!-- Bottom legal stays -->
     <div class="site-footer__bottom wrap">
       <small class="legal">© {{ now|date:"Y" }} FormSkies — All rights reserved.</small>
       <ul class="legal-links" aria-label="Legal">
