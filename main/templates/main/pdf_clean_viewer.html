@@ -554,17 +554,17 @@
         <button class="auth-close" onclick="closeSuccessModal()">×</button>
 
         <h2 style="text-align:center;margin-bottom:12px;">
-            {{ lang.pay_modal_success_title }}
+            Zahlung erfolgreich 🎉
         </h2>
-        
+
         <p style="text-align:center;color:#555;margin-bottom:20px;">
-            {{ lang.pay_modal_success_desc }}
+            Vielen Dank! Ihre Zahlung war erfolgreich.  
+            Sie können das ausgefüllte PDF jetzt herunterladen.
         </p>
-        
+
         <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
-            {{ lang.pay_modal_success_btn }}
+            PDF herunterladen
         </button>
-        
         
     </div>
 </div>
@@ -588,43 +588,6 @@
 
 <script>
 
-async function startDownloadProcess() {
-    const country = "{{ country_code }}";
-    const slug = "{{ form_info.slug }}";
-    const fields = collectFields();
-
-    // SAVE FIELDS TO DATABASE IF LOGGED IN
-    const res = await fetch(`/${country}/${slug}/has-paid/`, {
-        method: "GET",
-        headers: {
-            "X-CSRFToken": getCSRF(),
-            "X-Requested-With": "XMLHttpRequest"
-        },
-        credentials: "include"
-    });
-
-    const data = await res.json();
-
-    if (data.has_paid) {
-        downloadFilledPDF();
-    } else {
-        await fetch(`/${country}/${slug}/pre-generate-pdf/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF()
-            },
-            body: JSON.stringify({ fields_data: fields })
-        });
-
-        pendingPaymentCountry = country;
-        pendingPaymentSlug = slug;
-
-        openPaymentModal();
-    }
-}
-
-
 function saveFields() {
     const country = "{{ country_code }}";
     const slug = "{{ form_info.slug }}";
@@ -641,10 +604,9 @@ function saveFieldsAndOpenAuth() {
 }
 
 function saveFieldsAndDownload() {
-    saveFields();
-    startDownloadProcess();
+    saveFields();      // ensure saved before login check
+    handleDownloadClick();
 }
-
 
 
 
@@ -918,7 +880,33 @@ function saveFieldsAndDownload() {
 </script>
 
 <script>
+const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
 
+if (!IS_AUTH) {
+    console.log("📌 SENDING pending_fields TO SERVER:", fields);
+
+    const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRF(),
+        },
+        body: JSON.stringify({
+            fields_data: fields,
+            form_slug: slug
+        })
+    });
+
+    try {
+        const data = await resp.json();
+        console.log("📌 SERVER JSON store-pending:", data);
+    } catch (e) {
+        console.log("📌 Could not parse JSON:", e);
+    }
+
+    openAuthModal();
+    return;
+}
 
 
 
