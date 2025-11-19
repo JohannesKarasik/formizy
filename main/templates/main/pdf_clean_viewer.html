@@ -353,6 +353,25 @@
 }
 
 
+/* Force the payment modal content to center */
+#payment-modal .auth-box,
+#payment-success-modal .auth-box {
+    margin: 0 !important;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    /* Center inside the flex container */
+    transform: none !important;
+}
+
+
+body.modal-open {
+    overflow: hidden !important;
+}
+
 
    </style>
 {% endblock %}
@@ -956,24 +975,31 @@
        PAYMENT MODALS
     ========================= */
     function openPaymentModal() {
-        const modal = document.getElementById("payment-modal");
-        if (!modal) return;
-        modal.classList.remove("auth-modal-hidden");
-    }
+    const modal = document.getElementById("payment-modal");
+    if (!modal) return;
+    modal.classList.remove("auth-modal-hidden");
+    document.body.classList.add("modal-open");
+}
+
     
-    function closePaymentModal() {
-        const modal = document.getElementById("payment-modal");
-        if (!modal) return;
-        modal.classList.add("auth-modal-hidden");
-    }
-    
-    function openSuccessModal() {
-        document.getElementById("payment-success-modal").classList.remove("auth-modal-hidden");
-    }
-    
-    function closeSuccessModal() {
-        document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
-    }
+function closePaymentModal() {
+    const modal = document.getElementById("payment-modal");
+    if (!modal) return;
+    modal.classList.add("auth-modal-hidden");
+    document.body.classList.remove("modal-open");
+}
+
+
+function openSuccessModal() {
+    document.getElementById("payment-success-modal").classList.remove("auth-modal-hidden");
+    document.body.classList.add("modal-open");
+}
+
+function closeSuccessModal() {
+    document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
+    document.body.classList.remove("modal-open");
+}
+
     
     /* =========================
        STRIPE CHECKOUT
