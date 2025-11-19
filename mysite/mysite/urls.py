@@ -12,20 +12,26 @@ sitemaps = {
 }
 
 urlpatterns = [
-    # Language switcher endpoint
+
+    # Language switch endpoint (required)
     path('i18n/', include('django.conf.urls.i18n')),
 
-    # Admin and webhooks must NOT be translated
+    # Admin & webhook outside translations
     path('admin/', admin.site.urls),
     path("webhook/stripe/", include('main.urls')),
+
+    # MAIN ROUTES WITHOUT LANG PREFIX
+    # <-- This keeps: /  /de  /es /dk  etc. working
+    path('', include('main.urls')),
 ]
 
-# IMPORTANT: use a custom prefix to avoid conflicts with your country codes.
+# TRANSLATED VERSION OF ROUTES UNDER /lang/
+# This does NOT replace your existing routes
 urlpatterns += i18n_patterns(
-    path('lang/', include('main.urls')),  # ← LANG CODE prefix
+    path('lang/', include('main.urls')),
     prefix_default_language=False,
 )
 
-# Static files (development)
+# Static (dev mode)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
