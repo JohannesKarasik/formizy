@@ -322,97 +322,137 @@
     object-fit: contain;
 }
 /* Footer Base */
-.site-footer {
-    padding: 40px 0 10px;
-    color: #303bff;
-    background: transparent;
-    border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
+/* --------------------------------------
+   MODERN AI-SaaS FOOTER DESIGN
+-------------------------------------- */
+
+.fs-footer {
+    padding: 60px 0 25px;
+    background: linear-gradient(
+        180deg,
+        rgba(48,59,255,0.05),
+        rgba(48,59,255,0.02)
+    );
+    border-top: 1px solid rgba(48,59,255,0.15);
+    color: #1b1c44;
 }
 
-.site-footer__inner {
+.fs-footer-inner {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 40px;
     flex-wrap: wrap;
+    gap: 60px;
 }
 
-/* Brand block */
-.site-footer__brand .brand-title {
-    font-size: 1.4rem;
-    font-weight: 700;
+/* Brand */
+.fs-footer-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #303bff;
+    letter-spacing: -0.5px;
 }
 
-.site-footer__brand .brand-tagline {
-    margin-top: 6px;
-    color: #3b4bff;
+.fs-footer-tagline {
     max-width: 240px;
+    margin-top: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4352ff;
 }
 
-/* Navigation */
-.site-footer__list {
+/* Nav */
+.fs-footer-nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
 }
 
-.site-footer__list li {
-    margin-bottom: 6px;
+.fs-footer-nav li {
+    margin-bottom: 8px;
 }
 
-.site-footer__list a {
+.fs-footer-nav a {
     text-decoration: none;
-    color: #303bff;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #2c39e8;
+    transition: 0.2s ease;
 }
 
-.site-footer__list a:hover {
-    text-decoration: underline;
+.fs-footer-nav a:hover {
+    color: #6c75ff;
+    transform: translateX(3px);
 }
 
-/* Language Switcher */
-.footer-lang-switcher {
+/* Language dropdown */
+.fs-lang-box {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.footer-lang-switcher label {
-    font-size: 14px;
-    margin-bottom: 2px;
+.fs-lang-box label {
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #303bff;
 }
 
-.footer-lang-switcher select {
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid #d0d7ff;
-    background: white;
-    cursor: pointer;
-    font-size: 14px;
+.fs-lang-box select {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(48,59,255,0.25);
+    font-size: 0.95rem;
     color: #303bff;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(48,59,255,0.08);
+    transition: 0.2s ease;
+}
+
+.fs-lang-box select:hover {
+    border-color: #303bff;
+    box-shadow: 0 4px 30px rgba(48,59,255,0.15);
 }
 
 /* Bottom legal */
-.site-footer__bottom {
-    margin-top: 30px;
-    padding-top: 12px;
-    border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
+.fs-footer-bottom {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(48,59,255,0.15);
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    gap: 20px;
 }
 
-.legal-links {
+.fs-footer-legal {
     list-style: none;
-    padding: 0;
     display: flex;
-    gap: 14px;
+    gap: 20px;
 }
 
-.legal-links a {
+.fs-footer-legal a {
+    font-size: 0.85rem;
     color: #303bff;
-    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.fs-footer-legal a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media(max-width: 780px) {
+    .fs-footer-inner {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .fs-footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
 }
 
 
@@ -501,16 +541,18 @@
   </main>
 
   {% load i18n %}
-  <footer class="site-footer">
-    <div class="site-footer__inner wrap">
+  <footer class="fs-footer">
+    <div class="fs-footer-inner wrap">
 
-        <div class="site-footer__brand">
-            <span class="brand-title">FormSkies</span>
-            <p class="brand-tagline">{{ lang.footer_tagline }}</p>
+        <!-- Brand -->
+        <div class="fs-footer-brand">
+            <div class="fs-footer-logo">FormSkies</div>
+            <p class="fs-footer-tagline">{{ lang.footer_tagline }}</p>
         </div>
 
-        <nav class="site-footer__nav">
-            <ul class="site-footer__list">
+        <!-- Navigation -->
+        <nav class="fs-footer-nav">
+            <ul>
                 <li><a href="{% url 'home' %}">{{ lang.nav_home }}</a></li>
                 <li><a href="/about/">{{ lang.nav_about }}</a></li>
                 <li><a href="/contact/">{{ lang.nav_contact }}</a></li>
@@ -518,28 +560,31 @@
             </ul>
         </nav>
 
-        <!-- Custom language switcher -->
-        <div class="footer-lang-switcher">
-            <a href="{% url 'switch_lang' 'en' %}">🇬🇧 English</a>
-            <a href="{% url 'switch_lang' 'de' %}">🇩🇪 Deutsch</a>
-            <a href="{% url 'switch_lang' 'es' %}">🇪🇸 Español</a>
-            <a href="{% url 'switch_lang' 'it' %}">🇮🇹 Italiano</a>
+        <!-- Language Dropdown -->
+        <div class="fs-lang-box">
+            <label for="lang-select">🌐 Language</label>
+            <select id="lang-select" onchange="location.href=this.value;">
+                <option value="{% url 'switch_lang' 'en' %}" {% if lang_code == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                <option value="{% url 'switch_lang' 'de' %}" {% if lang_code == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                <option value="{% url 'switch_lang' 'es' %}" {% if lang_code == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                <option value="{% url 'switch_lang' 'it' %}" {% if lang_code == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
+            </select>
         </div>
 
     </div>
 
-    <div class="site-footer__bottom wrap">
-        <small class="legal">
-            © {{ now|date:"Y" }} FormSkies — {{ lang.legal_rights }}
-        </small>
+    <!-- Bottom -->
+    <div class="fs-footer-bottom wrap">
+        <small>© {{ now|date:"Y" }} FormSkies — {{ lang.legal_rights }}</small>
 
-        <ul class="legal-links">
+        <ul class="fs-footer-legal">
             <li><a href="/privacy/">{{ lang.legal_privacy }}</a></li>
             <li><a href="/terms/">{{ lang.legal_terms }}</a></li>
             <li><a href="/cookies/">{{ lang.legal_cookies }}</a></li>
         </ul>
     </div>
 </footer>
+
 
   
   
