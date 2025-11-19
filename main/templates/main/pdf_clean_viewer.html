@@ -3,7 +3,7 @@
 
 
 {% block title %}
-   {{ form_info.seo_title|default:form_info.title }} — FillThatForm
+   {{ form_info.seo_title|default:form_info.title }} — Formskies
 {% endblock %}
 
 
@@ -13,7 +13,7 @@
    <meta property="og:title" content="{{ form_info.seo_title|default:form_info.title }}">
    <meta property="og:description" content="{{ form_info.seo_description }}">
    <meta property="og:type" content="article">
-   <meta property="og:url" content="https://fillthatform.com/{{ country_code }}/{{ form_info.slug }}/">
+   <meta property="og:url" content="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -494,7 +494,7 @@
 {% if related_forms %}
   <div style="margin-top:50px; padding:20px; background:#fff; border-radius:12px; border:1px solid #e6eaf2; max-width:900px; margin:40px auto 0;">
     <h2 style="font-size:22px; color:#0b1220; margin-bottom:12px;">
-      Andere Formulare in {{ country_code|upper }}:
+        {{ lang.other_forms }}:
     </h2>
     <ul style="list-style:none; padding:0; margin:0;">
       {% for form in related_forms %}
@@ -879,48 +879,35 @@ function saveFieldsAndDownload() {
 </script>
 
 <script>
-async function handleDownloadClick() {
-    const country = "{{ country_code }}";
-    const slug = "{{ form_info.slug }}";
+const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
 
-    // ALWAYS collect fields
-    const fields = collectFields();
+if (!IS_AUTH) {
+    console.log("📌 SENDING pending_fields TO SERVER:", fields);
 
-    // 🔑 Use per-form key so we can restore after redirect
-    const storageKey = `pending_fields_${country}_${slug}`;
-    sessionStorage.setItem(storageKey, JSON.stringify(fields));
-    // fallback legacy key
-    sessionStorage.setItem("pending_fields", JSON.stringify(fields));
+    const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRF(),
+        },
+        body: JSON.stringify({
+            fields_data: fields,
+            form_slug: slug
+        })
+    });
 
-    // USER NOT LOGGED IN → Save to Django session + open modal
-    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
-
-        console.log("📌 SENDING pending_fields TO SERVER:", fields);
-
-        const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF(),
-            },
-            body: JSON.stringify({
-                fields_data: fields,
-                form_slug: slug
-            })
-        });
-
-        console.log("📌 SERVER RESPONSE store-pending:", resp.status);
-
-        try {
-            const data = await resp.json();
-            console.log("📌 SERVER JSON store-pending:", data);
-        } catch (e) {
-            console.log("📌 Could not parse JSON:", e);
-        }
-
-        openAuthModal();
-        return;
+    try {
+        const data = await resp.json();
+        console.log("📌 SERVER JSON store-pending:", data);
+    } catch (e) {
+        console.log("📌 Could not parse JSON:", e);
     }
+
+    openAuthModal();
+    return;
+}
+
+
 
     // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
@@ -967,7 +954,7 @@ async function handleDownloadClick() {
     openPaymentModal();
 }
 
-}
+
 </script>
 
 <script>
@@ -1010,8 +997,8 @@ async function handleDownloadClick() {
 </script>
     
 <script>
-    function downloadWithSpinner() {
-        const btn = document.getElementById("success-download-btn");
+async function downloadWithSpinner() {
+    const btn = document.getElementById("success-download-btn");
     
         // Save original label
         const originalHTML = btn.innerHTML;
