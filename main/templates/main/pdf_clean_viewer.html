@@ -325,6 +325,35 @@
 }
 
 
+/* Make payment modals full-screen overlays */
+#payment-modal,
+#payment-success-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2000 !important; /* above everything */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dark background should cover entire page */
+#payment-modal .auth-backdrop,
+#payment-success-modal .auth-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.55) !important;
+    z-index: 1990 !important;
+}
+
+/* Modal box must float over full-screen backdrop */
+#payment-modal .auth-box,
+#payment-success-modal .auth-box {
+    position: relative;
+    z-index: 2001 !important;
+}
+
+
+
    </style>
 {% endblock %}
 
