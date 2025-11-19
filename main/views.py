@@ -728,10 +728,14 @@ def download_pdf(request, country_code, form_slug):
     return fill_pdf(request, country_code, form_slug)
 
 
-@login_required
 def has_paid(request, country_code, form_slug):
     from .models import PaidForm
 
+    # If not logged in → no payment
+    if not request.user.is_authenticated:
+        return JsonResponse({"has_paid": False})
+
+    # Logged-in → check if payment exists
     paid = PaidForm.objects.filter(
         user=request.user,
         form_slug=form_slug
