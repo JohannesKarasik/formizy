@@ -908,6 +908,7 @@ if (!IS_AUTH) {
 }
 
 
+
     // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
         method: "POST",
@@ -996,8 +997,8 @@ if (!IS_AUTH) {
 </script>
     
 <script>
-    function downloadWithSpinner() {
-        const btn = document.getElementById("success-download-btn");
+async function downloadWithSpinner() {
+    const btn = document.getElementById("success-download-btn");
     
         // Save original label
         const originalHTML = btn.innerHTML;
