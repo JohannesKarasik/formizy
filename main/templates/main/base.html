@@ -541,18 +541,16 @@
   </main>
 
   {% load i18n %}
-  <footer class="fs-footer">
-    <div class="fs-footer-inner wrap">
+  <footer class="site-footer">
+    <div class="site-footer__inner wrap">
 
-        <!-- Brand -->
-        <div class="fs-footer-brand">
-            <div class="fs-footer-logo">FormSkies</div>
-            <p class="fs-footer-tagline">{{ lang.footer_tagline }}</p>
+        <div class="site-footer__brand">
+            <span class="brand-title">FormSkies</span>
+            <p class="brand-tagline">{{ lang.footer_tagline }}</p>
         </div>
 
-        <!-- Navigation -->
-        <nav class="fs-footer-nav">
-            <ul>
+        <nav class="site-footer__nav">
+            <ul class="site-footer__list">
                 <li><a href="{% url 'home' %}">{{ lang.nav_home }}</a></li>
                 <li><a href="/about/">{{ lang.nav_about }}</a></li>
                 <li><a href="/contact/">{{ lang.nav_contact }}</a></li>
@@ -560,31 +558,28 @@
             </ul>
         </nav>
 
-        <!-- Language Dropdown -->
-        <div class="fs-lang-box">
-            <label for="lang-select">🌐 Language</label>
-            <select id="lang-select" onchange="location.href=this.value;">
-                <option value="{% url 'switch_lang' 'en' %}" {% if lang_code == 'en' %}selected{% endif %}>🇬🇧 English</option>
-                <option value="{% url 'switch_lang' 'de' %}" {% if lang_code == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
-                <option value="{% url 'switch_lang' 'es' %}" {% if lang_code == 'es' %}selected{% endif %}>🇪🇸 Español</option>
-                <option value="{% url 'switch_lang' 'it' %}" {% if lang_code == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
-            </select>
+        <!-- Custom language switcher -->
+        <div class="footer-lang-switcher">
+            <a href="{% url 'switch_lang' 'en' %}">🇬🇧 English</a>
+            <a href="{% url 'switch_lang' 'de' %}">🇩🇪 Deutsch</a>
+            <a href="{% url 'switch_lang' 'es' %}">🇪🇸 Español</a>
+            <a href="{% url 'switch_lang' 'it' %}">🇮🇹 Italiano</a>
         </div>
 
     </div>
 
-    <!-- Bottom -->
-    <div class="fs-footer-bottom wrap">
-        <small>© {{ now|date:"Y" }} FormSkies — {{ lang.legal_rights }}</small>
+    <div class="site-footer__bottom wrap">
+        <small class="legal">
+            © {{ now|date:"Y" }} FormSkies — {{ lang.legal_rights }}
+        </small>
 
-        <ul class="fs-footer-legal">
+        <ul class="legal-links">
             <li><a href="/privacy/">{{ lang.legal_privacy }}</a></li>
             <li><a href="/terms/">{{ lang.legal_terms }}</a></li>
             <li><a href="/cookies/">{{ lang.legal_cookies }}</a></li>
         </ul>
     </div>
 </footer>
-
 
   
   
