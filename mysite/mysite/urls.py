@@ -6,6 +6,8 @@ from django.conf.urls.static import static
 
 from django.contrib.sitemaps.views import sitemap
 from main.sitemaps import FormSitemap
+from main.views import stripe_webhook
+
 
 sitemaps = {
     'forms': FormSitemap,
@@ -18,7 +20,7 @@ urlpatterns = [
 
     # Admin & webhook outside translations
     path('admin/', admin.site.urls),
-    path("webhook/stripe/", include('main.urls')),
+    path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
 
     # MAIN ROUTES WITHOUT LANG PREFIX
     # <-- This keeps: /  /de  /es /dk  etc. working
