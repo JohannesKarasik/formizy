@@ -27,10 +27,25 @@ import json
 from django.http import JsonResponse
 
 
-def get_ui_language(request):
-    code = request.COOKIES.get("site_lang", "en")
-    return LANGUAGE_TEXT.get(code, LANGUAGE_TEXT["en"])
+def get_ui_language(request, country_code=None):
+    """
+    Priority:
+    1. country_code in URL (auto-select)
+    2. cookie (manual override)
+    3. default: English
+    """
 
+    # 1) Auto-select based on URL country
+    if country_code in LANGUAGE_TEXT:
+        return LANGUAGE_TEXT[country_code], country_code
+
+    # 2) Otherwise try cookie
+    cookie_lang = request.COOKIES.get("site_lang")
+    if cookie_lang in LANGUAGE_TEXT:
+        return LANGUAGE_TEXT[cookie_lang], cookie_lang
+
+    # 3) Fallback
+    return LANGUAGE_TEXT["en"], "en"
 
 def switch_lang(request, lang_code):
     # only allow the languages you have in LANGUAGE_TEXT
@@ -161,31 +176,26 @@ def store_pending_fields(request, country, slug):
 
 
 def home(request):
-    countries = Country.objects.all().order_by("name")
+    lang, lang_code = get_ui_language(request)
 
     return render(request, "main/home.html", {
         "countries": countries,
-        "lang": get_ui_language(request)
+        "lang": lang,
+        "lang_code": lang_code
     })
 
 
 
 
 def country(request, country_code):
-    # Get matching country object
-    country_obj = get_object_or_404(Country, code=country_code)
-
-    # Get all forms assigned to this country
-    forms = Form.objects.filter(country=country_obj)
-
-    # Load language (fallback to EN)
-    lang = get_ui_language(request)
+    lang, lang_code = get_ui_language(request, country_code)
 
     return render(request, "main/country.html", {
         "country_code": country_code,
         "country_name": country_obj.name,
         "forms": forms,
-        "lang": get_ui_language(request)
+        "lang": lang,
+        "lang_code": lang_code
     })
 
 
@@ -215,7 +225,8 @@ def form_detail(request, country_code, form_slug):
     doc.close()
     viewer_scale = 833 / width
 
-    lang = get_ui_language(request)
+    # ✅ NEW: auto-language from URL → or cookie → fallback
+    lang, lang_code = get_ui_language(request, country_code)
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": form_info,
@@ -223,9 +234,14 @@ def form_detail(request, country_code, form_slug):
         "country_code": country_code,
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-        "lang": get_ui_language(request),
+
+        # NEW — correct language
+        "lang": lang,
+        "lang_code": lang_code,
+
         "related_forms": related_forms,
     })
+
 
 
 

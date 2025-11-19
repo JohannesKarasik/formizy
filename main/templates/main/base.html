@@ -564,11 +564,12 @@
         <div class="fs-lang-box">
             <label for="lang-select">🌐 Language</label>
             <select id="lang-select" onchange="location.href=this.value;">
-                <option value="{% url 'switch_lang' 'en' %}" {% if lang_code == 'en' %}selected{% endif %}>🇬🇧 English</option>
-                <option value="{% url 'switch_lang' 'de' %}" {% if lang_code == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
-                <option value="{% url 'switch_lang' 'es' %}" {% if lang_code == 'es' %}selected{% endif %}>🇪🇸 Español</option>
-                <option value="{% url 'switch_lang' 'it' %}" {% if lang_code == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
-            </select>
+              <option value="{% url 'switch_lang' 'en' %}" {% if lang_code == 'en' %}selected{% endif %}>🇬🇧 English</option>
+              <option value="{% url 'switch_lang' 'de' %}" {% if lang_code == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+              <option value="{% url 'switch_lang' 'es' %}" {% if lang_code == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+              <option value="{% url 'switch_lang' 'it' %}" {% if lang_code == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
+          </select>
+          
         </div>
 
     </div>
