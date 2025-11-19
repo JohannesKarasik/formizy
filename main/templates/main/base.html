@@ -6,12 +6,21 @@
 <html lang="en">
   <head>
     <!-- FAVICONS -->
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico?v=3' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png?v=3' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png?v=3' %}">
-    <link rel="apple-touch-icon" href="{% static 'favicon/apple-touch-icon.png?v=3' %}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'favicon/android-chrome-192x192.png?v=3' %}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'favicon/android-chrome-512x512.png?v=3' %}">
+<!-- Modern SVG favicon -->
+<link rel="icon" href="{% static 'favicon/favicon.svg' %}" type="image/svg+xml">
+
+<!-- Fallback ICO -->
+<link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
+
+<!-- PNG icons -->
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="192x192" href="{% static 'favicon/android-chrome-192x192.png' %}">
+<link rel="icon" type="image/png" sizes="512x512" href="{% static 'favicon/android-chrome-512x512.png' %}">
+
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" href="{% static 'favicon/apple-touch-icon.png' %}">
+
     
 
     <!-- Google tag (gtag.js) -->
