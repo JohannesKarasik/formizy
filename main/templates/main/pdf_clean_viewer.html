@@ -554,196 +554,20 @@
         <button class="auth-close" onclick="closeSuccessModal()">×</button>
 
         <h2 style="text-align:center;margin-bottom:12px;">
-            Zahlung erfolgreich 🎉
+            {{ lang.pay_modal_success_title }}
         </h2>
-
+        
         <p style="text-align:center;color:#555;margin-bottom:20px;">
-            Vielen Dank! Ihre Zahlung war erfolgreich.  
-            Sie können das ausgefüllte PDF jetzt herunterladen.
+            {{ lang.pay_modal_success_desc }}
         </p>
-
+        
         <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
-            PDF herunterladen
+            {{ lang.pay_modal_success_btn }}
         </button>
+        
         
     </div>
 </div>
-
-<script>
-    let pendingPaymentCountry = null;
-    let pendingPaymentSlug = null;
-</script>
-
-
-<script>
-    function getCSRF() {
-        const token = document.querySelector("input[name='csrfmiddlewaretoken']");
-        if (!token) {
-            console.error("❌ CSRF token not found in DOM");
-            return "";
-        }
-        return token.value;
-    }
-</script>
-
-<script>
-
-function saveFields() {
-    const country = "{{ country_code }}";
-    const slug = "{{ form_info.slug }}";
-    const fields = collectFields();
-
-    const storageKey = `pending_fields_${country}_${slug}`;
-    sessionStorage.setItem(storageKey, JSON.stringify(fields));
-    sessionStorage.setItem("pending_fields", JSON.stringify(fields));
-}
-
-function saveFieldsAndOpenAuth() {
-    saveFields();
-    openAuthModal();
-}
-
-function saveFieldsAndDownload() {
-    saveFields();      // ensure saved before login check
-    handleDownloadClick();
-}
-
-
-
-    const pdfUrl = "{{ pdf_url }}";
-    const FIXED_WIDTH = 833;
-    const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
-
-    const pagesContainer = document.getElementById("pdf-pages");
-
-    pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
-        const pageCanvases = [];
-
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-            const page = await pdf.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 1 });
-
-            const scale = FIXED_WIDTH / viewport.width;
-            const scaledViewport = page.getViewport({ scale });
-
-            const canvas = document.createElement("canvas");
-            canvas.width = FIXED_WIDTH;
-            canvas.height = scaledViewport.height;
-            canvas.style.width = FIXED_WIDTH + "px";
-            canvas.style.height = scaledViewport.height + "px";
-            canvas.style.marginBottom = "20px";
-            canvas.dataset.page = pageNum;
-
-            pagesContainer.appendChild(canvas);
-
-            await page.render({
-                canvasContext: canvas.getContext("2d"),
-                viewport: scaledViewport
-            }).promise;
-
-            pageCanvases.push(canvas);
-        }
-
-        positionOverlays(pageCanvases);
-
-        // 🔁 After overlays exist, restore any saved field values
-        setTimeout(() => {
-    console.log("Trying delayed restore...");
-    restoreFieldsFromStorage();
-}, 300);    });
-
-
-    function positionOverlays(pageCanvases) {
-        const pageOffsets = {};
-        pageCanvases.forEach(canvas => {
-            const pageNum = canvas.dataset.page;
-            pageOffsets[pageNum] = canvas.offsetTop;
-        });
-
-        const scale = VIEWER_SCALE;
-
-        document.querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
-          .forEach(el => {
-              const page = el.dataset.page || "1";
-              const px = parseFloat(el.dataset.px || "0");
-              const py = parseFloat(el.dataset.py || "0");
-              const pw = parseFloat(el.dataset.pw || "0");
-              const ph = parseFloat(el.dataset.ph || "0");
-
-              const pageTop = pageOffsets[page] || 0;
-
-              el.style.left   = (px * scale) + "px";
-              el.style.top    = (pageTop + py * scale) + "px";
-              el.style.width  = (pw * scale) + "px";
-              el.style.height = (ph * scale) + "px";
-          });
-    }
-</script>
-
-
-<script>
-    async function downloadFilledPDF() {
-        const textFields = {};
-        document.querySelectorAll('#pdf-pages input[type="text"]').forEach((input) => {
-            const name = input.dataset.name;
-            textFields[name] = input.value || "";
-        });
-
-        const checkboxFields = {};
-        document.querySelectorAll('#pdf-pages .checkbox').forEach((box) => {
-            const name = box.dataset.name;
-            checkboxFields[name] = box.classList.contains("checked") ? "1" : "0";
-        });
-
-        const allFields = { ...textFields, ...checkboxFields };
-
-        console.log("VIEWER SENDING FIELDS_DATA:", allFields);
-
-        const res = await fetch(
-            "{% url 'fill_pdf' country_code=country_code form_slug=form_info.slug %}",
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ fields_data: allFields })
-            }
-        );
-
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error("Backend error:", errorText);
-            alert("PDF error:\n" + errorText);
-            return;
-        }
-
-        const blob = await res.blob();
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "{{ form_info.slug }}_filled.pdf";
-        link.click();
-    }
-
-    // 🔍 Zoom logic (scales the whole viewer container)
-    let currentZoom = 1.0;
-    function applyZoom(){
-        const container = document.getElementById("pdf-container");
-        if (!container) return;
-        container.style.transform = `scale(${currentZoom})`;
-        const label = document.getElementById("zoom-label");
-        if (label) label.textContent = Math.round(currentZoom * 100) + "%";
-    }
-    function zoomIn(){
-        currentZoom = Math.min(currentZoom + 0.1, 2.0);
-        applyZoom();
-    }
-    function zoomOut(){
-        currentZoom = Math.max(currentZoom - 0.1, 0.5);
-        applyZoom();
-    }
-    document.addEventListener("DOMContentLoaded", applyZoom);
-</script>
 
 
 
@@ -766,7 +590,104 @@ function saveFieldsAndDownload() {
     </div>
 </div>
 
+
+
+
+
+
 <script>
+    /* =========================
+       GLOBAL STATE
+    ========================= */
+    let pendingPaymentCountry = null;
+    let pendingPaymentSlug = null;
+    
+    /* =========================
+       CSRF HELPER
+    ========================= */
+    function getCSRF() {
+        const token = document.querySelector("input[name='csrfmiddlewaretoken']");
+        if (!token) {
+            console.error("❌ CSRF token not found in DOM");
+            return "";
+        }
+        return token.value;
+    }
+    
+    /* =========================
+       PDF.JS RENDERING
+    ========================= */
+    const pdfUrl = "{{ pdf_url }}";
+    const FIXED_WIDTH = 833;
+    const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
+    const pagesContainer = document.getElementById("pdf-pages");
+    
+    pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
+        const pageCanvases = [];
+    
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1 });
+    
+            const scale = FIXED_WIDTH / viewport.width;
+            const scaledViewport = page.getViewport({ scale });
+    
+            const canvas = document.createElement("canvas");
+            canvas.width = FIXED_WIDTH;
+            canvas.height = scaledViewport.height;
+            canvas.style.width = FIXED_WIDTH + "px";
+            canvas.style.height = scaledViewport.height + "px";
+            canvas.style.marginBottom = "20px";
+            canvas.dataset.page = pageNum;
+    
+            pagesContainer.appendChild(canvas);
+    
+            await page.render({
+                canvasContext: canvas.getContext("2d"),
+                viewport: scaledViewport
+            }).promise;
+    
+            pageCanvases.push(canvas);
+        }
+    
+        positionOverlays(pageCanvases);
+    
+        // After overlays exist, restore any saved field values
+        setTimeout(() => {
+            console.log("Trying delayed restore...");
+            restoreFieldsFromStorage();
+        }, 300);
+    });
+    
+    function positionOverlays(pageCanvases) {
+        const pageOffsets = {};
+        pageCanvases.forEach(canvas => {
+            const pageNum = canvas.dataset.page;
+            pageOffsets[pageNum] = canvas.offsetTop;
+        });
+    
+        const scale = VIEWER_SCALE;
+    
+        document.querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
+          .forEach(el => {
+              const page = el.dataset.page || "1";
+              const px = parseFloat(el.dataset.px || "0");
+              const py = parseFloat(el.dataset.py || "0");
+              const pw = parseFloat(el.dataset.pw || "0");
+              const ph = parseFloat(el.dataset.ph || "0");
+    
+              const pageTop = pageOffsets[page] || 0;
+    
+              el.style.left   = (px * scale) + "px";
+              el.style.top    = (pageTop + py * scale) + "px";
+              el.style.width  = (pw * scale) + "px";
+              el.style.height = (ph * scale) + "px";
+          });
+    }
+    
+    /* =========================
+       FIELD COLLECTION & STORAGE
+    ========================= */
     function collectFields() {
         const fields = {};
     
@@ -780,68 +701,219 @@ function saveFieldsAndDownload() {
     
         return fields;
     }
-</script>
-
-<script>
+    
+    function saveFields() {
+        const country = "{{ country_code }}";
+        const slug = "{{ form_info.slug }}";
+        const fields = collectFields();
+    
+        const storageKey = `pending_fields_${country}_${slug}`;
+        sessionStorage.setItem(storageKey, JSON.stringify(fields));
+        sessionStorage.setItem("pending_fields", JSON.stringify(fields)); // legacy key
+    }
+    
+    function saveFieldsAndOpenAuth() {
+        // 🔵 NOT LOGGED IN FLOW
+        saveFields();
+        // `openAuthModal` comes from your base template
+        if (typeof openAuthModal === "function") {
+            openAuthModal();
+        } else {
+            console.warn("openAuthModal() is not defined.");
+        }
+    }
+    
+    function saveFieldsAndDownload() {
+        // 🟡 / 🟢 LOGGED IN FLOW
+        saveFields();
+        startDownloadProcess();
+    }
+    
+    /* =========================
+       DOWNLOAD FLOW (OPTION A)
+    ========================= */
+    async function startDownloadProcess() {
+        const country = "{{ country_code }}";
+        const slug = "{{ form_info.slug }}";
+        const fields = collectFields();
+    
+        // Optional: save fields to server session (doesn't affect fill_pdf)
+        try {
+            await fetch(`/${country}/${slug}/save-fields/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRF(),
+                },
+                body: JSON.stringify({ fields_data: fields })
+            });
+        } catch (e) {
+            console.warn("save-fields failed:", e);
+        }
+    
+        // Check if user has already paid
+        const res = await fetch(`/${country}/${slug}/has-paid/`, {
+            method: "GET",
+            headers: {
+                "X-CSRFToken": getCSRF(),
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            credentials: "include"
+        });
+    
+        if (!res.ok) {
+            console.error("❌ has-paid request failed:", res.status);
+            return;
+        }
+    
+        const data = await res.json();
+    
+        if (data.has_paid) {
+            // 🟢 Already paid → directly generate & download PDF
+            downloadFilledPDF();
+        } else {
+            // 🟡 Not paid → open payment modal, Stripe handles payment
+            pendingPaymentCountry = country;
+            pendingPaymentSlug = slug;
+            openPaymentModal();
+        }
+    }
+    
+    /* =========================
+       FILL & DOWNLOAD PDF
+    ========================= */
+    async function downloadFilledPDF() {
+        const textFields = {};
+        document.querySelectorAll('#pdf-pages input[type="text"]').forEach((input) => {
+            const name = input.dataset.name;
+            textFields[name] = input.value || "";
+        });
+    
+        const checkboxFields = {};
+        document.querySelectorAll('#pdf-pages .checkbox').forEach((box) => {
+            const name = box.dataset.name;
+            checkboxFields[name] = box.classList.contains("checked") ? "1" : "0";
+        });
+    
+        const allFields = { ...textFields, ...checkboxFields };
+    
+        console.log("VIEWER SENDING FIELDS_DATA:", allFields);
+    
+        const res = await fetch(
+            "{% url 'fill_pdf' country_code=country_code form_slug=form_info.slug %}",
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ fields_data: allFields })
+            }
+        );
+    
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error("Backend error:", errorText);
+            alert("PDF error:\n" + errorText);
+            return;
+        }
+    
+        const blob = await res.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "{{ form_info.slug }}_filled.pdf";
+        link.click();
+    }
+    
+    /* =========================
+       ZOOM
+    ========================= */
+    let currentZoom = 1.0;
+    
+    function applyZoom(){
+        const container = document.getElementById("pdf-container");
+        if (!container) return;
+        container.style.transform = `scale(${currentZoom})`;
+        const label = document.getElementById("zoom-label");
+        if (label) label.textContent = Math.round(currentZoom * 100) + "%";
+    }
+    
+    function zoomIn(){
+        currentZoom = Math.min(currentZoom + 0.1, 2.0);
+        applyZoom();
+    }
+    function zoomOut(){
+        currentZoom = Math.max(currentZoom - 0.1, 0.5);
+        applyZoom();
+    }
+    document.addEventListener("DOMContentLoaded", applyZoom);
+    
+    /* =========================
+       SIGNATURE MODAL
+    ========================= */
     (function(){
       let currentSignatureInput = null;
-  
+    
       const modal      = document.getElementById('signature-modal');
       const nameInput  = document.getElementById('sig-name-input');
       const preview    = document.getElementById('sig-preview');
       const cancelBtn  = document.getElementById('sig-cancel-btn');
       const applyBtn   = document.getElementById('sig-apply-btn');
-  
+    
       if(!modal || !nameInput || !preview) return;
-  
+    
       function openSignatureModal(targetInput){
         currentSignatureInput = targetInput;
         const existing = targetInput.value || '';
-  
+    
         nameInput.value = existing;
         preview.textContent = existing;
         modal.classList.add('show');
         modal.setAttribute('aria-hidden', 'false');
         nameInput.focus();
       }
-  
+    
       function closeSignatureModal(){
         modal.classList.remove('show');
         modal.setAttribute('aria-hidden', 'true');
         currentSignatureInput = null;
       }
-  
+    
       // Update preview as user types
       nameInput.addEventListener('input', () => {
         preview.textContent = nameInput.value;
       });
-  
+    
       // Apply signature
-      applyBtn.addEventListener('click', () => {
-        if (!currentSignatureInput) return;
-        currentSignatureInput.value = nameInput.value;
-        closeSignatureModal();
-      });
-  
+      if (applyBtn) {
+          applyBtn.addEventListener('click', () => {
+            if (!currentSignatureInput) return;
+            currentSignatureInput.value = nameInput.value;
+            closeSignatureModal();
+          });
+      }
+    
       // Cancel
-      cancelBtn.addEventListener('click', () => {
-        closeSignatureModal();
-      });
-  
+      if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            closeSignatureModal();
+          });
+      }
+    
       // Close when clicking backdrop
       modal.addEventListener('click', (e) => {
         if (e.target === modal || e.target.classList.contains('sig-modal-backdrop')) {
           closeSignatureModal();
         }
       });
-  
+    
       // ESC closes modal
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('show')) {
           closeSignatureModal();
         }
       });
-  
+    
       // Attach click handler to all signature inputs
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.signature-input').forEach(input => {
@@ -850,9 +922,22 @@ function saveFieldsAndDownload() {
         });
       });
     })();
-</script>
-
-<script>
+    
+    /* =========================
+       PAYMENT MODALS
+    ========================= */
+    function openPaymentModal() {
+        const modal = document.getElementById("payment-modal");
+        if (!modal) return;
+        modal.classList.remove("auth-modal-hidden");
+    }
+    
+    function closePaymentModal() {
+        const modal = document.getElementById("payment-modal");
+        if (!modal) return;
+        modal.classList.add("auth-modal-hidden");
+    }
+    
     function openSuccessModal() {
         document.getElementById("payment-success-modal").classList.remove("auth-modal-hidden");
     }
@@ -860,9 +945,40 @@ function saveFieldsAndDownload() {
     function closeSuccessModal() {
         document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
     }
-</script>
-
-<script>
+    
+    /* =========================
+       STRIPE CHECKOUT
+    ========================= */
+    async function proceedPayment() {
+        closePaymentModal();
+    
+        const country = pendingPaymentCountry;
+        const slug = pendingPaymentSlug;
+    
+        if (!country || !slug) {
+            console.error("❌ Missing country/slug for payment");
+            return;
+        }
+    
+        const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            }
+        });
+    
+        if (!res.ok) {
+            console.error("❌ create-checkout-session failed:", res.status);
+            return;
+        }
+    
+        const data = await res.json();
+    
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        await stripe.redirectToCheckout({ sessionId: data.id });
+    }
+    
+    /* Optional helper if you use it somewhere else */
     async function startStripeCheckout(country, slug) {
         const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
             method: "POST",
@@ -872,227 +988,27 @@ function saveFieldsAndDownload() {
         });
     
         const data = await res.json();
-    
-        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}"); // Inject from Django
-    
-        await stripe.redirectToCheckout({ sessionId: data.id });
-    }
-</script>
-
-<script>
-const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
-
-if (!IS_AUTH) {
-    console.log("📌 SENDING pending_fields TO SERVER:", fields);
-
-    const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF(),
-        },
-        body: JSON.stringify({
-            fields_data: fields,
-            form_slug: slug
-        })
-    });
-
-    try {
-        const data = await resp.json();
-        console.log("📌 SERVER JSON store-pending:", data);
-    } catch (e) {
-        console.log("📌 Could not parse JSON:", e);
-    }
-
-    openAuthModal();
-    return;
-}
-
-
-
-    // LOGGED IN → Save to database
-    await fetch(`/${country}/${slug}/save-fields/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF(),
-        },
-        body: JSON.stringify({ fields_data: fields })
-    });
-
-        const res = await fetch(`/${country}/${slug}/has-paid/`, {
-        method: "GET",
-        headers: {
-            "X-CSRFToken": getCSRF(),
-            "X-Requested-With": "XMLHttpRequest"
-        },
-        credentials: "include"     // THIS is the key
-    });
-
-    if (!res.ok) {
-        console.error("❌ has-paid request failed:", res.status);
-        return;
-    }
-
-    const data = await res.json();
-
-
-    if (data.has_paid) {
-    downloadFilledPDF();
-} else {
-    // NEW: generate the PDF now
-    await fetch(`/${country}/${slug}/pre-generate-pdf/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF()
-        },
-        body: JSON.stringify({ fields_data: fields })
-    });
-
-    pendingPaymentCountry = country;
-    pendingPaymentSlug = slug;
-    openPaymentModal();
-}
-
-
-</script>
-
-<script>
-    async function proceedPayment() {
-        closePaymentModal();
-    
-        const country = pendingPaymentCountry;
-        const slug = pendingPaymentSlug;
-    
-        const res = await fetch(`/${country}/${slug}/create-checkout-session/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            }
-        });
-    
-        const data = await res.json();
-    
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-    
         await stripe.redirectToCheckout({ sessionId: data.id });
     }
-</script>
-
-<script>
+    
+    /* =========================
+       HANDLE ?paid=1 ON RETURN
+    ========================= */
     document.addEventListener("DOMContentLoaded", () => {
         const urlParams = new URLSearchParams(window.location.search);
     
         if (urlParams.get("paid") === "1") {
-    
             console.log("Payment complete → showing success modal");
-    
-            // Remove ?paid=1 so modal does not appear again
+            // Remove ?paid=1 so modal does not appear again on refresh
             window.history.replaceState({}, "", window.location.pathname);
-    
-            // Show success modal
             openSuccessModal();
         }
-    });
-</script>
     
-<script>
-async function downloadWithSpinner() {
-    const btn = document.getElementById("success-download-btn");
-    
-        // Save original label
-        const originalHTML = btn.innerHTML;
-    
-        // Show spinner + message
-        btn.innerHTML = `
-            <span class="download-spinner"></span> &nbsp; Wird vorbereitet...
-        `;
-        btn.disabled = true;
-    
-        // Trigger real PDF download
-        downloadFilledPDF();
-    
-        // Keep spinner for 30 seconds
-        setTimeout(() => {
-            btn.innerHTML = originalHTML;
-            btn.disabled = false;
-        }, 30000); // 30,000 ms = 30 seconds
-    }
-</script>
-
-<!-- 🔁 Restore fields function (used after PDF/overlays are ready) -->
-<script>
-function restoreFieldsFromStorage() {
-    const country = "{{ country_code }}";
-    const slug = "{{ form_info.slug }}";
-    const storageKey = `pending_fields_${country}_${slug}`;
-
-    let raw = sessionStorage.getItem(storageKey);
-
-    if (!raw) {
-        // fallback to legacy key if used earlier
-        raw = sessionStorage.getItem("pending_fields");
-    }
-
-    if (!raw) {
-        console.log("ℹ️ No pending fields in sessionStorage");
-        return;
-    }
-
-    let fields = {};
-    try {
-        fields = JSON.parse(raw);
-    } catch (e) {
-        console.log("⚠️ Could not parse pending fields from sessionStorage:", e);
-        return;
-    }
-
-    console.log("🔁 Restoring fields from sessionStorage:", fields);
-
-    // Text inputs (including signature)
-    document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
-        const name = input.dataset.name;
-        if (!name) return;
-        if (Object.prototype.hasOwnProperty.call(fields, name)) {
-            input.value = fields[name] || "";
-        }
-    });
-
-    // Checkboxes
-    document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
-        const name = box.dataset.name;
-        if (!name) return;
-
-        const val = fields[name];
-        const checked = (val === "1" || val === 1 || val === true);
-
-        if (checked) {
-            box.dataset.checked = "1";
-            box.classList.add("checked");
-            box.textContent = "✓";
-        } else {
-            box.classList.remove("checked");
-        }
-    });
-}
-
-
-
-
-
-
-</script>
-
-        
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+        // Checkbox click handling
         document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
-    
-            // Toggle checkbox on click
             box.addEventListener("click", (e) => {
                 e.stopPropagation();
-    
                 const isChecked = box.dataset.checked === "1";
     
                 if (isChecked) {
@@ -1107,23 +1023,94 @@ function restoreFieldsFromStorage() {
             });
         });
     });
+    
+    /* =========================
+       RESTORE FIELDS FROM SESSIONSTORAGE
+    ========================= */
+    function restoreFieldsFromStorage() {
+        const country = "{{ country_code }}";
+        const slug = "{{ form_info.slug }}";
+        const storageKey = `pending_fields_${country}_${slug}`;
+    
+        let raw = sessionStorage.getItem(storageKey);
+    
+        if (!raw) {
+            // fallback to legacy key if used earlier
+            raw = sessionStorage.getItem("pending_fields");
+        }
+    
+        if (!raw) {
+            console.log("ℹ️ No pending fields in sessionStorage");
+            return;
+        }
+    
+        let fields = {};
+        try {
+            fields = JSON.parse(raw);
+        } catch (e) {
+            console.log("⚠️ Could not parse pending fields from sessionStorage:", e);
+            return;
+        }
+    
+        console.log("🔁 Restoring fields from sessionStorage:", fields);
+    
+        // Text inputs (including signature)
+        document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+            const name = input.dataset.name;
+            if (!name) return;
+            if (Object.prototype.hasOwnProperty.call(fields, name)) {
+                input.value = fields[name] || "";
+            }
+        });
+    
+        // Checkboxes
+        document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+            const name = box.dataset.name;
+            if (!name) return;
+    
+            const val = fields[name];
+            const checked = (val === "1" || val === 1 || val === true);
+    
+            if (checked) {
+                box.dataset.checked = "1";
+                box.classList.add("checked");
+                box.textContent = "✓";
+            } else {
+                box.dataset.checked = "0";
+                box.classList.remove("checked");
+                box.textContent = "";
+            }
+        });
+    }
+    
+    /* =========================
+       SUCCESS MODAL DOWNLOAD + SPINNER
+    ========================= */
+    async function downloadWithSpinner() {
+        const btn = document.getElementById("success-download-btn");
+        if (!btn) {
+            downloadFilledPDF();
+            return;
+        }
+    
+        const originalHTML = btn.innerHTML;
+    
+        btn.innerHTML = `
+            <span class="download-spinner"></span> &nbsp; Wird vorbereitet...
+        `;
+        btn.disabled = true;
+    
+        // Trigger real PDF download
+        await downloadFilledPDF();
+    
+        // Keep spinner for 30s just in case (or reset sooner)
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }, 30000);
+    }
     </script>
     
-    <script>
-        function openPaymentModal() {
-            const modal = document.getElementById("payment-modal");
-            if (!modal) return;
-            modal.classList.remove("auth-modal-hidden");
-        }
-        
-        function closePaymentModal() {
-            const modal = document.getElementById("payment-modal");
-            if (!modal) return;
-            modal.classList.add("auth-modal-hidden");
-        }
-        </script>
-        
-  
    </main>
 
 {% endblock %}
