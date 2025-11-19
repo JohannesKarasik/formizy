@@ -407,7 +407,29 @@
 .footer-lang-switcher select:hover {
     border-color: #303bff;
 }
-
+.footer-lang-switcher {
+    margin-top: 18px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.footer-lang-switcher a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+}
+.footer-lang-switcher a:hover {
+    color: #000;
+}
+.flag {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    object-fit: cover;
+}
 
 
     </style>
@@ -495,56 +517,14 @@
 
   {% load i18n %}
 
-  <footer class="site-footer" role="contentinfo">
-      <div class="site-footer__inner wrap">
-  
-          <!-- Brand + short pitch -->
-          <div class="site-footer__brand">
-              <span class="brand-title">FormSkies</span>
-              <p class="brand-tagline">
-                  {% trans "Build, share, and automate forms in minutes." %}
-              </p>
-          </div>
-  
-          <!-- Simple nav -->
-          <nav class="site-footer__nav" aria-label="Footer">
-              <ul class="site-footer__list">
-                  <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
-                  <li><a href="/about/">{% trans "About us" %}</a></li>
-                  <li><a href="/contact/">{% trans "Contact" %}</a></li>
-                  <li><a href="/blog/">{% trans "Blog" %}</a></li>
-              </ul>
-          </nav>
-  
-      </div>
-  
-      <!-- Bottom area -->
-      <div class="site-footer__bottom wrap">
-  
-          <!-- Legal -->
-          <small class="legal">
-              © {{ now|date:"Y" }} FormSkies — {% trans "All rights reserved." %}
-          </small>
-  
-          <ul class="legal-links" aria-label="Legal">
-              <li><a href="/privacy/">{% trans "Privacy" %}</a></li>
-              <li><a href="/terms/">{% trans "Terms" %}</a></li>
-              <li><a href="/cookies/">{% trans "Cookies" %}</a></li>
-          </ul>
-  
-          <!-- Language Switcher -->
-          <form method="post" action="/i18n/setlang/" class="footer-lang-switcher">
-              {% csrf_token %}
-              <select name="language" onchange="this.form.submit()">
-                  <option value="en">🇬🇧 English</option>
-                  <option value="de">🇩🇪 Deutsch</option>
-                  <option value="es">🇪🇸 Español</option>
-                  <option value="it">🇮🇹 Italiano</option>
-              </select>
-          </form>
-  
-      </div>
-  </footer>
+  <div class="footer-lang-switcher">
+    <a href="{% url 'switch_lang' 'en' %}">🇬🇧 English</a>
+    <a href="{% url 'switch_lang' 'de' %}">🇩🇪 Deutsch</a>
+    <a href="{% url 'switch_lang' 'es' %}">🇪🇸 Español</a>
+    <a href="{% url 'switch_lang' 'it' %}">🇮🇹 Italiano</a>
+</div>
+
+
   
   
   

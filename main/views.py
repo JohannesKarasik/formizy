@@ -27,6 +27,21 @@ import json
 from django.http import JsonResponse
 
 
+def get_ui_language(request):
+    code = request.COOKIES.get("site_lang", "en")
+    return LANGUAGE_TEXT.get(code, LANGUAGE_TEXT["en"])
+
+
+def switch_lang(request, lang_code):
+    # only allow the languages you have in LANGUAGE_TEXT
+    if lang_code not in LANGUAGE_TEXT:
+        lang_code = "en"
+
+    response = redirect(request.META.get("HTTP_REFERER", "/"))
+    response.set_cookie("site_lang", lang_code, max_age=60*60*24*365)  # 1 year
+
+    return response
+
 
 LANGUAGE_TEXT = {
     "en": {
@@ -149,7 +164,8 @@ def home(request):
     countries = Country.objects.all().order_by("name")
 
     return render(request, "main/home.html", {
-        "countries": countries
+        "countries": countries,
+        "lang": get_ui_language(request)
     })
 
 
@@ -163,14 +179,15 @@ def country(request, country_code):
     forms = Form.objects.filter(country=country_obj)
 
     # Load language (fallback to EN)
-    lang = LANGUAGE_TEXT.get(country_code, LANGUAGE_TEXT["en"])
+    lang = get_ui_language(request)
 
     return render(request, "main/country.html", {
         "country_code": country_code,
         "country_name": country_obj.name,
         "forms": forms,
-        "lang": lang
+        "lang": get_ui_language(request)
     })
+
 
 
 
@@ -198,7 +215,7 @@ def form_detail(request, country_code, form_slug):
     doc.close()
     viewer_scale = 833 / width
 
-    lang = LANGUAGE_TEXT.get(country_code, LANGUAGE_TEXT["en"])
+    lang = get_ui_language(request)
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": form_info,
@@ -206,8 +223,8 @@ def form_detail(request, country_code, form_slug):
         "country_code": country_code,
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-        "lang": lang,
-        "related_forms": related_forms,  # 👈 new context
+        "lang": get_ui_language(request),
+        "related_forms": related_forms,
     })
 
 

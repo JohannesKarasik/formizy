@@ -42,6 +42,10 @@ urlpatterns = [
     path('<str:country_code>/<str:form_slug>/create-checkout-session/',
          create_checkout_session, name='create_checkout_session'),
 
+
+     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
+
+
     # COUNTRY PAGE (must be before form_detail)
      re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
 
