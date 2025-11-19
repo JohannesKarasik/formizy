@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 # settings.py
 import os
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _  # ADD
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,7 +60,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',        # ← ADD (order matters)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -78,7 +77,6 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                'django.template.context_processors.i18n',   # ← ADD
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -171,35 +169,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024  # 25 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024  # optional but safe
 
 X_FRAME_OPTIONS = 'ALLOWALL'
-
-
-
-
-
-
-# Internationalization  ✅ set base language + supported locales + locale folder
-LANGUAGE_CODE = 'en'  # change from 'en-us' so it matches your language codes
-
-TIME_ZONE = 'UTC'     # (optional) set to your preference, e.g. 'Europe/Madrid'
-USE_I18N = True
-USE_TZ = True
-
-LANGUAGES = [         # ← ADD the languages you want to serve
-    ('en', _('English')),
-    ('de', _('German')),
-    ('es', _('Spanish')),
-    ('it', _('Italian')),
-]
-
-LOCALE_PATHS = [      # ← ADD where your .po/.mo files will live
-    BASE_DIR / 'locale',
-]
-
-# Optional: nicer cookie settings for language switchers
-LANGUAGE_COOKIE_NAME = 'django_language'
-LANGUAGE_COOKIE_SAMESITE = 'Lax'
-LANGUAGE_COOKIE_SECURE = not DEBUG
-
-
 
 
