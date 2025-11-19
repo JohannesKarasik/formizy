@@ -494,7 +494,7 @@
 {% if related_forms %}
   <div style="margin-top:50px; padding:20px; background:#fff; border-radius:12px; border:1px solid #e6eaf2; max-width:900px; margin:40px auto 0;">
     <h2 style="font-size:22px; color:#0b1220; margin-bottom:12px;">
-        {{ lang.other_forms }}:
+        {{ lang.other_forms }} {{ country_code|upper }}:
     </h2>
     <ul style="list-style:none; padding:0; margin:0;">
       {% for form in related_forms %}
@@ -879,35 +879,48 @@ function saveFieldsAndDownload() {
 </script>
 
 <script>
-const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
+async function handleDownloadClick() {
+    const country = "{{ country_code }}";
+    const slug = "{{ form_info.slug }}";
 
-if (!IS_AUTH) {
-    console.log("📌 SENDING pending_fields TO SERVER:", fields);
+    // ALWAYS collect fields
+    const fields = collectFields();
 
-    const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF(),
-        },
-        body: JSON.stringify({
-            fields_data: fields,
-            form_slug: slug
-        })
-    });
+    // 🔑 Use per-form key so we can restore after redirect
+    const storageKey = `pending_fields_${country}_${slug}`;
+    sessionStorage.setItem(storageKey, JSON.stringify(fields));
+    // fallback legacy key
+    sessionStorage.setItem("pending_fields", JSON.stringify(fields));
 
-    try {
-        const data = await resp.json();
-        console.log("📌 SERVER JSON store-pending:", data);
-    } catch (e) {
-        console.log("📌 Could not parse JSON:", e);
+    // USER NOT LOGGED IN → Save to Django session + open modal
+    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+
+        console.log("📌 SENDING pending_fields TO SERVER:", fields);
+
+        const resp = await fetch(`/${country}/${slug}/store-pending-fields/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
+            },
+            body: JSON.stringify({
+                fields_data: fields,
+                form_slug: slug
+            })
+        });
+
+        console.log("📌 SERVER RESPONSE store-pending:", resp.status);
+
+        try {
+            const data = await resp.json();
+            console.log("📌 SERVER JSON store-pending:", data);
+        } catch (e) {
+            console.log("📌 Could not parse JSON:", e);
+        }
+
+        openAuthModal();
+        return;
     }
-
-    openAuthModal();
-    return;
-}
-
-
 
     // LOGGED IN → Save to database
     await fetch(`/${country}/${slug}/save-fields/`, {
@@ -954,7 +967,7 @@ if (!IS_AUTH) {
     openPaymentModal();
 }
 
-
+}
 </script>
 
 <script>
@@ -997,8 +1010,8 @@ if (!IS_AUTH) {
 </script>
     
 <script>
-async function downloadWithSpinner() {
-    const btn = document.getElementById("success-download-btn");
+    function downloadWithSpinner() {
+        const btn = document.getElementById("success-download-btn");
     
         // Save original label
         const originalHTML = btn.innerHTML;
