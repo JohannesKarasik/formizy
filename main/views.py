@@ -82,8 +82,7 @@ LANGUAGE_TEXT = {
         "login_failed": "Error al iniciar sesión. Verifica correo o contraseña.",
         "register_failed": "Error en el registro",
         "server_error": "Error del servidor: respuesta inesperada.",
-        "other_forms": "Other forms in"
-
+        "other_forms": "Otros formularios en"
 
     },
 
