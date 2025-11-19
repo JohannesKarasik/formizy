@@ -731,18 +731,29 @@ def download_pdf(request, country_code, form_slug):
 def has_paid(request, country_code, form_slug):
     from .models import PaidForm
 
-    # If not logged in → no payment
-    if not request.user.is_authenticated:
-        return JsonResponse({"has_paid": False})
+    try:
+        print("🟦 HAS_PAID — request user:", request.user)
 
-    # Logged-in → check if payment exists
-    paid = PaidForm.objects.filter(
-        user=request.user,
-        form_slug=form_slug
-    ).exists()
+        if not request.user.is_authenticated:
+            print("🟦 Not logged in → has_paid=False")
+            return JsonResponse({"has_paid": False})
 
-    return JsonResponse({"has_paid": paid})
+        print("🟦 Querying PaidForm…")
 
+        paid = PaidForm.objects.filter(
+            user=request.user,
+            form_slug=form_slug
+        ).exists()
+
+        print("🟩 Query result:", paid)
+        return JsonResponse({"has_paid": paid})
+
+    except Exception as e:
+        import traceback
+        print("🟥 has_paid ERROR:", e)
+        print(traceback.format_exc())
+
+        return JsonResponse({"has_paid": False, "error": str(e)}, status=500)
 
 
 
