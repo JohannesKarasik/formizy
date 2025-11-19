@@ -54,11 +54,13 @@ urlpatterns = [
      re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
 
     # MUST BE LAST
-re_path(r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/$', 
-        views.form_detail, 
-        name='form_detail'),
+# MUST BE LAST
+     re_path(
+     r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
+     views.form_detail,
+     name='form_detail'
+     ),
 
-]
 
 
 sitemaps = {
