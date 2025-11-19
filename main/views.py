@@ -45,6 +45,15 @@ LANGUAGE_TEXT = {
         "register_failed": "Registration failed",
         "server_error": "Server error: Unexpected response.",
         "other_forms": "Other important forms",
+        "footer_tagline": "Build, share, and automate forms in minutes.",
+        "nav_home": "Home",
+        "nav_about": "About us",
+        "nav_contact": "Contact",
+        "nav_blog": "Blog",
+        "legal_privacy": "Privacy",
+        "legal_terms": "Terms",
+        "legal_cookies": "Cookies",
+        "legal_rights": "All rights reserved."
 
     },
 
@@ -64,6 +73,15 @@ LANGUAGE_TEXT = {
         "register_failed": "Registrierung fehlgeschlagen",
         "server_error": "Serverfehler: Unerwartete Antwort vom Server.",
         "other_forms": "Weitere wichtige Formulare",
+        "footer_tagline": "Erstellen, teilen und automatisieren Sie Formulare in wenigen Minuten.",
+        "nav_home": "Startseite",
+        "nav_about": "Über uns",
+        "nav_contact": "Kontakt",
+        "nav_blog": "Blog",
+        "legal_privacy": "Datenschutz",
+        "legal_terms": "Nutzungsbedingungen",
+        "legal_cookies": "Cookies",
+        "legal_rights": "Alle Rechte vorbehalten."
 
     },
 
@@ -83,12 +101,30 @@ LANGUAGE_TEXT = {
         "register_failed": "Error en el registro",
         "server_error": "Error del servidor: respuesta inesperada.",
         "other_forms": "Otros formularios importantes",
+        "footer_tagline": "Crear, compartir y automatizar formularios en minutos.",
+        "nav_home": "Inicio",
+        "nav_about": "Sobre nosotros",
+        "nav_contact": "Contacto",
+        "nav_blog": "Blog",
+        "legal_privacy": "Privacidad",
+        "legal_terms": "Términos",
+        "legal_cookies": "Cookies",
+        "legal_rights": "Todos los derechos reservados."
 
     },
 
 
     "it": {
         "other_forms": "Altri moduli importanti",
+        "footer_tagline": "Creare, condividere e automatizzare moduli in pochi minuti.",
+        "nav_home": "Home",
+        "nav_about": "Chi siamo",
+        "nav_contact": "Contatti",
+        "nav_blog": "Blog",
+        "legal_privacy": "Privacy",
+        "legal_terms": "Termini",
+        "legal_cookies": "Cookie",
+        "legal_rights": "Tutti i diritti riservati."
 
     }
 

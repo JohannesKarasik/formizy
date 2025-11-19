@@ -1,4 +1,6 @@
 {% load static %}
+{% load i18n %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -472,33 +474,39 @@
 
   <footer class="site-footer" role="contentinfo">
     <div class="site-footer__inner wrap">
-      <!-- Brand + short pitch -->
-      <div class="site-footer__brand">
-        <span class="brand-title">FormSkies</span>
-        <p class="brand-tagline">Build, share, and automate forms in minutes.</p>
-      </div>
-  
-      <!-- Simple nav -->
-      <nav class="site-footer__nav" aria-label="Footer">
-        <ul class="site-footer__list">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="/about/">About us</a></li>
-          <li><a href="/contact/">Contact</a></li>
-          <li><a href="/blog/">Blog</a></li>
-        </ul>
-      </nav>
+
+        <!-- Brand + short pitch -->
+        <div class="site-footer__brand">
+            <span class="brand-title">FormSkies</span>
+            <p class="brand-tagline">
+                {% trans "Build, share, and automate forms in minutes." %}
+            </p>
+        </div>
+
+        <!-- Simple nav -->
+        <nav class="site-footer__nav" aria-label="Footer">
+            <ul class="site-footer__list">
+                <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                <li><a href="/about/">{% trans "About us" %}</a></li>
+                <li><a href="/contact/">{% trans "Contact" %}</a></li>
+                <li><a href="/blog/">{% trans "Blog" %}</a></li>
+            </ul>
+        </nav>
+
     </div>
-  
+
     <!-- Bottom legal stays -->
     <div class="site-footer__bottom wrap">
-      <small class="legal">© {{ now|date:"Y" }} FormSkies — All rights reserved.</small>
+      <small class="legal">
+        © {{ now|date:"Y" }} FormSkies — {% trans "All rights reserved." %}
+      </small>
       <ul class="legal-links" aria-label="Legal">
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/terms/">Terms</a></li>
-        <li><a href="/cookies/">Cookies</a></li>
+        <li><a href="/privacy/">{% trans "Privacy" %}</a></li>
+        <li><a href="/terms/">{% trans "Terms" %}</a></li>
+        <li><a href="/cookies/">{% trans "Cookies" %}</a></li>
       </ul>
     </div>
-  </footer>
+</footer>
   
   
 
