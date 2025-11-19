@@ -17,9 +17,13 @@ urlpatterns = [
     path("register/", register_view, name="register"),
     path("logout/", views.logout_view, name="logout"),
 
-    # MAP
-    path("map-form/<str:country_code>/<slug:form_slug>/", 
-         views.map_form, name="map_form"),
+     # MAP
+     re_path(
+     r"^map-form/(?P<country_code>[a-zA-Z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$",
+     views.map_form,
+     name="map_form"
+),
+
 
     # ACTION ROUTES FIRST
     path('<str:country_code>/<str:form_slug>/store-pending-fields/',
