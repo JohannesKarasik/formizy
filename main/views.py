@@ -193,15 +193,23 @@ def home(request):
 
 
 def country(request, country_code):
-    lang, lang_code = get_ui_language(request, country_code)
+    # Load matching country object
+    country_obj = get_object_or_404(Country, code=country_code)
+
+    # All forms for this country
+    forms = Form.objects.filter(country=country_obj)
+
+    # Load UI language (using your cookie system)
+    lang, lang_code = get_ui_language(request)
 
     return render(request, "main/country.html", {
         "country_code": country_code,
         "country_name": country_obj.name,
         "forms": forms,
         "lang": lang,
-        "lang_code": lang_code
+        "lang_code": lang_code,
     })
+
 
 
 
