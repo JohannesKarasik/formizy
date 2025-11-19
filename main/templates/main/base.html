@@ -574,18 +574,18 @@
           <h3>Product</h3>
           <ul>
             <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'forms:index' %}">Other forms</a></li>
-            <li><a href="{% url 'blog:index' %}">Blog</a></li>
+            <li><a href="">Other forms</a></li>
+            <li><a href="">Blog</a></li>
           </ul>
         </section>
   
         <section class="site-footer__col" aria-label="Company">
           <h3>Company</h3>
           <ul>
-            <li><a href="{% url 'about' %}">About</a></li>
-            <li><a href="{% url 'contact' %}">Contact us</a></li>
+            <li><a href="">About</a></li>
+            <li><a href="">Contact us</a></li>
             {% if user.is_authenticated %}
-              <li><a href="{% url 'logout' %}">Logout</a></li>
+              <li><a href="">Logout</a></li>
             {% endif %}
           </ul>
         </section>
@@ -593,7 +593,7 @@
         <section class="site-footer__col" aria-label="Resources">
           <h3>Resources</h3>
           <ul>
-            <li><a href="{% url 'blog:index' %}">Guides</a></li>
+            <li><a href="">Guides</a></li>
             <li><a href="/status/">Status</a></li>
             <li><a href="/changelog/">Changelog</a></li>
           </ul>
