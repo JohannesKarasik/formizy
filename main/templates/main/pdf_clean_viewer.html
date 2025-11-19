@@ -3,7 +3,7 @@
 
 
 {% block title %}
-   {{ form_info.seo_title|default:form_info.title }} — Formskies
+   {{ form_info.seo_title|default:form_info.title }} — FillThatForm
 {% endblock %}
 
 
@@ -13,7 +13,7 @@
    <meta property="og:title" content="{{ form_info.seo_title|default:form_info.title }}">
    <meta property="og:description" content="{{ form_info.seo_description }}">
    <meta property="og:type" content="article">
-   <meta property="og:url" content="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/">
+   <meta property="og:url" content="https://fillthatform.com/{{ country_code }}/{{ form_info.slug }}/">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -494,7 +494,7 @@
 {% if related_forms %}
   <div style="margin-top:50px; padding:20px; background:#fff; border-radius:12px; border:1px solid #e6eaf2; max-width:900px; margin:40px auto 0;">
     <h2 style="font-size:22px; color:#0b1220; margin-bottom:12px;">
-        {{ lang.other_forms }} {{ country_code|upper }}:
+      Andere Formulare in {{ country_code|upper }}:
     </h2>
     <ul style="list-style:none; padding:0; margin:0;">
       {% for form in related_forms %}
