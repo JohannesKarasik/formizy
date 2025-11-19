@@ -188,14 +188,20 @@ def home(request):
 
 
 def country(request, country_code):
-    lang, lang_code = get_ui_language(request, country_code)
+    # Get matching country object
+    country_obj = get_object_or_404(Country, code=country_code)
+
+    # Get all forms assigned to this country
+    forms = Form.objects.filter(country=country_obj)
+
+    # Load language (fallback to EN)
+    lang = get_ui_language(request)
 
     return render(request, "main/country.html", {
         "country_code": country_code,
         "country_name": country_obj.name,
         "forms": forms,
-        "lang": lang,
-        "lang_code": lang_code
+        "lang": get_ui_language(request)
     })
 
 
@@ -225,8 +231,7 @@ def form_detail(request, country_code, form_slug):
     doc.close()
     viewer_scale = 833 / width
 
-    # ✅ NEW: auto-language from URL → or cookie → fallback
-    lang, lang_code = get_ui_language(request, country_code)
+    lang = get_ui_language(request)
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": form_info,
@@ -234,14 +239,9 @@ def form_detail(request, country_code, form_slug):
         "country_code": country_code,
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-
-        # NEW — correct language
-        "lang": lang,
-        "lang_code": lang_code,
-
+        "lang": get_ui_language(request),
         "related_forms": related_forms,
     })
-
 
 
 
