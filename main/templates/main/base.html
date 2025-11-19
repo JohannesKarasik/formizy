@@ -320,35 +320,157 @@
     object-fit: contain;
 }
 /* Footer: no background, brand + links use #303bff */
+/* ===== Modern SaaS Footer (transparent, #303bff text/links) ===== */
 .site-footer{
-  background: transparent;     /* removed background */
-  color: #303bff;              /* set text color */
-  border-top: 1px solid color-mix(in oklab, currentColor 15%, transparent);
-  padding: 2.5rem 1rem;
+  background: transparent;             /* keep page background */
+  color: #303bff;                      /* unified text color */
+  padding: 40px 0 20px;
+  border-top: 1px solid color-mix(in oklab, #303bff 20%, transparent);
 }
 
-.site-footer__brand,
-.site-footer__list a,
-.site-footer__legal{
-  color: #303bff;              /* unify text/link color */
+.site-footer a{ color: #303bff; text-decoration: none; }
+.site-footer a:hover{ text-decoration: underline; }
+
+/* Layout */
+.site-footer__inner{
+  display: grid;
+  grid-template-columns: 1.2fr 2.8fr;
+  gap: 28px;
+  align-items: start;
 }
 
-/* Hover/focus keep the same color, add subtle underline & ring */
-.site-footer__list a:hover{
+.site-footer__brand .brand-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  font-size: 1.1rem;
+}
+
+.site-footer__brand .brand-logo{
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+.site-footer__brand .brand-tagline{
+  margin: 10px 0 0;
+  opacity: .9;              /* still blue, slightly softer */
+}
+
+/* Columns */
+.site-footer__cols{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 18px 28px;
+}
+
+.site-footer__col h3{
+  margin: 0 0 10px;
+  font-size: .95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.site-footer__col ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.site-footer__col a{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+/* Subscribe */
+.subscribe{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.subscribe input{
+  border: 1px solid color-mix(in oklab, #303bff 28%, transparent);
   color: #303bff;
-  background: transparent;     /* no highlight bg */
-  text-decoration: underline;
-}
-
-.site-footer__list a:focus-visible{
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: 10px;
+  width: 100%;
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in oklab, #303bff 25%, transparent);
-  text-decoration: underline;
+}
+.subscribe input::placeholder{ color: color-mix(in oklab, #303bff 60%, white); }
+.subscribe input:focus{ box-shadow: 0 0 0 3px color-mix(in oklab, #303bff 25%, transparent); }
+
+.btn-subscribe{
+  border: 1px solid #303bff;
+  background: transparent;
+  color: #303bff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-subscribe:hover{ text-decoration: underline; }
+
+/* Social icons */
+.social{
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.social a{
+  display: inline-flex;
+  width: 36px; height: 36px;
+  align-items: center; justify-content: center;
+  border: 1px solid color-mix(in oklab, #303bff 28%, transparent);
+  border-radius: 10px;
 }
 
-/* Optional: if you had light/dark overrides before, remove them for the footer */
-@media (prefers-color-scheme: light){
-  .site-footer{ background: transparent; }
+/* Bottom bar */
+.site-footer__bottom{
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px dashed color-mix(in oklab, #303bff 20%, transparent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legal{ opacity: .85; }
+.legal-links{
+  list-style: none; padding: 0; margin: 0;
+  display: inline-flex; gap: 14px; flex-wrap: wrap;
+}
+.legal-links a{ text-decoration: none; }
+.legal-links a:hover{ text-decoration: underline; }
+
+/* Accessibility helpers */
+.sr-only{
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* Responsive */
+@media (max-width: 960px){
+  .site-footer__inner{
+    grid-template-columns: 1fr;
+  }
+  .site-footer__cols{
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+@media (max-width: 560px){
+  .site-footer__cols{
+    grid-template-columns: 1fr;
+  }
 }
 
 
@@ -435,25 +557,82 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <a class="site-footer__brand" href="{% url 'home' %}">FormSkies</a>
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer__inner wrap">
+      <!-- Brand + short pitch -->
+      <div class="site-footer__block site-footer__brand">
+        <a class="brand-link" href="{% url 'home' %}" aria-label="FormSkies home">
+          <img src="{% static 'logo.png' %}" alt="" class="brand-logo" />
+          <span>FormSkies</span>
+        </a>
+        <p class="brand-tagline">Build, share, and automate forms in minutes.</p>
+      </div>
   
-      <nav class="site-footer__nav" aria-label="Footer">
-        <ul class="site-footer__list">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="">About</a></li>
-          <li><a href="">Contact us</a></li>
-          <li><a href="">Other forms</a></li>
-          <li><a href="">Blog</a></li>
-        </ul>
+      <!-- Columns -->
+      <nav class="site-footer__cols" aria-label="Footer">
+        <section class="site-footer__col" aria-label="Product">
+          <h3>Product</h3>
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'forms:index' %}">Other forms</a></li>
+            <li><a href="{% url 'blog:index' %}">Blog</a></li>
+          </ul>
+        </section>
+  
+        <section class="site-footer__col" aria-label="Company">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'contact' %}">Contact us</a></li>
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% endif %}
+          </ul>
+        </section>
+  
+        <section class="site-footer__col" aria-label="Resources">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="{% url 'blog:index' %}">Guides</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/changelog/">Changelog</a></li>
+          </ul>
+        </section>
+  
+        <section class="site-footer__col" aria-label="Stay in the loop">
+          <h3>Subscribe</h3>
+          <form class="subscribe" action="/newsletter/" method="post">
+            {% csrf_token %}
+            <label class="sr-only" for="footer-email">Email</label>
+            <input id="footer-email" name="email" type="email" inputmode="email" placeholder="you@company.com" required>
+            <button type="submit" class="btn-subscribe">Join</button>
+          </form>
+  
+          <div class="social">
+            <a href="https://x.com/" aria-label="X (Twitter)">{# simple icon #}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.7 8.8L23.3 22H16l-5.4-7.2L4 22H1l8.4-9.6L1.3 2H8l5 6.6L18.9 2z"/></svg>
+            </a>
+            <a href="https://github.com/" aria-label="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.4 2 1.4 1.2 2 3.1 1.4 3.8 1.1.1-.9.5-1.4.9-1.7-2.6-.3-5.3-1.3-5.3-5.9 0-1.3.5-2.4 1.3-3.3-.1-.3-.6-1.7.1-3.5 0 0 1-.3 3.4 1.3a11.8 11.8 0 0 1 6.2 0C18.1 6.3 19 6.6 19 6.6c.7 1.8.2 3.2.1 3.5.8.9 1.3 2 1.3 3.3 0 4.7-2.7 5.6-5.3 5.9.5.4 1 1.2 1 2.4v3.5c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+            </a>
+            <a href="mailto:danskhjaelpfirma@gmail.com" aria-label="Email">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
+            </a>
+          </div>
+        </section>
       </nav>
+    </div>
   
-      <small class="site-footer__legal">
-        © {{ now|date:"Y" }} FormSkies — All rights reserved.
-      </small>
+    <div class="site-footer__bottom wrap">
+      <small class="legal">© {{ now|date:"Y" }} FormSkies — All rights reserved.</small>
+      <ul class="legal-links" aria-label="Legal">
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/cookies/">Cookies</a></li>
+      </ul>
     </div>
   </footer>
+  
   
 
   <!-- CONTACT MODAL -->
