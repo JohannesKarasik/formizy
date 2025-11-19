@@ -176,13 +176,18 @@ def store_pending_fields(request, country, slug):
 
 
 def home(request):
+    # Load all countries
+    countries = Country.objects.all().order_by("name")
+
+    # Load language using URL/cookie logic
     lang, lang_code = get_ui_language(request)
 
     return render(request, "main/home.html", {
         "countries": countries,
         "lang": lang,
-        "lang_code": lang_code
+        "lang_code": lang_code,
     })
+
 
 
 
