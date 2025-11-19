@@ -44,7 +44,7 @@ LANGUAGE_TEXT = {
         "login_failed": "Login failed. Check email or password.",
         "register_failed": "Registration failed",
         "server_error": "Server error: Unexpected response.",
-        "other_forms": "Other forms in",
+        "other_forms": "Other important forms",
 
     },
 
@@ -63,7 +63,7 @@ LANGUAGE_TEXT = {
         "login_failed": "Login fehlgeschlagen. Bitte E-Mail oder Passwort prüfen.",
         "register_failed": "Registrierung fehlgeschlagen",
         "server_error": "Serverfehler: Unerwartete Antwort vom Server.",
-        "other_forms": "Andere Formulare in"
+        "other_forms": "Weitere wichtige Formulare",
 
     },
 
@@ -82,13 +82,13 @@ LANGUAGE_TEXT = {
         "login_failed": "Error al iniciar sesión. Verifica correo o contraseña.",
         "register_failed": "Error en el registro",
         "server_error": "Error del servidor: respuesta inesperada.",
-        "other_forms": "Otros formularios en"
+        "other_forms": "Otros formularios importantes",
 
     },
 
 
     "it": {
-        "other_forms": "Altri moduli in",
+        "other_forms": "Altri moduli importanti",
 
     }
 
