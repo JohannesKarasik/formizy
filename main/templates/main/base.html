@@ -537,8 +537,8 @@
     
             {% if user.is_authenticated %}
               <a href="" style="color:#2563eb;">Contact Us</a>
-              <a href="" style="color:#2563eb;">Logout</a>
-            {% endif %}
+              <a href="{% url 'logout' %}" style="color:#2563eb;">Logout</a>
+              {% endif %}
         </div>
     </header>
     
