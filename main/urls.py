@@ -17,13 +17,12 @@ urlpatterns = [
     path("register/", register_view, name="register"),
     path("logout/", views.logout_view, name="logout"),
 
-     # MAP
-     re_path(
-     r"^map-form/(?P<country_code>[a-zA-Z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$",
-     views.map_form,
-     name="map_form"
-),
-
+    # MAP
+    re_path(
+        r"^map-form/(?P<country_code>[a-zA-Z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$",
+        views.map_form,
+        name="map_form"
+    ),
 
     # ACTION ROUTES FIRST
     path('<str:country_code>/<str:form_slug>/store-pending-fields/',
@@ -34,7 +33,7 @@ urlpatterns = [
          views.save_fields,
          name="save_fields"),
 
-    path('<str:country_code>/<str:form_slug>/fill/', 
+    path('<str:country_code>/<str:form_slug>/fill/',
          views.fill_pdf, name='fill_pdf'),
 
     path('<str:country_code>/<str:form_slug>/download/',
@@ -46,22 +45,18 @@ urlpatterns = [
     path('<str:country_code>/<str:form_slug>/create-checkout-session/',
          create_checkout_session, name='create_checkout_session'),
 
-
-     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
-
+    path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
 
     # COUNTRY PAGE (must be before form_detail)
-     re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
+    re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
 
     # MUST BE LAST
-# MUST BE LAST
-     re_path(
-     r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
-     views.form_detail,
-     name='form_detail'
-     ),
-
-
+    re_path(
+        r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
+        views.form_detail,
+        name='form_detail'
+    ),
+]
 
 sitemaps = {
     'forms': FormSitemap,
