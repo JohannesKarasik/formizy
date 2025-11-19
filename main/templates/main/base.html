@@ -388,6 +388,27 @@
 }
 
 
+.footer-lang-switcher {
+    margin-left: auto;
+}
+
+.footer-lang-switcher select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #d0d7ff;
+    background: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #303bff;
+    cursor: pointer;
+    outline: none;
+}
+
+.footer-lang-switcher select:hover {
+    border-color: #303bff;
+}
+
+
 
     </style>
   
@@ -472,41 +493,59 @@
     {% block content %}{% endblock %}
   </main>
 
+  {% load i18n %}
+
   <footer class="site-footer" role="contentinfo">
-    <div class="site-footer__inner wrap">
-
-        <!-- Brand + short pitch -->
-        <div class="site-footer__brand">
-            <span class="brand-title">FormSkies</span>
-            <p class="brand-tagline">
-                {% trans "Build, share, and automate forms in minutes." %}
-            </p>
-        </div>
-
-        <!-- Simple nav -->
-        <nav class="site-footer__nav" aria-label="Footer">
-            <ul class="site-footer__list">
-                <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
-                <li><a href="/about/">{% trans "About us" %}</a></li>
-                <li><a href="/contact/">{% trans "Contact" %}</a></li>
-                <li><a href="/blog/">{% trans "Blog" %}</a></li>
-            </ul>
-        </nav>
-
-    </div>
-
-    <!-- Bottom legal stays -->
-    <div class="site-footer__bottom wrap">
-      <small class="legal">
-        © {{ now|date:"Y" }} FormSkies — {% trans "All rights reserved." %}
-      </small>
-      <ul class="legal-links" aria-label="Legal">
-        <li><a href="/privacy/">{% trans "Privacy" %}</a></li>
-        <li><a href="/terms/">{% trans "Terms" %}</a></li>
-        <li><a href="/cookies/">{% trans "Cookies" %}</a></li>
-      </ul>
-    </div>
-</footer>
+      <div class="site-footer__inner wrap">
+  
+          <!-- Brand + short pitch -->
+          <div class="site-footer__brand">
+              <span class="brand-title">FormSkies</span>
+              <p class="brand-tagline">
+                  {% trans "Build, share, and automate forms in minutes." %}
+              </p>
+          </div>
+  
+          <!-- Simple nav -->
+          <nav class="site-footer__nav" aria-label="Footer">
+              <ul class="site-footer__list">
+                  <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                  <li><a href="/about/">{% trans "About us" %}</a></li>
+                  <li><a href="/contact/">{% trans "Contact" %}</a></li>
+                  <li><a href="/blog/">{% trans "Blog" %}</a></li>
+              </ul>
+          </nav>
+  
+      </div>
+  
+      <!-- Bottom area -->
+      <div class="site-footer__bottom wrap">
+  
+          <!-- Legal -->
+          <small class="legal">
+              © {{ now|date:"Y" }} FormSkies — {% trans "All rights reserved." %}
+          </small>
+  
+          <ul class="legal-links" aria-label="Legal">
+              <li><a href="/privacy/">{% trans "Privacy" %}</a></li>
+              <li><a href="/terms/">{% trans "Terms" %}</a></li>
+              <li><a href="/cookies/">{% trans "Cookies" %}</a></li>
+          </ul>
+  
+          <!-- Language Switcher -->
+          <form method="post" action="/i18n/setlang/" class="footer-lang-switcher">
+              {% csrf_token %}
+              <select name="language" onchange="this.form.submit()">
+                  <option value="en">🇬🇧 English</option>
+                  <option value="de">🇩🇪 Deutsch</option>
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="it">🇮🇹 Italiano</option>
+              </select>
+          </form>
+  
+      </div>
+  </footer>
+  
   
   
 
