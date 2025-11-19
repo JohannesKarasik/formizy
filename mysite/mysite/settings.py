@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 # settings.py
 import os
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -170,3 +172,24 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024  # optional but safe
 X_FRAME_OPTIONS = 'ALLOWALL'
 
 
+
+
+LANGUAGE_CODE = 'en'  # best base value
+
+USE_I18N = True
+USE_TZ = True
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('de', _('German')),
+    ('es', _('Spanish')),
+    ('it', _('Italian')),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+LANGUAGE_COOKIE_NAME = 'django_language'
+LANGUAGE_COOKIE_SAMESITE = 'Lax'
+LANGUAGE_COOKIE_SECURE = not DEBUG
