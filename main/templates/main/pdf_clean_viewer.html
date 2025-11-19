@@ -588,6 +588,43 @@
 
 <script>
 
+async function startDownloadProcess() {
+    const country = "{{ country_code }}";
+    const slug = "{{ form_info.slug }}";
+    const fields = collectFields();
+
+    // SAVE FIELDS TO DATABASE IF LOGGED IN
+    const res = await fetch(`/${country}/${slug}/has-paid/`, {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": getCSRF(),
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (data.has_paid) {
+        downloadFilledPDF();
+    } else {
+        await fetch(`/${country}/${slug}/pre-generate-pdf/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF()
+            },
+            body: JSON.stringify({ fields_data: fields })
+        });
+
+        pendingPaymentCountry = country;
+        pendingPaymentSlug = slug;
+
+        openPaymentModal();
+    }
+}
+
+
 function saveFields() {
     const country = "{{ country_code }}";
     const slug = "{{ form_info.slug }}";
@@ -604,9 +641,10 @@ function saveFieldsAndOpenAuth() {
 }
 
 function saveFieldsAndDownload() {
-    saveFields();      // ensure saved before login check
-    handleDownloadClick();
+    saveFields();
+    startDownloadProcess();
 }
+
 
 
 
