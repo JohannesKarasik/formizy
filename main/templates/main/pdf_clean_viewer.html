@@ -473,20 +473,23 @@ body.modal-open {
 
 .code-input .cell {
     flex: 1;
+    min-width: 10px;   /* ← make each box much smaller */
+    max-width: 14px;
     border: 1px solid #d1d5db;
 
     display: flex;
-    align-items: center;   /* vertical center */
-    justify-content: flex-start; /* horizontal LEFT */
+    align-items: center;
+    justify-content: center;
 
-    font-family: monospace;  
+    font-family: monospace;
     font-size: 16px;
     font-weight: 600;
 
     background: #fff;
-    padding-left: 4px;     /* push the digit slightly right */
+    padding-left: 2px;
     box-sizing: border-box;
 }
+
 
 
 
@@ -1369,7 +1372,7 @@ window.addEventListener("resize", () => {
 
 
 document.querySelectorAll(".code-input").forEach(codeEl => {
-    const charCount = Math.max(1, Math.floor(codeEl.offsetWidth / 18));
+    const charCount = Math.max(2, Math.floor(codeEl.offsetWidth / 12));
     codeEl.innerHTML = "";
 
     // Create editable cells
