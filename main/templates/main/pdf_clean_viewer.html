@@ -580,15 +580,17 @@ body.modal-open {
                                    data-pw="{{ field.pixel_width }}"
                                    data-ph="{{ field.pixel_height }}">
 
-                        {% elif field.type == "code" %}
-                        <div class="code-input"
-                            data-name="{{ field.name }}"
-                            data-page="{{ field.page|default:1 }}"
-                            data-px="{{ field.pixel_x }}"
-                            data-py="{{ field.pixel_y }}"
-                            data-pw="{{ field.pixel_width }}"
-                            data-ph="{{ field.pixel_height }}">
-                        </div>
+                            {% elif field.type == "code" %}
+                            <div class="code-input"
+                                data-name="{{ field.name }}"
+                                data-page="{{ field.page }}"
+                                data-px="{{ field.pixel_x }}"
+                                data-py="{{ field.pixel_y }}"
+                                data-pw="{{ field.pixel_width }}"
+                                data-ph="{{ field.pixel_height }}"
+                                data-digits="{{ field.digits }}">  <!-- ⭐ REQUIRED -->
+                            </div>
+                                   
                 
                         {% else %}
                             <input type="text"
@@ -1372,7 +1374,7 @@ window.addEventListener("resize", () => {
 
 
 document.querySelectorAll(".code-input").forEach(codeEl => {
-    const charCount = Math.max(2, Math.floor(codeEl.offsetWidth / 12));
+    const charCount = parseInt(codeEl.dataset.digits) || 1;
     codeEl.innerHTML = "";
 
     // Create editable cells

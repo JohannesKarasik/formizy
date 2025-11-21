@@ -493,8 +493,11 @@ document.querySelectorAll(".draggable").forEach(el => {
     mapper_scale: window.mapperScale,
     page: parseInt(pageCanvas.dataset.page),
 
-    checked: el.dataset.checked || "0"   // ✅ SAVE CHECKED STATE
+    checked: el.dataset.checked || "0",
+
+    digits: el.dataset.digits || null   // ⭐ NEW
 });
+
 
 });
 
