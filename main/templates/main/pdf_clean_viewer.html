@@ -782,8 +782,8 @@ body.modal-open {
             wrapper.style.width = FIXED_WIDTH + "px";
             wrapper.dataset.page = pageNum;
 
-            wrapper.appendChild(canvas);
-            pagesContainer.appendChild(wrapper);
+            pagesContainer.appendChild(canvas);
+
     
             await page.render({
                 canvasContext: canvas.getContext("2d"),
