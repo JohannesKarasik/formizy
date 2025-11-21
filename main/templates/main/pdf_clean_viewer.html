@@ -778,11 +778,13 @@ body.modal-open {
             const wrapper = document.createElement("div");
             wrapper.style.position = "relative";
             wrapper.style.display = "block";
-            wrapper.style.margin = "0";
             wrapper.style.width = FIXED_WIDTH + "px";
+            wrapper.style.marginBottom = "20px";
             wrapper.dataset.page = pageNum;
 
-            pagesContainer.appendChild(canvas);
+            wrapper.appendChild(canvas);
+            pagesContainer.appendChild(wrapper);
+
 
     
             await page.render({
@@ -806,7 +808,7 @@ body.modal-open {
         const pageOffsets = {};
         pageCanvases.forEach(canvas => {
             const pageNum = canvas.dataset.page;
-            pageOffsets[pageNum] = canvas.offsetTop;
+            pageOffsets[pageNum] = wrapper.offsetTop;
         });
     
         const scale = VIEWER_SCALE;
