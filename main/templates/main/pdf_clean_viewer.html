@@ -1363,25 +1363,65 @@ window.addEventListener("resize", () => {
 
 document.querySelectorAll(".code-input").forEach(codeEl => {
     const charCount = Math.max(1, Math.floor(codeEl.offsetWidth / 18));
-
     codeEl.innerHTML = "";
 
+    // Create editable cells
     for (let i = 0; i < charCount; i++) {
         const cell = document.createElement("div");
         cell.className = "cell";
         cell.dataset.index = i;
+        cell.contentEditable = "true";
+        cell.spellcheck = false;
         codeEl.appendChild(cell);
     }
 
-    codeEl.addEventListener("click", () => {
-        const input = prompt("Enter code:");
-        if (!input) return;
+    const cells = [...codeEl.querySelectorAll(".cell")];
 
-        [...codeEl.querySelectorAll(".cell")].forEach((c, i) => {
-            c.textContent = input[i] || "";
+    // Click → focus first empty cell
+    codeEl.addEventListener("click", (e) => {
+        if (e.target.classList.contains("cell")) return;
+        const firstEmpty = cells.find(c => !c.textContent.trim()) || cells[0];
+        firstEmpty.focus();
+    });
+
+    // Handle typing
+    cells.forEach((cell, idx) => {
+        cell.addEventListener("input", () => {
+            const text = cell.textContent;
+
+            // keep only 1 character
+            if (text.length > 1) {
+                cell.textContent = text[0];
+            }
+
+            // auto-move to next cell
+            if (cell.textContent && idx < cells.length - 1) {
+                cells[idx + 1].focus();
+            }
+        });
+
+        cell.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace") {
+                if (!cell.textContent && idx > 0) {
+                    cells[idx - 1].focus();
+                    cells[idx - 1].textContent = "";
+                    e.preventDefault();
+                }
+            }
+
+            if (e.key === "ArrowRight" && idx < cells.length - 1) {
+                cells[idx + 1].focus();
+                e.preventDefault();
+            }
+
+            if (e.key === "ArrowLeft" && idx > 0) {
+                cells[idx - 1].focus();
+                e.preventDefault();
+            }
         });
     });
 });
+
 
 
 
