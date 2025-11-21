@@ -374,21 +374,22 @@ body.modal-open {
 
 
 
-/* Fullscreen button (hidden until hover) */
 #fullscreen-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(15, 23, 42, 0.85);
-    color: white;
-    padding: 6px 12px;
+    display: inline-block;
+    margin: 10px auto 0 auto;
+    padding: 6px 14px;
+    background: rgba(15,23,42,0.85);
+    color: #fff;
     border-radius: 6px;
     font-size: 13px;
     cursor: pointer;
-    z-index: 50;
-    opacity: 0;
-    transition: opacity 0.25s ease;
     backdrop-filter: blur(4px);
+
+    /* center button */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
 }
 
 /* Show button when hovering viewer */
@@ -480,7 +481,7 @@ body.modal-open {
        <!-- 🖼 Viewer frame: toolbar + scroll area -->
        <div class="viewer-frame">
 
-        <div id="fullscreen-btn">⤢ Full screen</div>
+
 
            <!-- 🔝 Toolbar -->
            <div class="viewer-toolbar">
@@ -505,6 +506,8 @@ body.modal-open {
             </div>
          </div>
          
+
+         <div id="fullscreen-btn">⤢ Full screen</div>
 
            <!-- 📄 FIXED-HEIGHT SCROLL BOX -->
            <div id="pdf-scroll">
