@@ -152,6 +152,10 @@ document.addEventListener("mousemove", (e) => {
 
      let fieldCount = 0;
 
+    let lastFieldWidth = 260;
+    let lastFieldHeight = 13;
+
+
      function addField() {
 
     fieldCount++;
@@ -179,8 +183,8 @@ Object.assign(box.style, {
     position: "absolute",
     left: relLeft + "px",
     top: relTop + "px",
-    width: "260px",          // ⭐ longer
-    height: "13px",          // ⭐ thinner
+    width: lastFieldWidth + "px",
+    height: lastFieldHeight + "px",     // ⭐ thinner
     background: "rgba(255,255,255,0.8)",
     border: "2px dashed #0071e3",
     borderRadius: "4px",
@@ -349,6 +353,9 @@ function addSignature() {
                          `translate(${x + event.deltaRect.left}px,
                                     ${y + event.deltaRect.top}px)`
                  });
+
+                lastFieldWidth = event.rect.width;
+                lastFieldHeight = event.rect.height;
 
                  event.target.dataset.x =
                      x + event.deltaRect.left;
