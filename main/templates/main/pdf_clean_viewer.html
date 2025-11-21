@@ -754,7 +754,14 @@ body.modal-open {
             canvas.style.marginBottom = "20px";
             canvas.dataset.page = pageNum;
     
-            pagesContainer.appendChild(canvas);
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "relative";
+            wrapper.style.display = "inline-block";
+            wrapper.style.width = FIXED_WIDTH + "px";
+            wrapper.dataset.page = pageNum;
+
+            wrapper.appendChild(canvas);
+            pagesContainer.appendChild(wrapper);
     
             await page.render({
                 canvasContext: canvas.getContext("2d"),
