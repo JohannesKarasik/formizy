@@ -853,6 +853,26 @@ body.modal-open {
     
         document.querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
           .forEach(el => {
+
+
+
+        document.querySelectorAll('#pdf-pages .code-input').forEach(el => {
+            const page = el.dataset.page || "1";
+            const px = parseFloat(el.dataset.px || "0");
+            const py = parseFloat(el.dataset.py || "0");
+            const pw = parseFloat(el.dataset.pw || "0");
+            const ph = parseFloat(el.dataset.ph || "0");
+
+            const pageTop = pageOffsets[page] || 0;
+
+            el.style.left = (px * scale + 4) + "px";
+            el.style.top  = (pageTop + py * scale) + "px";
+            el.style.width  = (pw * scale - 1) + "px";
+            el.style.height = (ph * scale) + "px";
+        });
+
+
+
               const page = el.dataset.page || "1";
               const px = parseFloat(el.dataset.px || "0");
               const py = parseFloat(el.dataset.py || "0");
