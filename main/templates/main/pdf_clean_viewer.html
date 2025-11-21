@@ -373,6 +373,67 @@ body.modal-open {
 }
 
 
+
+/* Fullscreen button (hidden until hover) */
+#fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(15, 23, 42, 0.85);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    backdrop-filter: blur(4px);
+}
+
+/* Show button when hovering viewer */
+.viewer-frame:hover #fullscreen-btn {
+    opacity: 1;
+}
+
+/* Make PDF viewer adapt to full-screen body */
+:fullscreen .viewer-frame,
+:-webkit-full-screen .viewer-frame {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+}
+
+:fullscreen #pdf-scroll,
+:-webkit-full-screen #pdf-scroll {
+    height: calc(100vh - 50px) !important;
+}
+
+:fullscreen #pdf-container,
+:-webkit-full-screen #pdf-container {
+    transform-origin: top left;
+}
+
+
+.viewer-frame {
+    position: relative; /* <-- needed */
+}
+
+
+
+.viewer-frame:hover #fullscreen-btn,
+#pdf-scroll:hover #fullscreen-btn {
+    opacity: 1;
+}
+
+
+#fullscreen-btn {
+    z-index: 9999;
+}
+
+
+
    </style>
 {% endblock %}
 
@@ -401,6 +462,8 @@ body.modal-open {
 
        <!-- 🖼 Viewer frame: toolbar + scroll area -->
        <div class="viewer-frame">
+
+        <div id="fullscreen-btn">⤢ Full screen</div>
 
            <!-- 🔝 Toolbar -->
            <div class="viewer-toolbar">
@@ -1167,6 +1230,38 @@ function closeSuccessModal() {
             btn.disabled = false;
         }, 30000);
     }
+
+
+    /* =========================
+   FULLSCREEN HANDLER
+========================= */
+const viewerFrame = document.querySelector(".viewer-frame");
+const fullscreenBtn = document.getElementById("fullscreen-btn");
+
+if (fullscreenBtn && viewerFrame) {
+
+    fullscreenBtn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen mode
+            viewerFrame.requestFullscreen().catch(err => {
+                console.error("Fullscreen error:", err);
+            });
+        } else {
+            // Exit fullscreen mode
+            document.exitFullscreen();
+        }
+    });
+
+    // Optional: change text when in fullscreen
+    document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) {
+            fullscreenBtn.textContent = "⤢ Exit full screen";
+        } else {
+            fullscreenBtn.textContent = "⤢ Full screen";
+        }
+    });
+}
+
     </script>
     
    </main>
