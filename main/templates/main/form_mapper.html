@@ -47,6 +47,13 @@
                 ✍️ Add Signature Field
             </button>
 
+            <button onclick="addCodeField()"
+        style="display:block;width:100%;margin-bottom:10px;
+               padding:10px;border:none;border-radius:6px;
+               background:#0ea5e9;color:white;cursor:pointer;">
+    🔢 Add Code Field
+            </button>
+
 
            <button onclick="saveLayout()"
                    style="display:block;width:100%;padding:10px;
@@ -263,6 +270,50 @@ box.addEventListener("click", (e) => {
 
 container.appendChild(box);
 enableDrag(box);
+}
+
+
+function addCodeField() {
+    fieldCount++;
+
+    const box = document.createElement("div");
+    box.className = "draggable code-field";
+    box.dataset.type = "code";
+    box.dataset.name = "code_" + fieldCount;
+    box.textContent = "";  // hidden text
+
+    const del = document.createElement("div");
+    del.className = "delete-btn";
+    del.textContent = "×";
+    del.onclick = () => {
+        box.dataset.deleted = "1";
+        box.remove();
+    };
+    box.appendChild(del);
+
+    const container = document.getElementById("pdf-container");
+    const cRect = container.getBoundingClientRect();
+    const relLeft = mouseX - cRect.left;
+    const relTop  = mouseY - cRect.top;
+
+    Object.assign(box.style, {
+        position: "absolute",
+        left: relLeft + "px",
+        top: relTop + "px",
+        width: lastFieldWidth + "px",
+        height: lastFieldHeight + "px",
+        background: "rgba(255,255,255,0.8)",
+        border: "2px solid #0ea5e9",
+        borderRadius: "4px",
+        cursor: "move",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: "20",
+    });
+
+    container.appendChild(box);
+    enableDrag(box);
 }
 
 
@@ -497,59 +548,73 @@ function restoreSavedLayout() {
             zIndex: 20,
         });
 
+        /* ===============================
+           RESTORE DIFFERENT FIELD TYPES
+        =============================== */
+
         if (f.type === "checkbox") {
-    box.classList.add("checkbox-field");
+            box.classList.add("checkbox-field");
 
-    // restore state
-    box.dataset.checked = f.checked === "1" ? "1" : "0";
-    box.textContent = f.checked === "1" ? "✓" : "";
+            // restore state
+            box.dataset.checked = f.checked === "1" ? "1" : "0";
+            box.textContent = f.checked === "1" ? "✓" : "";
 
-    // ✅ restore BLUE BACKGROUND + STYLING
-    Object.assign(box.style, {
-        background: "rgba(37, 99, 235, 0.08)",  // BLUE
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-        fontSize: "20px",
-        fontWeight: "bold",
-        userSelect: "none",
-    });
+            Object.assign(box.style, {
+                background: "rgba(37, 99, 235, 0.08)",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "20px",
+                fontWeight: "bold",
+                userSelect: "none",
+            });
 
-    // click toggles check state
-    box.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isChecked = box.dataset.checked === "1";
-        box.dataset.checked = isChecked ? "0" : "1";
-        box.textContent = isChecked ? "" : "✓";
-    });
-}
-
+            box.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const isChecked = box.dataset.checked === "1";
+                box.dataset.checked = isChecked ? "0" : "1";
+                box.textContent = isChecked ? "" : "✓";
+            });
+        }
 
         else if (f.type === "signature") {
             box.classList.add("signature-field");
             box.textContent = "Signature";
             box.style.border = "2px dashed #6b21a8";
         }
+
+        /* ⭐ NEW SPECIAL FIELD TYPE: CODE FIELD */
+        else if (f.type === "code") {
+            box.classList.add("code-field");
+            box.textContent = "";
+            box.style.border = "2px solid #0ea5e9";
+            box.style.background = "rgba(255,255,255,0.85)";
+        }
+
         else {
+            // regular text field
             box.textContent = "";
             box.style.border = "2px dashed #0071e3";
             box.style.background = "rgba(255,255,255,0.8)";
         }
 
-        // ADD DELETE BUTTON
+        /* ===============================
+           DELETE BUTTON FOR ALL FIELDS
+        =============================== */
         const del = document.createElement("div");
         del.className = "delete-btn";
         del.textContent = "×";
-del.onclick = () => {
-    box.dataset.deleted = "1";   // mark as deleted
-    box.remove();                // remove from screen
-};
+        del.onclick = () => {
+            box.dataset.deleted = "1";
+            box.remove();
+        };
         box.appendChild(del);
 
         document.getElementById("pdf-container").appendChild(box);
         enableDrag(box);
     });
 }
+
 
 
    </script>
