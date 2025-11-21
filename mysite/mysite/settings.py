@@ -150,7 +150,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # Which environment to use: "test" or "live"
-STRIPE_MODE = os.getenv("STRIPE_MODE", "live")
+STRIPE_MODE = os.getenv("STRIPE_MODE", "test")
 
 if STRIPE_MODE == "live":
     STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
