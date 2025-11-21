@@ -473,8 +473,8 @@ body.modal-open {
 
 .code-input .cell {
     flex: 1;
-    min-width: 10px;   /* ← make each box much smaller */
-    max-width: 14px;
+    min-width: 0;    /* allow shrink */
+    max-width: none; /* allow stretch */
     border: 1px solid #d1d5db;
 
     display: flex;
@@ -1388,6 +1388,9 @@ document.querySelectorAll(".code-input").forEach(codeEl => {
     }
 
     const cells = [...codeEl.querySelectorAll(".cell")];
+
+    codeEl.style.display = "flex";
+    cells.forEach(c => c.style.flex = "1");
 
     // Click → focus first empty cell
     codeEl.addEventListener("click", (e) => {
