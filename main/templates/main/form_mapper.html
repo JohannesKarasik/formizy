@@ -67,8 +67,8 @@
    <style>
     .delete-btn {
         position: absolute;
-        top: -8px;
-        right: -8px;
+        top: -18px;   /* lifted higher */
+        right: -8px;  /* small horizontal offset */
         width: 18px;
         height: 18px;
         background: #e11d48;
@@ -163,7 +163,7 @@ document.addEventListener("mousemove", (e) => {
     const box = document.createElement("div");
     box.className = "draggable";
     box.dataset.name = "field_" + fieldCount;
-    box.textContent = "Field " + fieldCount;
+    box.textContent = "";
 
     const del = document.createElement("div");
     del.className = "delete-btn";
@@ -273,7 +273,7 @@ function addSignature() {
     box.className = "draggable signature-field";
     box.dataset.type = "signature";                 // 🔑 important
     box.dataset.name = "signature_" + fieldCount;
-    box.textContent = "Signature " + fieldCount;
+    box.textContent = "";
 
 
     const del = document.createElement("div");
@@ -531,7 +531,7 @@ function restoreSavedLayout() {
             box.style.border = "2px dashed #6b21a8";
         }
         else {
-            box.textContent = f.name;
+            box.textContent = "";
             box.style.border = "2px dashed #0071e3";
             box.style.background = "rgba(255,255,255,0.8)";
         }
