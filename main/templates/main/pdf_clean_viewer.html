@@ -1235,6 +1235,7 @@ function closeSuccessModal() {
     /* =========================
    FULLSCREEN HANDLER
 ========================= */
+/* FULLSCREEN HANDLER */
 const viewerFrame = document.querySelector(".viewer-frame");
 const fullscreenBtn = document.getElementById("fullscreen-btn");
 
@@ -1242,25 +1243,34 @@ if (fullscreenBtn && viewerFrame) {
 
     fullscreenBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            // Enter fullscreen mode
-            viewerFrame.requestFullscreen().catch(err => {
-                console.error("Fullscreen error:", err);
-            });
+            viewerFrame.requestFullscreen();
         } else {
-            // Exit fullscreen mode
             document.exitFullscreen();
         }
     });
 
-    // Optional: change text when in fullscreen
     document.addEventListener("fullscreenchange", () => {
+        // Update button
         if (document.fullscreenElement) {
             fullscreenBtn.textContent = "⤢ Exit full screen";
         } else {
             fullscreenBtn.textContent = "⤢ Full screen";
         }
+
+        // VERY IMPORTANT: re-position overlays
+        setTimeout(() => {
+            const canvases = document.querySelectorAll("#pdf-pages canvas");
+            positionOverlays(Array.from(canvases));
+        }, 150);
     });
 }
+
+// Optional: fix on window resize as well
+window.addEventListener("resize", () => {
+    const canvases = document.querySelectorAll("#pdf-pages canvas");
+    positionOverlays(Array.from(canvases));
+});
+
 
     </script>
     
