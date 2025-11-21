@@ -375,8 +375,10 @@ body.modal-open {
 
 
 #fullscreen-btn {
-    display: inline-block;
-    margin: 10px auto 0 auto;
+    position: absolute;
+    top: 48px; /* right under toolbar (toolbar = 40px tall + padding) */
+    right: 10px;
+
     padding: 6px 14px;
     background: rgba(15,23,42,0.85);
     color: #fff;
@@ -384,13 +386,12 @@ body.modal-open {
     font-size: 13px;
     cursor: pointer;
     backdrop-filter: blur(4px);
+    z-index: 50;
 
-    /* center button */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 120px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
+
 
 /* Show button when hovering viewer */
 .viewer-frame:hover #fullscreen-btn {
