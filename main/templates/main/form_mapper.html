@@ -276,11 +276,23 @@ enableDrag(box);
 function addCodeField() {
     fieldCount++;
 
+    // Ask how many digits
+    let digits = prompt("How many digits?");
+    if (!digits) return;
+    digits = parseInt(digits.trim());
+    if (isNaN(digits) || digits < 1) {
+        alert("Invalid number");
+        return;
+    }
+
     const box = document.createElement("div");
     box.className = "draggable code-field";
     box.dataset.type = "code";
     box.dataset.name = "code_" + fieldCount;
-    box.textContent = "";  // hidden text
+    box.dataset.digits = digits;
+
+    // Each digit cell ~18px + 2px gap (use consistent spacing)
+    const totalWidth = digits * 18 + (digits - 1) * 2;
 
     const del = document.createElement("div");
     del.className = "delete-btn";
@@ -300,9 +312,9 @@ function addCodeField() {
         position: "absolute",
         left: relLeft + "px",
         top: relTop + "px",
-        width: lastFieldWidth + "px",
-        height: lastFieldHeight + "px",
-        background: "rgba(255,255,255,0.8)",
+        width: totalWidth + "px",
+        height: "20px",
+        background: "rgba(255,255,255,0.85)",
         border: "2px solid #0ea5e9",
         borderRadius: "4px",
         cursor: "move",
@@ -315,6 +327,7 @@ function addCodeField() {
     container.appendChild(box);
     enableDrag(box);
 }
+
 
 
 function addSignature() {
