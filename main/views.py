@@ -736,19 +736,56 @@ from .models import PaidForm
 
 @login_required
 def download_pdf(request, country_code, form_slug):
+    from .models import PaidForm, GeneratedPDF
+    form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
-    # Check if user paid
+    # 1) Check payment
     has_paid = PaidForm.objects.filter(
         user=request.user,
         form_slug=form_slug
     ).exists()
 
     if not has_paid:
-        # Redirect back to form with flag “payment required”
         return redirect(f"/{country_code}/{form_slug}/?payment_required=1")
 
-    # ---- CALL YOUR EXISTING FILL_PDF LOGIC ----
-    return fill_pdf(request, country_code, form_slug)
+    # 2) If already generated → return it
+    existing = GeneratedPDF.objects.filter(
+        user=request.user,
+        form_slug=form_slug
+    ).first()
+
+    if existing:
+        return FileResponse(
+            existing.pdf_file.open("rb"),
+            filename=f"{form_slug}_filled.pdf",
+            as_attachment=True,
+            content_type="application/pdf"
+        )
+
+    # 3) If not generated yet → generate once using fill_pdf logic
+    # (we simulate a POST with previously saved session fields)
+    saved_fields = request.session.get("saved_fields", {})
+
+    fake_request = request
+    fake_request._body = json.dumps({"fields_data": saved_fields}).encode("utf-8")
+    fake_request.method = "POST"
+
+    # Call fill_pdf to generate into memory
+    filled_pdf_response = fill_pdf(fake_request, country_code, form_slug)
+
+    # 4) Save permanently so user can re-download in future
+    from django.core.files.base import ContentFile
+    output = filled_pdf_response.getvalue()
+
+    GeneratedPDF.objects.create(
+        user=request.user,
+        form_slug=form_slug,
+        pdf_file=ContentFile(output, name=f"{form_slug}_filled.pdf")
+    )
+
+    # 5) Return the file
+    return filled_pdf_response
+
 
 
 def has_paid(request, country_code, form_slug):
