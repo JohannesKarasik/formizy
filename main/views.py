@@ -352,7 +352,6 @@ def fill_pdf(request, country_code, form_slug):
     doc = fitz.open("pdf", original_pdf_bytes)
 
     # Load font only INSIDE the new PDF
-    font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
     FONT_NAME = "ArialUnicode"
     FONT_SIZE = 10
 
@@ -380,7 +379,7 @@ def fill_pdf(request, country_code, form_slug):
 
         page = doc[page_index]
 
-        page.insert_font(fontfile=font_path, fontname=FONT_NAME)
+        page.insert_font(fontname="helv")  # built-in Helvetica
 
         px = float(field.get("pixel_x", 0))
         py = float(field.get("pixel_y", 0))
@@ -799,7 +798,6 @@ def pre_generate_pdf(request, country_code, form_slug):
     original_bytes = open(form_info.pdf_file.path, "rb").read()
     doc = fitz.open("pdf", original_bytes)
 
-    font_path = os.path.join(settings.BASE_DIR, "main", "fonts", "Arial Unicode.ttf")
     FONT_NAME = "ArialUnicode"
     FONT_SIZE = 10
     OFFSET_X = 0
@@ -814,7 +812,7 @@ def pre_generate_pdf(request, country_code, form_slug):
         page_index = max(0, int(field.get("page", 1)) - 1)
         page = doc[page_index]
 
-        page.insert_font(fontfile=font_path, fontname=FONT_NAME)
+        page.insert_font(fontname="helv")  # built-in Helvetica
 
         x = float(field["pixel_x"]) + OFFSET_X
         y = float(field["pixel_y"]) + OFFSET_Y
