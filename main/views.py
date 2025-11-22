@@ -91,6 +91,8 @@ LANGUAGE_TEXT = {
         "pay_modal_success_title": "Payment successful 🎉",
         "pay_modal_success_desc": "Thank you! Your payment was successful. You can now download the completed PDF.",
         "pay_modal_success_btn": "Download PDF",
+        "fullscreen": "Full screen",        # EN
+        "fullscreen_exit": "Exit full screen",
 
     },
 
@@ -127,6 +129,8 @@ LANGUAGE_TEXT = {
         "pay_modal_success_title": "Zahlung erfolgreich 🎉",
         "pay_modal_success_desc": "Vielen Dank! Ihre Zahlung war erfolgreich. Sie können das ausgefüllte PDF jetzt herunterladen.",
         "pay_modal_success_btn": "PDF herunterladen",
+        "fullscreen": "Vollbild",           # DE
+        "fullscreen_exit": "Vollbild verlassen",
 
 
     },
@@ -163,6 +167,8 @@ LANGUAGE_TEXT = {
         "pay_modal_success_title": "Pago exitoso 🎉",
         "pay_modal_success_desc": "¡Gracias! Tu pago fue exitoso. Ahora puedes descargar el PDF completado.",
         "pay_modal_success_btn": "Descargar PDF",
+        "fullscreen": "Pantalla completa",  # ES
+        "fullscreen_exit": "Salir de pantalla completa",
 
 
     },
@@ -186,6 +192,8 @@ LANGUAGE_TEXT = {
         "pay_modal_success_title": "Pagamento riuscito 🎉",
         "pay_modal_success_desc": "Grazie! Il pagamento è andato a buon fine. Ora puoi scaricare il PDF compilato.",
         "pay_modal_success_btn": "Scarica PDF",
+        "fullscreen": "Schermo intero",     # IT
+        "fullscreen_exit": "Esci da schermo intero",
 
 
     }
