@@ -1019,7 +1019,7 @@ body.modal-open {
             {
                 method: "POST",
                 headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-CSRFToken": getCSRF(),
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ fields_data: allFields })
