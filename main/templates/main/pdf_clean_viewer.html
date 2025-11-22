@@ -491,6 +491,19 @@ body.modal-open {
 }
 
 
+#fullscreen-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* <<< makes room */
+}
+
+.fs-icon {
+    font-size: 14px;
+}
+
+.fs-text {
+    font-size: 13px;
+}
 
 
    </style>
@@ -548,8 +561,11 @@ body.modal-open {
          </div>
          
 
-         <div id="fullscreen-btn">⤢ {{ lang.fullscreen }}</div>
-
+         <div id="fullscreen-btn">
+            <span class="fs-icon">⤢</span>
+            <span class="fs-text">{{ lang.fullscreen }}</span>
+        </div>
+        
            <!-- 📄 FIXED-HEIGHT SCROLL BOX -->
            <div id="pdf-scroll">
                <div id="pdf-container">
