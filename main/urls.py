@@ -24,7 +24,9 @@ urlpatterns = [
         name="map_form"
     ),
 
-    # ACTION ROUTES FIRST
+    # =============================
+    # ACTION ROUTES — must be ABOVE country & form_detail
+    # =============================
     path('<str:country_code>/<str:form_slug>/store-pending-fields/',
          views.store_pending_fields,
          name="store_pending_fields"),
@@ -47,17 +49,19 @@ urlpatterns = [
 
     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
 
-    # COUNTRY PAGE (must be before form_detail)
+    # =============================
+    # COUNTRY ROUTE
+    # =============================
     re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
 
-    # MUST BE LAST
+    # =============================
+    # FORM DETAIL (must ALWAYS be last)
+    # =============================
      re_path(
-     r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
-     views.form_detail,
-     name='form_detail'
+         r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
+         views.form_detail,
+         name='form_detail'
      )
-
-
 ]
 
 sitemaps = {
