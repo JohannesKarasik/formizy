@@ -387,27 +387,50 @@ def fill_pdf(request, country_code, form_slug):
         y = py + OFFSET_Y
 
         # Checkbox
-        if field.get("type") == "checkbox":
-            if str(value) == "1":
-                page.insert_text(
-                    (x, y),
-                    CHECKMARK,
-                    fontsize=14,
-                    fontname=FONT_NAME,
-                    color=(0, 0, 0),
-                    overlay=True,
-                )
+        # ---------------------------------------------
+        # SAFE INSERT — prevents all PyMuPDF crashes
+        # ---------------------------------------------
+        try:
+            # Validate coordinates
+            if x is None or y is None:
+                raise ValueError("Invalid coords")
+
+            # Clamp coordinates inside page
+            x = max(0, min(float(x), page.rect.width - 5))
+            y = max(0, min(float(y), page.rect.height - 5))
+
+            # Convert the value safely
+            safe_text = str(value)
+            safe_text = safe_text.encode("utf-8", "replace").decode("utf-8")
+
+            # Use built-in Helvetica (works with unicode fallback)
+            page.insert_font(fontname="helv")
+
+            # Checkbox
+            if field.get("type") == "checkbox":
+                if str(value) == "1":
+                    page.insert_text(
+                        (x, y),
+                        CHECKMARK,
+                        fontsize=14,
+                        fontname="helv",
+                        overlay=True,
+                    )
+            # Normal text field
+            else:
+                if safe_text.strip():
+                    page.insert_text(
+                        (x, y),
+                        safe_text,
+                        fontsize=FONT_SIZE,
+                        fontname="helv",
+                        overlay=True,
+                    )
+
+        except Exception as e:
+            print("🔥 INSERT ERROR:", e)
             continue
 
-        # Text field
-        page.insert_text(
-            (x, y),
-            str(value),
-            fontsize=FONT_SIZE,
-            fontname=FONT_NAME,
-            color=(0, 0, 0),
-            overlay=True,
-        )
 
     # ---------------------------------------------------
     # ✔ ALWAYS SAVE TO MEMORY — NEVER SAVE TO DISK
