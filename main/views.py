@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth import logout
 from .models import Form, Country
+from .models import Form, Country, PaidForm, GeneratedPDF, LandingPDF
+
 
 
 
