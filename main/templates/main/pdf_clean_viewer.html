@@ -191,6 +191,8 @@
     z-index: 20;
     box-sizing: border-box;
     cursor: pointer;
+    max-width: 280px !important;     /* Adjust to match preview width */
+    width: auto !important;     
 }
 
 
@@ -639,10 +641,7 @@ body.modal-open {
 
 
 
-.sig-modal-dialog {
-    width: calc(100% - 48px) !important; /* 24px padding on each side */
-    max-width: 420px;
-}
+
 
    </style>
 {% endblock %}
