@@ -99,6 +99,14 @@ LANGUAGE_TEXT = {
         "header_logout": "Logout",
         "close": "Close",
         "contact_reach": "You can reach us anytime at:",
+        "sig_title": "Add your signature",
+        "sig_label": "Type your full name",
+        "sig_preview": "Preview",
+        "sig_cancel": "Cancel",
+        "sig_apply": "Apply signature",
+
+        "contact_reach": "You can reach us anytime at:",
+
 
 
 
@@ -143,6 +151,14 @@ LANGUAGE_TEXT = {
         "header_logout": "Abmelden",
         "close": "Schließen",
         "contact_reach": "Sie können uns jederzeit erreichen unter:",
+        "sig_title": "Unterschrift hinzufügen",
+        "sig_label": "Geben Sie Ihren vollständigen Namen ein",
+        "sig_preview": "Vorschau",
+        "sig_cancel": "Abbrechen",
+        "sig_apply": "Unterschrift übernehmen",
+
+        "contact_reach": "Sie können uns jederzeit erreichen unter:",
+
 
 
 
@@ -187,6 +203,13 @@ LANGUAGE_TEXT = {
         "header_logout": "Cerrar sesión",
         "close": "Cerrar",
         "contact_reach": "Puedes contactarnos en cualquier momento en:",
+        "sig_title": "Añadir tu firma",
+        "sig_label": "Escribe tu nombre completo",
+        "sig_preview": "Vista previa",
+        "sig_cancel": "Cancelar",
+        "sig_apply": "Aplicar firma",
+
+        "contact_reach": "Puedes contactarnos en cualquier momento en:",
 
 
 
@@ -217,6 +240,13 @@ LANGUAGE_TEXT = {
         "header_contact": "Contatti",
         "header_logout": "Logout",
         "close": "Chiudi",
+        "contact_reach": "Puoi contattarci in qualsiasi momento a:",
+        "sig_title": "Aggiungi la tua firma",
+        "sig_label": "Inserisci il tuo nome completo",
+        "sig_preview": "Anteprima",
+        "sig_cancel": "Annulla",
+        "sig_apply": "Applica firma",
+
         "contact_reach": "Puoi contattarci in qualsiasi momento a:",
 
 

@@ -784,17 +784,26 @@ body.modal-open {
 <div id="signature-modal" class="sig-modal" aria-hidden="true">
     <div class="sig-modal-backdrop"></div>
     <div class="sig-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
-      <h2 id="sig-modal-title" class="sig-modal-title">Add your signature</h2>
-  
-      <label class="sig-modal-label" for="sig-name-input">Type your full name</label>
+      
+      <h2 id="sig-modal-title" class="sig-modal-title">{{ lang.sig_title }}</h2>
+
+      <label class="sig-modal-label" for="sig-name-input">
+        {{ lang.sig_label }}
+      </label>
+
       <input id="sig-name-input" class="sig-modal-input" type="text" placeholder="e.g. Jane Doe">
-  
-      <div class="sig-modal-preview-label">Preview</div>
+
+      <div class="sig-modal-preview-label">{{ lang.sig_preview }}</div>
       <div id="sig-preview" class="sig-modal-preview"></div>
-  
+
       <div class="sig-modal-actions">
-        <button type="button" class="sig-btn secondary" id="sig-cancel-btn">Cancel</button>
-        <button type="button" class="sig-btn primary" id="sig-apply-btn">Apply signature</button>
+        <button type="button" class="sig-btn secondary" id="sig-cancel-btn">
+          {{ lang.sig_cancel }}
+        </button>
+
+        <button type="button" class="sig-btn primary" id="sig-apply-btn">
+          {{ lang.sig_apply }}
+        </button>
       </div>
     </div>
 </div>
