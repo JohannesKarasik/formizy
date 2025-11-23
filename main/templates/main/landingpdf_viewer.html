@@ -119,4 +119,10 @@
 </script>
 <script src="{% static 'viewer/viewer_core.js' %}"></script>
 
+<script>
+    const pendingPaymentCountry = "{{ country_code }}";
+    const pendingPaymentSlug = "{{ form_slug }}";   <!-- NOT form_info.slug -->
+</script>
+
+
 {% endblock %}
