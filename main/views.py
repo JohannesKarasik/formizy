@@ -1041,6 +1041,8 @@ def landingpdf_detail(request, country_code, slug):
         "lang": lang,
         "lang_code": lang_code,
         "related_forms": None,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+
     })
 
 
