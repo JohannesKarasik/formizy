@@ -525,7 +525,7 @@
                 font-weight:600;
                 font-size:14px;
                ">
-            {{ lang.logout }}
+            {{ lang.header_logout }}
             </a>
           {% endif %}
       
@@ -546,7 +546,8 @@
     
             {% if request.user.is_authenticated %}
             <a href="" style="color:#2563eb;">{{ lang.nav_contact }}</a>
-              <a href="{% url 'logout' %}" style="color:#2563eb;">{{ lang.logout }}
+              <a href="{% url 'logout' %}" style="color:#2563eb;">{{ lang.header_logout }}
+
             </a>
               {% endif %}
         </div>
