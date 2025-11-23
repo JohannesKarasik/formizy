@@ -106,6 +106,7 @@ LANGUAGE_TEXT = {
         "sig_apply": "Apply signature",
 
         "contact_reach": "You can reach us anytime at:",
+        "sig_placeholder": "Sign here",  
 
 
 
@@ -158,6 +159,7 @@ LANGUAGE_TEXT = {
         "sig_apply": "Unterschrift übernehmen",
 
         "contact_reach": "Sie können uns jederzeit erreichen unter:",
+        "sig_placeholder": "Hier unterschreiben", 
 
 
 
@@ -210,6 +212,7 @@ LANGUAGE_TEXT = {
         "sig_apply": "Aplicar firma",
 
         "contact_reach": "Puedes contactarnos en cualquier momento en:",
+        "sig_placeholder": "Firmar aquí", 
 
 
 
@@ -248,6 +251,8 @@ LANGUAGE_TEXT = {
         "sig_apply": "Applica firma",
 
         "contact_reach": "Puoi contattarci in qualsiasi momento a:",
+        "sig_field_placeholder": "Firma qui",
+
 
 
 

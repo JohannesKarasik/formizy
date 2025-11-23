@@ -502,16 +502,15 @@
                             </div>
                 
                         {% elif field.type == "signature" %}
-                            <input type="text"
-                                   class="signature-input"
-                                   placeholder="Sign here"
-                                   data-name="{{ field.name }}"
-                                   data-page="{{ field.page|default:1 }}"
-                                   data-px="{{ field.pixel_x }}"
-                                   data-py="{{ field.pixel_y }}"
-                                   data-pw="{{ field.pixel_width }}"
-                                   data-ph="{{ field.pixel_height }}">
-
+                                <input type="text"
+                                class="signature-input"
+                                placeholder="{{ lang.sig_placeholder }}"
+                                data-name="{{ field.name }}"
+                                data-page="{{ field.page|default:1 }}"
+                                data-px="{{ field.pixel_x }}"
+                                data-py="{{ field.pixel_y }}"
+                                data-pw="{{ field.pixel_width }}"
+                                data-ph="{{ field.pixel_height }}">
                             {% elif field.type == "code" %}
                             <div class="code-input"
                                 data-name="{{ field.name }}"
