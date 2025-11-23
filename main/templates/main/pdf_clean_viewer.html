@@ -629,6 +629,9 @@ body.modal-open {
        
 
     </div>  {# end .viewer-frame #}
+
+    {% if form_info.seo_title or form_info.seo_description or form_info.seo_sections or form_info.seo_faqs %}
+
 <!-- ⭐ SEO CONTENT (SAFE ZONE BELOW PDF VIEWER) -->
 <div style="margin-top:40px; padding:20px; background:white; border-radius:12px; border:1px solid #e6eaf2; max-width:800px; margin-left:auto; margin-right:auto;">
 
@@ -693,6 +696,9 @@ body.modal-open {
     {% endif %}
 
 </div>
+
+{% endif %}
+
 
 {% if related_forms %}
   <div style="margin-top:50px; padding:20px; background:#fff; border-radius:12px; border:1px solid #e6eaf2; max-width:900px; margin:40px auto 0;">
