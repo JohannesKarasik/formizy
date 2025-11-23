@@ -952,24 +952,36 @@ def debug_stripe(request):
         SK={settings.STRIPE_SECRET_KEY}<br>
     """)
 
+def landingpdf_detail(request, country_code, slug):
+    """
+    Landing-page PDF viewer, but now supports language based on /<country_code>/lp-pdf/<slug>
+    """
 
-def landingpdf_detail(request, slug):
     pdf_info = get_object_or_404(LandingPDF, slug=slug)
 
+    # Load language according to URL → cookie → fallback
+    lang, lang_code = get_ui_language(request, country_code)
+
+    # PDF viewer scaling logic
     import time
     pdf_url = f"{pdf_info.pdf_file.url}?v={int(time.time())}"
     pdf_path = pdf_info.pdf_file.path
+
     doc = fitz.open(pdf_path)
     width = doc[0].rect.width
     doc.close()
+
     viewer_scale = 833 / width
 
     return render(request, "main/pdf_clean_viewer.html", {
-        "form_info": pdf_info,    # ✔ viewer expects form_info, so we reuse same key
+        "form_info": pdf_info,           # viewer expects this key
         "pdf_url": pdf_url,
         "viewer_scale": viewer_scale,
-        "country_code": "lp",     # dummy so template doesn't break
-        "lang": LANGUAGE_TEXT["en"],
-        "lang_code": "en",
+
+        # NEW: dynamic from URL
+        "country_code": country_code,
+        "lang": lang,
+        "lang_code": lang_code,
+
         "related_forms": None,
     })
