@@ -1,0 +1,115 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}
+   {{ pdf_info.title }} — PDF Viewer
+{% endblock %}
+
+{% block meta %}
+   <meta name="description" content="{{ pdf_info.description|default:'' }}">
+   <link rel="canonical" href="https://formskies.com/lp-pdf/{{ pdf_info.slug }}/">
+{% endblock %}
+
+{% block content %}
+<main class="content-main">
+
+    <h1 style="font-size:32px;font-weight:700;text-align:center;margin-bottom:20px;">
+        {{ pdf_info.title }}
+    </h1>
+
+    {% if pdf_info.description %}
+    <p style="font-size:18px;text-align:center;color:#444;max-width:720px;margin:0 auto 30px;">
+        {{ pdf_info.description }}
+    </p>
+    {% endif %}
+
+    <!-- === PDF VIEWER === -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <div class="viewer-frame">
+
+        <!-- Toolbar -->
+        <div class="viewer-toolbar">
+            <div class="viewer-toolbar-left">
+                PDF Preview
+            </div>
+
+            <div class="viewer-toolbar-right">
+                <button class="toolbar-btn" onclick="zoomOut()">−</button>
+                <span id="zoom-label">100%</span>
+                <button class="toolbar-btn" onclick="zoomIn()">+</button>
+            </div>
+        </div>
+
+        <div id="fullscreen-btn">
+            ⤢ Fullscreen
+        </div>
+
+        <div id="pdf-scroll">
+            <div id="pdf-container">
+                <div id="pdf-pages">
+
+                    {% if pdf_info.fields_schema %}
+                        {% for field in pdf_info.fields_schema %}
+                            
+                            {% if field.type == "checkbox" %}
+                                <div class="checkbox"
+                                     data-name="{{ field.name }}"
+                                     data-page="{{ field.page|default:1 }}"
+                                     data-px="{{ field.pixel_x }}"
+                                     data-py="{{ field.pixel_y }}"
+                                     data-pw="{{ field.pixel_width }}"
+                                     data-ph="{{ field.pixel_height }}">
+                                </div>
+
+                            {% elif field.type == "signature" %}
+                                <input type="text"
+                                       class="signature-input"
+                                       placeholder="Sign here"
+                                       data-name="{{ field.name }}"
+                                       data-page="{{ field.page|default:1 }}"
+                                       data-px="{{ field.pixel_x }}"
+                                       data-py="{{ field.pixel_y }}"
+                                       data-pw="{{ field.pixel_width }}"
+                                       data-ph="{{ field.pixel_height }}">
+
+                            {% elif field.type == "code" %}
+                                <div class="code-input"
+                                    data-name="{{ field.name }}"
+                                    data-page="{{ field.page }}"
+                                    data-px="{{ field.pixel_x }}"
+                                    data-py="{{ field.pixel_y }}"
+                                    data-pw="{{ field.pixel_width }}"
+                                    data-ph="{{ field.pixel_height }}"
+                                    data-digits="{{ field.digits }}">
+                                </div>
+
+                            {% else %}
+                                <input type="text"
+                                       data-name="{{ field.name }}"
+                                       data-page="{{ field.page|default:1 }}"
+                                       data-px="{{ field.pixel_x }}"
+                                       data-py="{{ field.pixel_y }}"
+                                       data-pw="{{ field.pixel_width }}"
+                                       data-ph="{{ field.pixel_height }}">
+                            {% endif %}
+
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Reuse your full JavaScript viewer code -->
+<script>
+    const pdfUrl = "{{ pdf_url }}";
+    const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
+</script>
+<script src="{% static 'viewer/viewer_core.js' %}"></script>
+
+{% endblock %}

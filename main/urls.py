@@ -31,6 +31,9 @@ urlpatterns = [
          views.store_pending_fields,
          name="store_pending_fields"),
 
+     path("lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail")
+
+
     path('<str:country_code>/<str:form_slug>/save-fields/',
          views.save_fields,
          name="save_fields"),

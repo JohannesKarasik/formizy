@@ -949,3 +949,25 @@ def debug_stripe(request):
         PK={settings.STRIPE_PUBLIC_KEY}<br>
         SK={settings.STRIPE_SECRET_KEY}<br>
     """)
+
+
+def landingpdf_detail(request, slug):
+    pdf_info = get_object_or_404(LandingPDF, slug=slug)
+
+    import time
+    pdf_url = f"{pdf_info.pdf_file.url}?v={int(time.time())}"
+    pdf_path = pdf_info.pdf_file.path
+    doc = fitz.open(pdf_path)
+    width = doc[0].rect.width
+    doc.close()
+    viewer_scale = 833 / width
+
+    return render(request, "main/pdf_clean_viewer.html", {
+        "form_info": pdf_info,    # ✔ viewer expects form_info, so we reuse same key
+        "pdf_url": pdf_url,
+        "viewer_scale": viewer_scale,
+        "country_code": "lp",     # dummy so template doesn't break
+        "lang": LANGUAGE_TEXT["en"],
+        "lang_code": "en",
+        "related_forms": None,
+    })
