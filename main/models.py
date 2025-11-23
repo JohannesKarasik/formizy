@@ -93,16 +93,29 @@ from django.db import models
 from django.urls import reverse
 
 
+from django.db import models
+from django.urls import reverse
+from .models import Country  # IMPORTANT → you already have this model
+
 class LandingPDF(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
 
+    # NEW — link to Country just like Form does
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.CASCADE,
+        related_name="landing_pdfs",
+        null=True,
+        blank=True,
+    )
+
     description = models.TextField(blank=True)
 
-    # Upload folder separated from forms
+    # Upload folder separate from normal forms
     pdf_file = models.FileField(upload_to="landing_pdfs/", blank=True, null=True)
 
-    # The JSON field schema for draggable fields
+    # Draggable fields schema
     fields_schema = models.JSONField(default=list, blank=True)
 
     total_pages = models.IntegerField(default=1)
@@ -110,8 +123,9 @@ class LandingPDF(models.Model):
     def get_absolute_url(self):
         return reverse(
             "landingpdf_detail",
-            kwargs={"slug": self.slug}
+            kwargs={"country_code": self.country.code, "slug": self.slug}
         )
 
     def __str__(self):
         return self.title
+
