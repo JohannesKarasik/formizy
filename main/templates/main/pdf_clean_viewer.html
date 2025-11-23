@@ -840,9 +840,10 @@ body.modal-open {
 :fullscreen #signature-modal {
     position: fixed !important;
     inset: 0 !important;
-    z-index: 2147483647 !important; /* max */
-    display: flex !important;
+    z-index: 2147483647 !important;
+    /* ❗ DO NOT CHANGE DISPLAY HERE */
 }
+
 
 :fullscreen #payment-modal .auth-backdrop,
 :fullscreen #payment-success-modal .auth-backdrop,
@@ -864,7 +865,7 @@ body.modal-open {
     position: fixed !important;
     inset: 0 !important;
     z-index: 2147483647 !important;
-    display: flex !important;
+    /* remove display:flex !important */
 }
 
 :-webkit-full-screen #payment-modal .auth-backdrop,
