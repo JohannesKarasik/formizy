@@ -1042,3 +1042,36 @@ def landingpdf_detail(request, country_code, slug):
         "lang_code": lang_code,
         "related_forms": None,
     })
+
+
+@login_required
+def create_landing_pdf_checkout_session(request, country_code, slug):
+    pdf_info = get_object_or_404(LandingPDF, slug=slug)
+
+    if settings.STRIPE_MODE == "live":
+        PRICE_ID = "price_1STc0oL5aHEScFcdbcdX3o0j"
+    else:
+        PRICE_ID = "price_1STXpBL5aHEScFcdhakCN4R0"
+
+    user_email = request.user.email
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        mode="payment",
+        line_items=[{"price": PRICE_ID, "quantity": 1}],
+        customer_email=user_email,
+        metadata={
+            "user_id": request.user.id,
+            "form_slug": slug,     # we store landing slug
+            "is_landing": True,    # mark it
+        },
+        locale=country_code.lower(),
+        success_url=request.build_absolute_uri(
+            f"/{country_code}/lp-pdf/{slug}/?paid=1"
+        ),
+        cancel_url=request.build_absolute_uri(
+            f"/{country_code}/lp-pdf/{slug}/"
+        ),
+    )
+
+    return JsonResponse({"id": session.id})
