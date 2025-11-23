@@ -813,43 +813,10 @@ body.modal-open {
 }
 
 
-/* Remove white block in fullscreen */
-:fullscreen main,
-:-webkit-full-screen main {
-    max-width: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    background: #000 !important; /* Or match viewer background */
-}
-
-/* Also fix the viewer frame expanding */
 :fullscreen .viewer-frame,
 :-webkit-full-screen .viewer-frame {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    background: #000 !important; /* only viewer goes dark */
 }
-
-
-:fullscreen .content-main,
-:-webkit-full-screen .content-main {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: none !important;
-    width: 100% !important;
-    background: #000 !important;
-}
-
-:fullscreen .wrap,
-:-webkit-full-screen .wrap {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-}
-
 
 </style>
 
