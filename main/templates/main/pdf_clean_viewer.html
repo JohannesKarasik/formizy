@@ -283,18 +283,22 @@
 
     .sig-modal-preview {
     width: 100%;
-    max-width: 300px;         /* <<< MATCH WIDTH */
+    max-width: 300px;
     margin: 0 auto;
     padding: 15px;
     min-height: 60px;
     border-radius: 10px;
     border: 1px dashed #cdd7ee;
     background: #f8faff;
-    font-size: 1.3rem;
+    font-size: 1.8rem;                 /* Slightly bigger; looks like handwriting */
     color: #1d2a3b;
     display: flex;
     align-items: center;
+
+    font-family: 'Caveat', system-ui !important;  /* <<< THIS FIXES IT */
+    letter-spacing: 0.02em;
 }
+
 
 .sig-modal-actions {
     width: 100%;
