@@ -285,7 +285,6 @@ def form_detail(request, country_code, form_slug):
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": form_info,
-        "pdf_info": pdf_info,
         "pdf_url": pdf_url,
         "country_code": country_code,
         "viewer_scale": viewer_scale,
@@ -967,7 +966,6 @@ def landingpdf_detail(request, slug):
 
     return render(request, "main/pdf_clean_viewer.html", {
         "form_info": pdf_info,    # ✔ viewer expects form_info, so we reuse same key
-        "pdf_info": pdf_info,
         "pdf_url": pdf_url,
         "viewer_scale": viewer_scale,
         "country_code": "lp",     # dummy so template doesn't break
