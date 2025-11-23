@@ -74,13 +74,13 @@ urlpatterns = [
          r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
          views.form_detail,
          name='form_detail'
-     )
+     ),
 
-     path(
-    "<str:country_code>/lp-pdf/<slug:slug>/create-checkout-session/",
-    views.create_landing_pdf_checkout_session,
-    name="create_landing_checkout",
-)
+        path(
+        "<str:country_code>/lp-pdf/<slug:slug>/create-checkout-session/",
+        views.create_landing_pdf_checkout_session,
+        name="create_landing_checkout",
+    )
 
 ]
 
