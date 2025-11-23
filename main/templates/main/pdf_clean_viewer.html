@@ -787,8 +787,8 @@
             wrapper.style.width = FIXED_WIDTH + "px";
             wrapper.dataset.page = pageNum;
 
-            pagesContainer.appendChild(canvas);
-
+            wrapper.appendChild(canvas);
+            pagesContainer.appendChild(wrapper);
     
             await page.render({
                 canvasContext: canvas.getContext("2d"),
