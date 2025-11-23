@@ -452,6 +452,26 @@
     opacity: 1;
 }
 
+
+/* Remove white block in fullscreen */
+:fullscreen main,
+:-webkit-full-screen main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    background: #000 !important; /* Or match viewer background */
+}
+
+/* Also fix the viewer frame expanding */
+:fullscreen .viewer-frame,
+:-webkit-full-screen .viewer-frame {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
 </style>
 
 {% endblock %}
