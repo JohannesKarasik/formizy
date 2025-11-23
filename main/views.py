@@ -98,6 +98,8 @@ LANGUAGE_TEXT = {
         "header_contact": "Contact Us",
         "header_logout": "Logout",
         "close": "Close",
+        "contact_reach": "You can reach us anytime at:",
+
 
 
     },
@@ -140,6 +142,8 @@ LANGUAGE_TEXT = {
         "header_contact": "Kontakt",
         "header_logout": "Abmelden",
         "close": "Schließen",
+        "contact_reach": "Sie können uns jederzeit erreichen unter:",
+
 
 
 
@@ -182,6 +186,8 @@ LANGUAGE_TEXT = {
         "header_contact": "Contacto",
         "header_logout": "Cerrar sesión",
         "close": "Cerrar",
+        "contact_reach": "Puedes contactarnos en cualquier momento en:",
+
 
 
 
@@ -211,6 +217,8 @@ LANGUAGE_TEXT = {
         "header_contact": "Contatti",
         "header_logout": "Logout",
         "close": "Chiudi",
+        "contact_reach": "Puoi contattarci in qualsiasi momento a:",
+
 
 
     }
