@@ -62,6 +62,15 @@
                💾 Save Layout
            </button>
 
+
+           <button onclick="resetLayout()"
+        style="display:block;width:100%;padding:10px;margin-top:10px;
+               border:none;border-radius:6px;
+               background:#dc2626;color:white;cursor:pointer;">
+                ❌ Reset Layout
+            </button>
+
+
        </div>
 
    </div>
@@ -631,6 +640,30 @@ function restoreSavedLayout() {
     });
 }
 
+function resetLayout() {
+
+if (!confirm("Are you sure? This will delete all fields permanently.")) {
+    return;
+}
+
+// Remove all displayed fields
+document.querySelectorAll(".draggable").forEach(el => el.remove());
+
+// Send empty field list to backend
+fetch(window.location.href, {
+    method: "POST",
+    headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify([])   // empty layout!
+})
+.then(r => r.json())
+.then(data => {
+    alert("Layout reset!");
+})
+.catch(err => alert("Error resetting layout"));
+}
 
 
    </script>
