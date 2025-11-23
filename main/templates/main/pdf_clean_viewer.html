@@ -1638,7 +1638,7 @@ if (fullscreenBtn && viewerFrame) {
 
     fullscreenBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            viewerFrame.requestFullscreen();
+            document.body.requestFullscreen();
         } else {
             document.exitFullscreen();
         }
