@@ -1067,6 +1067,91 @@ body.modal-open {
 
     
 
+<!-- === PAYMENT MODAL === -->
+<div id="payment-modal" class="auth-modal-hidden">
+    <div class="auth-backdrop" onclick="closePaymentModal()"></div>
+
+    <div class="auth-box">
+        <button class="auth-close" onclick="closePaymentModal()">×</button>
+
+        <h2 style="text-align:center;margin-bottom:10px;">
+            {{ lang.pay_modal_title }}
+        </h2>
+        
+        <p style="text-align:center;color:#555;margin-bottom:20px;">
+            {{ lang.pay_modal_description }}
+        </p>
+        
+        <button class="auth-btn-primary" onclick="proceedPayment()">
+            {{ lang.pay_modal_button }}
+        </button>
+        
+
+        <!-- 💳 Secure Stripe Payment message -->
+<!-- 💳 Secure Stripe Payment message -->
+        <div style="margin-top:18px;opacity:0.85;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span>Sicher bezahlen mit</span>
+            <img src="{% static 'stripelogo.png' %}"
+                alt="Stripe"
+                style="height:22px;opacity:0.9;">
+        </div>
+
+    </div>
+</div>
+
+    <!-- === PAYMENT SUCCESS MODAL === -->
+<div id="payment-success-modal" class="auth-modal-hidden">
+    <div class="auth-backdrop" onclick="closeSuccessModal()"></div>
+
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeSuccessModal()">×</button>
+
+        <h2 style="text-align:center;margin-bottom:12px;">
+            {{ lang.pay_modal_success_title }}
+        </h2>
+        
+        <p style="text-align:center;color:#555;margin-bottom:20px;">
+            {{ lang.pay_modal_success_desc }}
+        </p>
+        
+        <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
+            {{ lang.pay_modal_success_btn }}
+        </button>
+        
+        
+    </div>
+</div>
+
+
+
+<!-- ✍️ Signature modal -->
+<div id="signature-modal" class="sig-modal" aria-hidden="true">
+    <div class="sig-modal-backdrop"></div>
+    <div class="sig-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
+      
+      <h2 id="sig-modal-title" class="sig-modal-title">{{ lang.sig_title }}</h2>
+
+      <label class="sig-modal-label" for="sig-name-input">
+        {{ lang.sig_label }}
+      </label>
+
+      <input id="sig-name-input" class="sig-modal-input" type="text" placeholder="e.g. Jane Doe">
+
+      <div class="sig-modal-preview-label">{{ lang.sig_preview }}</div>
+      <div id="sig-preview" class="sig-modal-preview"></div>
+
+      <div class="sig-modal-actions">
+        <button type="button" class="sig-btn secondary" id="sig-cancel-btn">
+          {{ lang.sig_cancel }}
+        </button>
+
+        <button type="button" class="sig-btn primary" id="sig-apply-btn">
+          {{ lang.sig_apply }}
+        </button>
+      </div>
+    </div>
+</div>
+
 
 
 
@@ -1638,7 +1723,7 @@ if (fullscreenBtn && viewerFrame) {
 
     fullscreenBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            document.body.requestFullscreen();
+            viewerFrame.requestFullscreen();
         } else {
             document.exitFullscreen();
         }
@@ -1738,93 +1823,5 @@ document.querySelectorAll(".code-input").forEach(codeEl => {
     </script>
     
    </main>
-
-
-
-<!-- === PAYMENT MODAL === -->
-<div id="payment-modal" class="auth-modal-hidden">
-    <div class="auth-backdrop" onclick="closePaymentModal()"></div>
-
-    <div class="auth-box">
-        <button class="auth-close" onclick="closePaymentModal()">×</button>
-
-        <h2 style="text-align:center;margin-bottom:10px;">
-            {{ lang.pay_modal_title }}
-        </h2>
-        
-        <p style="text-align:center;color:#555;margin-bottom:20px;">
-            {{ lang.pay_modal_description }}
-        </p>
-        
-        <button class="auth-btn-primary" onclick="proceedPayment()">
-            {{ lang.pay_modal_button }}
-        </button>
-        
-
-        <!-- 💳 Secure Stripe Payment message -->
-<!-- 💳 Secure Stripe Payment message -->
-        <div style="margin-top:18px;opacity:0.85;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span>Sicher bezahlen mit</span>
-            <img src="{% static 'stripelogo.png' %}"
-                alt="Stripe"
-                style="height:22px;opacity:0.9;">
-        </div>
-
-    </div>
-</div>
-
-    <!-- === PAYMENT SUCCESS MODAL === -->
-<div id="payment-success-modal" class="auth-modal-hidden">
-    <div class="auth-backdrop" onclick="closeSuccessModal()"></div>
-
-    <div class="auth-box">
-        <button class="auth-close" onclick="closeSuccessModal()">×</button>
-
-        <h2 style="text-align:center;margin-bottom:12px;">
-            {{ lang.pay_modal_success_title }}
-        </h2>
-        
-        <p style="text-align:center;color:#555;margin-bottom:20px;">
-            {{ lang.pay_modal_success_desc }}
-        </p>
-        
-        <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
-            {{ lang.pay_modal_success_btn }}
-        </button>
-        
-        
-    </div>
-</div>
-
-
-
-<!-- ✍️ Signature modal -->
-<div id="signature-modal" class="sig-modal" aria-hidden="true">
-    <div class="sig-modal-backdrop"></div>
-    <div class="sig-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
-      
-      <h2 id="sig-modal-title" class="sig-modal-title">{{ lang.sig_title }}</h2>
-
-      <label class="sig-modal-label" for="sig-name-input">
-        {{ lang.sig_label }}
-      </label>
-
-      <input id="sig-name-input" class="sig-modal-input" type="text" placeholder="e.g. Jane Doe">
-
-      <div class="sig-modal-preview-label">{{ lang.sig_preview }}</div>
-      <div id="sig-preview" class="sig-modal-preview"></div>
-
-      <div class="sig-modal-actions">
-        <button type="button" class="sig-btn secondary" id="sig-cancel-btn">
-          {{ lang.sig_cancel }}
-        </button>
-
-        <button type="button" class="sig-btn primary" id="sig-apply-btn">
-          {{ lang.sig_apply }}
-        </button>
-      </div>
-    </div>
-</div>
-
 
 {% endblock %}
