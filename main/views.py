@@ -95,6 +95,10 @@ LANGUAGE_TEXT = {
         "pay_modal_success_btn": "Download PDF",
         "fullscreen": "Full screen",        # EN
         "fullscreen_exit": "Exit full screen",
+        "header_contact": "Contact Us",
+        "header_logout": "Logout",
+        "close": "Close",
+
 
     },
 
@@ -133,6 +137,10 @@ LANGUAGE_TEXT = {
         "pay_modal_success_btn": "PDF herunterladen",
         "fullscreen": "Vollbild",           # DE
         "fullscreen_exit": "Vollbild verlassen",
+        "header_contact": "Kontakt",
+        "header_logout": "Abmelden",
+        "close": "Schließen",
+
 
 
     },
@@ -171,6 +179,10 @@ LANGUAGE_TEXT = {
         "pay_modal_success_btn": "Descargar PDF",
         "fullscreen": "Pantalla completa",  # ES
         "fullscreen_exit": "Salir de pantalla completa",
+        "header_contact": "Contacto",
+        "header_logout": "Cerrar sesión",
+        "close": "Cerrar",
+
 
 
     },
@@ -196,6 +208,9 @@ LANGUAGE_TEXT = {
         "pay_modal_success_btn": "Scarica PDF",
         "fullscreen": "Schermo intero",     # IT
         "fullscreen_exit": "Esci da schermo intero",
+        "header_contact": "Contatti",
+        "header_logout": "Logout",
+        "close": "Chiudi",
 
 
     }
