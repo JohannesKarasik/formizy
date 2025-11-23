@@ -819,14 +819,10 @@ body.modal-open {
 }
 
 
-:fullscreen .viewer-frame {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: none !important;
-    max-height: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+:fullscreen body {
+    background: #000 !important;
 }
+
 
 :fullscreen #pdf-scroll {
     height: calc(100vh - 48px) !important; /* fits under toolbar */
@@ -1756,7 +1752,7 @@ if (fullscreenBtn && viewerFrame) {
 
         fullscreenBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            viewerFrame.requestFullscreen();  // <--- only viewer fullscreen
+            document.documentElement.requestFullscreen();
         } else {
             document.exitFullscreen();
         }
