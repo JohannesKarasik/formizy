@@ -7,6 +7,13 @@ from .views import download_pdf, create_checkout_session, has_paid
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import FormSitemap
 from django.urls import path, re_path
+from .views import (
+    home,
+    country,
+    form_detail,
+    map_form,
+    landingpdf_detail,
+)
 
 
 urlpatterns = [
@@ -31,7 +38,7 @@ urlpatterns = [
          views.store_pending_fields,
          name="store_pending_fields"),
 
-     path("lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail")
+     path("lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail"),
 
 
     path('<str:country_code>/<str:form_slug>/save-fields/',
