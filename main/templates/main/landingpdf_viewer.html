@@ -125,13 +125,9 @@
 
 
 <script>
-    // Force override AFTER viewer_core.js loads
-    setTimeout(() => {
-        window.pendingPaymentCountry = "{{ country_code }}";
-        window.pendingPaymentSlug = "{{ pdf_info.slug }}";
-        console.log("Landing page override applied:", window.pendingPaymentCountry, window.pendingPaymentSlug);
-    }, 50);
-    </script>
+    window.pendingPaymentCountry = "{{ country_code }}";
+    window.pendingPaymentSlug = "{{ pdf_info.slug|lower }}";   // FIXED
+</script>
 
 
 
