@@ -112,6 +112,10 @@
     
 </main>
 
+<script>
+    window.STRIPE_PUBLIC_KEY = "{{ STRIPE_PUBLIC_KEY }}";
+</script>
+
 <!-- Reuse your full JavaScript viewer code -->
 <script>
     const pdfUrl = "{{ pdf_url }}";
@@ -128,6 +132,9 @@
         console.log("Landing page override applied:", window.pendingPaymentCountry, window.pendingPaymentSlug);
     }, 50);
     </script>
+
+
+
     
 
 {% endblock %}
