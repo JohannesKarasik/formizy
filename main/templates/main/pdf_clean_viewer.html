@@ -1309,12 +1309,16 @@ body.modal-open {
     }
     
     function saveFieldsAndDownload() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        // 🟡 / 🟢 LOGGED IN FLOW
-        saveFields();
-        startDownloadProcess();
-    }}
+    // Leave fullscreen if needed
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+
+    // ALWAYS do this:
+    saveFields();
+    startDownloadProcess();
+}
+
     
     /* =========================
        DOWNLOAD FLOW (OPTION A)
