@@ -126,8 +126,10 @@
 
 <script>
     window.pendingPaymentCountry = "{{ country_code }}";
-    window.pendingPaymentSlug = "{{ pdf_info.slug|lower }}";   // FIXED
-</script>
+    window.pendingPaymentSlug = "{{ pdf_info.slug|slugify }}";   // ❤️ FIXED
+    console.log("Landing FIX:", window.pendingPaymentCountry, window.pendingPaymentSlug);
+    </script>
+    
 
 
 
