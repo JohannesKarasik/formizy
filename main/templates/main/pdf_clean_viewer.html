@@ -64,6 +64,8 @@
         border: 1px solid var(--border);
         overflow: hidden;
         margin-top: 24px;
+        position: relative;  /* <-- REQUIRED for fullscreen button to anchor correctly */
+
     }
 
     .viewer-toolbar {
@@ -428,6 +430,27 @@
        background: #fff;
        box-sizing:border-box;
     }
+
+
+    #fullscreen-btn {
+    position: absolute;
+    top: 44px;  /* sits directly under the toolbar */
+    right: 12px;
+    padding: 6px 14px;
+    background: rgba(15,23,42,0.85);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    z-index: 50;
+
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.viewer-frame:hover #fullscreen-btn {
+    opacity: 1;
+}
 
 </style>
 
