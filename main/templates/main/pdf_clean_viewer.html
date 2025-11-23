@@ -182,20 +182,19 @@
     color: #0b1220;
     box-sizing: border-box;
     cursor: pointer;
-
-    /* REMOVE THESE (they break widths):
-       width: 100% !important;
-       max-width: none !important;
-    */
-
+    
+    font-family: 'Caveat', system-ui !important;   /* <<< ADD THIS BACK */
+    
     overflow: visible;
     white-space: nowrap;
 }
 
-
-    .signature-input::placeholder {
-        color: #9ca3af;
-    }
+/* Explicitly force placeholder to use Caveat too */
+.signature-input::placeholder {
+    font-family: 'Caveat', system-ui !important;
+    color: #9ca3af;
+    opacity: 1;  /* ensure visible in some browsers */
+}
 
     /* ==================================
        SIGNATURE MODAL — MODERN STYLING
