@@ -819,10 +819,14 @@ body.modal-open {
 }
 
 
-:fullscreen body {
-    background: #000 !important;
+:fullscreen .viewer-frame {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
-
 
 :fullscreen #pdf-scroll {
     height: calc(100vh - 48px) !important; /* fits under toolbar */
@@ -833,52 +837,6 @@ body.modal-open {
     transform-origin: top center !important;
 }
 
-
-/* Force modals ABOVE a fullscreen element */
-:fullscreen #payment-modal,
-:fullscreen #payment-success-modal,
-:fullscreen #signature-modal {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 2147483647 !important;
-    /* ❗ DO NOT CHANGE DISPLAY HERE */
-}
-
-
-:fullscreen #payment-modal .auth-backdrop,
-:fullscreen #payment-success-modal .auth-backdrop,
-:fullscreen #signature-modal .sig-modal-backdrop {
-    z-index: 2147483646 !important;
-}
-
-:fullscreen #payment-modal .auth-box,
-:fullscreen #payment-success-modal .auth-box,
-:fullscreen #signature-modal .sig-modal-dialog {
-    z-index: 2147483647 !important;
-}
-
-
-
-:-webkit-full-screen #payment-modal,
-:-webkit-full-screen #payment-success-modal,
-:-webkit-full-screen #signature-modal {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 2147483647 !important;
-    /* remove display:flex !important */
-}
-
-:-webkit-full-screen #payment-modal .auth-backdrop,
-:-webkit-full-screen #payment-success-modal .auth-backdrop,
-:-webkit-full-screen #signature-modal .sig-modal-backdrop {
-    z-index: 2147483646 !important;
-}
-
-:-webkit-full-screen #payment-modal .auth-box,
-:-webkit-full-screen #payment-success-modal .auth-box,
-:-webkit-full-screen #signature-modal .sig-modal-dialog {
-    z-index: 2147483647 !important;
-}
 
 
 </style>
@@ -1753,7 +1711,7 @@ if (fullscreenBtn && viewerFrame) {
 
         fullscreenBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
+            viewerFrame.requestFullscreen();  // <--- only viewer fullscreen
         } else {
             document.exitFullscreen();
         }
