@@ -838,6 +838,52 @@ body.modal-open {
 }
 
 
+/* Force modals ABOVE a fullscreen element */
+:fullscreen #payment-modal,
+:fullscreen #payment-success-modal,
+:fullscreen #signature-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483647 !important; /* max */
+    display: flex !important;
+}
+
+:fullscreen #payment-modal .auth-backdrop,
+:fullscreen #payment-success-modal .auth-backdrop,
+:fullscreen #signature-modal .sig-modal-backdrop {
+    z-index: 2147483646 !important;
+}
+
+:fullscreen #payment-modal .auth-box,
+:fullscreen #payment-success-modal .auth-box,
+:fullscreen #signature-modal .sig-modal-dialog {
+    z-index: 2147483647 !important;
+}
+
+
+
+:-webkit-full-screen #payment-modal,
+:-webkit-full-screen #payment-success-modal,
+:-webkit-full-screen #signature-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483647 !important;
+    display: flex !important;
+}
+
+:-webkit-full-screen #payment-modal .auth-backdrop,
+:-webkit-full-screen #payment-success-modal .auth-backdrop,
+:-webkit-full-screen #signature-modal .sig-modal-backdrop {
+    z-index: 2147483646 !important;
+}
+
+:-webkit-full-screen #payment-modal .auth-box,
+:-webkit-full-screen #payment-success-modal .auth-box,
+:-webkit-full-screen #signature-modal .sig-modal-dialog {
+    z-index: 2147483647 !important;
+}
+
+
 </style>
 
 {% endblock %}
