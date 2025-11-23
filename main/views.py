@@ -1032,16 +1032,13 @@ def landingpdf_detail(request, country_code, slug):
     viewer_scale = 833 / width
 
     return render(request, "main/pdf_clean_viewer.html", {
-        "pdf_info": pdf_info,        # ✔ correct key
-        "form_slug": pdf_info.slug,      # ✔ needed for Stripe
-
+        "pdf_info": pdf_info,
+        "form_info": pdf_info,        # ⭐ REQUIRED FIX ⭐
+        "form_slug": pdf_info.slug,
         "pdf_url": pdf_url,
         "viewer_scale": viewer_scale,
-
-        # NEW: dynamic from URL
         "country_code": country_code,
         "lang": lang,
         "lang_code": lang_code,
-
         "related_forms": None,
     })
