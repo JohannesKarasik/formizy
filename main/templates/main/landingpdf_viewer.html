@@ -124,5 +124,10 @@
     const pendingPaymentSlug = "{{ form_slug }}";   <!-- NOT form_info.slug -->
 </script>
 
+<script>
+    window.pendingPaymentCountry = "{{ country_code }}";
+    window.pendingPaymentSlug = "{{ pdf_info.slug }}";
+    </script>
+    
 
 {% endblock %}
