@@ -98,7 +98,7 @@ from django.urls import reverse
 from .models import Country  # IMPORTANT → you already have this model
 
 class LandingPDF(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True)
     slug = models.SlugField(unique=True)
 
     # NEW — link to Country just like Form does
