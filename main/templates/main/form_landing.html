@@ -1,0 +1,357 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}
+   {{ form_info.seo_title|default:form_info.title }} — Formskies
+{% endblock %}
+
+{% block meta %}
+   <meta name="description" content="{{ form_info.seo_description }}">
+   <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/">
+   <meta property="og:title" content="{{ form_info.seo_title|default:form_info.title }}">
+   <meta property="og:description" content="{{ form_info.seo_description }}">
+   <meta property="og:type" content="article">
+   <meta property="og:url" content="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<style>
+  :root {
+    --bg:#f7f9fc;
+    --text:#1b2430;
+    --muted:#5a6b87;
+    --heading:#0b1220;
+    --card:#ffffff;
+    --border:#e6eaf2;
+    --primary:#2563eb;
+    --primary-600:#1e54d4;
+    --primary-700:#1747bd;
+    --shadow:0 8px 24px rgba(16, 24, 64, 0.08);
+    --radius:12px;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui;
+    margin: 0;
+    padding: 0;
+  }
+
+  main.content-main {
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto 60px auto;
+  }
+
+  .lp-hero {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 28px 24px 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .lp-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #e0edff;
+    color:#1e40af;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .lp-hero h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--heading);
+    margin: 0 0 12px;
+    line-height: 1.25;
+  }
+
+  .lp-hero p.lp-subtitle {
+    font-size: 16px;
+    color: #4b5563;
+    max-width: 680px;
+    margin: 0 auto 22px;
+    line-height: 1.6;
+  }
+
+  .lp-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .fill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--primary-700));
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .fill-btn span.icon {
+    font-size: 16px;
+  }
+
+  .fill-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 35px rgba(37, 99, 235, 0.42);
+  }
+
+  .lp-meta-line {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  .lp-meta-line strong {
+    color: #111827;
+  }
+
+  .lp-layout-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 22px;
+  }
+
+  .lp-section-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 22px 20px;
+  }
+
+  .lp-section-card h2,
+  .lp-section-card h3 {
+    margin-top: 0;
+    color: var(--heading);
+  }
+
+  .lp-section-card h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .lp-section-card h3 {
+    font-size: 18px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+
+  .lp-section-card p {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .lp-faq-block {
+    margin-top: 14px;
+  }
+
+  .lp-faq-q {
+    font-weight: 600;
+    font-size: 15px;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+
+  .lp-faq-a {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .lp-cta-box {
+    margin-top: 18px;
+    padding: 14px 14px;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    color: #1f2937;
+    line-height: 1.6;
+  }
+
+  .lp-related {
+    margin-top: 36px;
+  }
+
+  .lp-related h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .lp-related ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .lp-related li + li {
+    margin-top: 6px;
+  }
+
+  .lp-related a {
+    font-size: 15px;
+    text-decoration: none;
+    color: var(--primary);
+  }
+
+  .lp-related a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    main.content-main {
+      padding: 24px 12px 40px;
+    }
+
+    .lp-hero {
+      padding: 22px 16px 18px;
+      border-radius: 14px;
+    }
+
+    .lp-hero h1 {
+      font-size: 24px;
+    }
+
+    .lp-hero p.lp-subtitle {
+      font-size: 15px;
+    }
+
+    .lp-layout-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
+
+<main class="content-main">
+
+  <!-- CSRF just in case you need it for future actions -->
+  <form id="csrf-form">{% csrf_token %}</form>
+
+  <!-- ========== HERO / TOP SEO AREA ========== -->
+  <section class="lp-hero">
+    <div class="lp-badge">
+      <span>Offizielles Formular als PDF</span>
+    </div>
+
+    <h1>
+      {{ form_info.seo_h1|default:form_info.title }}
+    </h1>
+
+    {% if form_info.seo_intro %}
+      <p class="lp-subtitle">
+        {{ form_info.seo_intro }}
+      </p>
+    {% endif %}
+
+    <div class="lp-cta-row">
+      <a href="/{{ country_code }}/{{ form_info.slug }}/editor/" class="fill-btn">
+        <span class="icon">✍️</span>
+        <span>{{ lang.fill_form_cta|default:"Formular jetzt online ausfüllen" }}</span>
+      </a>
+    </div>
+
+    <div class="lp-meta-line">
+      <strong>{{ form_info.title }}</strong> · {{ lang.no_software_needed|default:"Kein Download, direkt im Browser ausfüllen" }}
+    </div>
+  </section>
+
+  <!-- ========== MAIN SEO CONTENT ========== -->
+  {% if form_info.seo_title or form_info.seo_description or form_info.seo_sections or form_info.seo_faqs or form_info.seo_ctas %}
+  <section class="lp-layout-grid">
+
+    <!-- LEFT: main description + sections -->
+    <article class="lp-section-card">
+      {% if form_info.seo_title %}
+        <h2>{{ form_info.seo_title }}</h2>
+      {% endif %}
+
+      {% if form_info.seo_description %}
+        <p>{{ form_info.seo_description }}</p>
+      {% endif %}
+
+      {% if form_info.seo_h1 and not form_info.seo_intro %}
+        <h3>{{ form_info.seo_h1 }}</h3>
+      {% endif %}
+
+      {% if form_info.seo_intro and not form_info.seo_description %}
+        <p>{{ form_info.seo_intro }}</p>
+      {% endif %}
+
+      {% if form_info.seo_sections %}
+        {% for section in form_info.seo_sections %}
+          <h3>{{ section.heading|safe }}</h3>
+          <p>{{ section.content|safe }}</p>
+        {% endfor %}
+      {% endif %}
+    </article>
+
+    <!-- RIGHT: FAQ + CTA text block -->
+    <aside class="lp-section-card">
+      {% if form_info.seo_faqs %}
+        <h2>{{ lang.faqs_title|default:"Häufige Fragen" }}</h2>
+
+        <div class="lp-faq-block">
+          {% for faq in form_info.seo_faqs %}
+            <div style="margin-bottom:14px;">
+              <div class="lp-faq-q">{{ faq.question }}</div>
+              <div class="lp-faq-a">{{ faq.answer }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if form_info.seo_ctas %}
+        <div class="lp-cta-box">
+          {{ form_info.seo_ctas }}
+        </div>
+      {% endif %}
+    </aside>
+
+  </section>
+  {% endif %}
+
+  <!-- ========== RELATED FORMS ========== -->
+  {% if related_forms %}
+    <section class="lp-section-card lp-related">
+      <h2>{{ lang.other_forms }}:</h2>
+      <ul>
+        {% for form in related_forms %}
+          <li>
+            <a href="/{{ country_code }}/{{ form.slug }}/">
+              {{ form.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+</main>
+
+{% endblock %}
