@@ -13,15 +13,21 @@ from .views import (
 
 urlpatterns = [
 
+    # ============================
     # HOME
+    # ============================
     path('', home, name='home'),
 
+    # ============================
     # AUTH
+    # ============================
     path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
     path('logout/', logout_view, name='logout'),
 
+    # ============================
     # MAP-FORM (PDF mapping tool)
+    # ============================
     re_path(
         r"^map-form/(?P<country_code>[a-zA-Z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$",
         map_form,
@@ -31,17 +37,17 @@ urlpatterns = [
     # ============================
     # LP-PDF SPECIAL LANDING VIEWER
     # ============================
-
-    path("<str:country_code>/lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail"),
+    path("<str:country_code>/lp-pdf/<slug:slug>/", 
+         landingpdf_detail, 
+         name="landingpdf_detail"),
 
     path("<str:country_code>/lp-pdf/<slug:slug>/create-checkout-session/",
          create_landing_pdf_checkout_session,
          name="create_landing_checkout"),
 
     # ============================
-    # ACTION ROUTES (must be above form_landing)
+    # ACTION ROUTES (must stay ABOVE landing page)
     # ============================
-
     path("<str:country_code>/<str:form_slug>/store-pending-fields/",
          store_pending_fields, name="store_pending_fields"),
 
@@ -60,35 +66,36 @@ urlpatterns = [
     path("<str:country_code>/<str:form_slug>/create-checkout-session/",
          create_checkout_session, name="create_checkout_session"),
 
+    # ============================
     # LANGUAGE SWITCHER
+    # ============================
     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
 
-
+    # ============================
+    # EDITOR ROUTE (must be ABOVE landing page)
+    # ============================
     path("<str:country_code>/<slug:form_slug>/editor/",
-     views.form_editor,
-     name="form_editor"),
+         form_editor, name="form_editor"),
 
-     # ============================
-# NEW FORM ROUTES (CORRECT)
-# ============================
-
-     # 1) Landing page (SEO page)
-     path("<str:country_code>/<slug:form_slug>/",
-          form_landing, name="form_landing"),
-
-     # 2) PDF editor page
-     path("<str:country_code>/<slug:form_slug>/editor/",
-          form_editor, name="form_editor"),
-
+    # ============================
+    # LANDING PAGE (SEO) — MUST BE AFTER EDITOR
+    # ============================
+    path("<str:country_code>/<slug:form_slug>/",
+         form_landing, name="form_landing"),
 
     # ============================
     # COUNTRY ROUTE
     # ============================
-    re_path(r"^(?P<country_code>[a-z]{2})/$",
-            country, name='country'),
+    re_path(
+        r"^(?P<country_code>[a-z]{2})/$",
+        country,
+        name='country'
+    ),
 ]
 
+# ============================
 # SITEMAP
+# ============================
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import FormSitemap
 
