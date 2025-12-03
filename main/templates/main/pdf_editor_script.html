@@ -1455,55 +1455,40 @@
 
   
       // Set the first thumb active
-      setActiveThumb(1);
-  
-      // Scroll sync: highlight thumb for the most visible page
-      const io = new IntersectionObserver((entries) => {
-        // pick the entry with highest intersection ratio
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible){
-          const pageNum = visible.target.dataset.page;
-          setActiveThumb(pageNum);
-        }
-      }, { root: scrollEl, threshold: [0.2, 0.6, 0.9] });
-  
-      pageCanvases.forEach(c => io.observe(c));
+    // Set the first thumb active
+setActiveThumb(1);
 
-            // Scroll sync: highlight thumb for the most visible page
-            const io = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible){
-          const pageNum = visible.target.dataset.page;
-          setActiveThumb(pageNum);
-        }
-      }, { root: scrollEl, threshold: [0.2, 0.6, 0.9] });
+// Scroll sync: highlight thumb for the most visible page
+const io = new IntersectionObserver((entries) => {
+  const visible = entries
+    .filter(e => e.isIntersecting)
+    .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (visible){
+    const pageNum = visible.target.dataset.page;
+    setActiveThumb(pageNum);
+  }
+}, { root: scrollEl, threshold: [0.2, 0.6, 0.9] });
 
-      pageCanvases.forEach(c => io.observe(c));
+pageCanvases.forEach(c => io.observe(c));
 
-      // ===== Finish loading: fade out overlay and reveal viewer =====
-      const MIN_LOAD_MS = 700; // keep loader at least ~0.7s for a smooth feel
-      const elapsed = performance.now() - LOAD_START;
-      const delay = Math.max(0, MIN_LOAD_MS - elapsed);
+// ===== Finish loading: fade out overlay and reveal viewer =====
+const MIN_LOAD_MS = 700;
+const elapsed = performance.now() - LOAD_START;
+const delay = Math.max(0, MIN_LOAD_MS - elapsed);
 
-      setTimeout(() => {
-        const loader = document.getElementById('viewer-loader');
-        const body   = document.querySelector('.viewer-body');
+setTimeout(() => {
+  const loader = document.getElementById('viewer-loader');
+  const body   = document.querySelector('.viewer-body');
 
-        if (loader){
-          loader.style.opacity = '0';
-          // after transition, remove it from flow
-          setTimeout(() => { loader.style.display = 'none'; }, 260);
-        }
-        if (body){
-          body.classList.add('is-ready'); // fades in via CSS
-        }
-      }, delay);
-    }); // <-- keep this closing brace/paren of the .then(async pdf => { ... })
-
+  if (loader){
+    loader.style.opacity = '0';
+    setTimeout(() => { loader.style.display = 'none'; }, 260);
+  }
+  if (body){
+    body.classList.add('is-ready');
+  }
+}, delay);
+}); // end of pdfjsLib.getDocument(...).promise.then(...)
 
   
     /* ===== Keep overlays positioned if layout changes ===== */
