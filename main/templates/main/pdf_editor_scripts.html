@@ -1,0 +1,1201 @@
+{% load static %}
+
+{# ===========================
+   STYLES FOR PDF EDITOR
+   (copied from old viewer)
+   =========================== #}
+<style>
+    :root{
+        --bg:#f7f9fc;
+        --text:#1b2430;
+        --muted:#5a6b87;
+        --heading:#0b1220;
+        --card:#ffffff;
+        --border:#e6eaf2;
+        --primary:#2563eb;
+        --primary-600:#1e54d4;
+        --primary-700:#1747bd;
+        --success:#16a34a;
+        --shadow:0 8px 24px rgba(16, 24, 64, 0.08);
+        --radius:12px;
+    }
+    html, body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui;
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+       padding: 40px 20px;
+       max-width: 900px;
+       margin: 0 auto;
+    }
+
+    .content-main {
+        max-width: 900px;
+        margin: auto;
+        padding: 30px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* 🖼 Frame around toolbar + viewer */
+    .viewer-frame {
+        background: #ffffff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        overflow: hidden; /* keep corners round */
+        margin-top: 24px;
+        position: relative;
+    }
+
+    /* 🔝 Top toolbar */
+    .viewer-toolbar {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding: 8px 12px;
+        background: #e5edf7;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .viewer-toolbar-left {
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .viewer-toolbar-right {
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .toolbar-btn {
+        border: 1px solid #cbd5f5;
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 13px;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-width:28px;
+    }
+
+    .toolbar-btn-primary {
+        border-color: transparent;
+        background: linear-gradient(180deg,var(--primary),var(--primary-600));
+        color:#fff;
+        font-weight:600;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    #zoom-label {
+        font-size: 13px;
+        color:#475569;
+        min-width:40px;
+        text-align:center;
+    }
+
+    /* 📄 Scrollable PDF window */
+    #pdf-scroll {
+        height: 600px;
+        overflow-y: auto;
+        overflow-x: auto; /* allow side scroll when zoomed in */
+        background: #f8f9fa;
+    }
+
+    #pdf-container {
+        position: relative;
+        width: 100%;
+        display: inline-block;
+        transform-origin: top left;
+    }
+
+    #pdf-pages {
+        position: relative;
+    }
+
+    #pdf-pages canvas {
+        display: block;
+        margin: 0 auto 20px auto;
+    }
+
+    #pdf-container input[type="text"] {
+        position:absolute;
+        border: 1px solid rgba(37, 99, 235, 0.18);
+        background: rgba(37, 99, 235, 0.08);
+        border-radius: 0px;
+        color: #0b1220;
+        padding: 4px 6px;
+        font-size: 14px;
+        z-index: 20;
+        box-sizing: border-box;
+    }
+
+    .checkbox {
+       position:absolute;
+       background: rgba(37, 99, 235, 0.08);
+       border: none;
+       border-radius: 0px;
+       cursor:pointer;
+       display:flex;
+       align-items:center;
+       justify-content:center;
+       font-size: 15px;
+       font-weight: bold;
+       user-select: none;
+       z-index:20;
+    }
+
+    /* SIGNATURE FIELD ON PDF */
+    .signature-input {
+        position: absolute;
+        border: 1px dashed rgba(107,33,168,0.7);
+        background: rgba(248,250,252,0.9);
+        padding: 4px 6px;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: #0b1220;
+        box-sizing: border-box;
+        cursor: pointer;
+        font-family: 'Caveat', system-ui !important;
+        overflow: visible;
+        white-space: nowrap;
+    }
+    .signature-input::placeholder {
+        font-family: 'Caveat', system-ui !important;
+        color: #9ca3af;
+        opacity: 1;
+    }
+
+    /* SIGNATURE MODAL */
+    .sig-modal {
+       position: fixed;
+       inset: 0;
+       display: none;
+       align-items: center;
+       justify-content: center;
+       z-index: 99999;
+       font-family: 'Manrope', sans-serif;
+    }
+    .sig-modal[aria-hidden="false"] {
+       display: flex;
+    }
+    .sig-modal-backdrop {
+       position: absolute;
+       inset: 0;
+       background: rgba(0, 0, 0, 0.45);
+       backdrop-filter: blur(3px);
+       z-index: 1;
+    }
+    .sig-modal-dialog {
+       position: relative;
+       z-index: 2;
+       width: 90%;
+       max-width: 380px;
+       background: #fff;
+       border-radius: 14px;
+       padding: 28px;
+       box-shadow: 0 10px 40px rgba(0,0,0,0.16);
+       animation: sigFadeUp 0.22s ease-out;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+    }
+    @keyframes sigFadeUp {
+       from { opacity: 0; transform: translateY(12px); }
+       to   { opacity: 1; transform: translateY(0); }
+    }
+    .sig-modal-title {
+       font-size: 1.4rem;
+       font-weight: 700;
+       color: #111;
+       margin-top: 10px;
+       margin-bottom: 12px;
+       width: 100%;
+       text-align: center;
+    }
+    .sig-modal-label {
+       display: block;
+       margin-bottom: 24px;
+       font-weight: 600;
+       font-size: 0.95rem;
+       color: #333;
+    }
+    .sig-modal-input {
+       width: 100%;
+       max-width: 300px;
+       padding: 12px 14px;
+       border: 1px solid #dbe2ef;
+       border-radius: 10px;
+       font-size: 1rem;
+       outline: none;
+       transition: 0.15s;
+       margin: 0 auto 14px auto;
+    }
+    .sig-modal-input:focus {
+       border-color: #3b82f6;
+       box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+    }
+    .sig-modal-preview-label {
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto 6px auto;
+        font-weight: 600;
+        color: #555;
+    }
+    .sig-modal-preview {
+       width: 100%;
+       max-width: 300px;
+       margin: 0 auto;
+       padding: 15px;
+       min-height: 60px;
+       border-radius: 10px;
+       border: 1px dashed #cdd7ee;
+       background: #f8faff;
+       font-size: 1.8rem;
+       color: #1d2a3b;
+       display: flex;
+       align-items: center;
+       font-family: 'Caveat', system-ui !important;
+       letter-spacing: 0.02em;
+    }
+    .sig-modal-actions {
+       width: 100%;
+       max-width: 300px;
+       margin: 26px auto 0 auto;
+       display: flex;
+       justify-content: flex-end;
+       gap: 12px;
+    }
+    .sig-btn {
+       padding: 10px 18px;
+       border-radius: 10px;
+       font-size: 0.95rem;
+       font-weight: 600;
+       cursor: pointer;
+       border: none;
+       transition: 0.18s ease;
+    }
+    .sig-btn.primary {
+       background: linear-gradient(135deg, #3b82f6, #60a5fa);
+       color: white;
+    }
+    .sig-btn.secondary {
+       background: #f1f5fb;
+       color: #1b2431;
+       border: 1px solid #d0d8ea;
+    }
+    .sig-btn.primary:hover {
+       transform: translateY(-2px);
+    }
+
+    /* PAYMENT MODALS */
+    #payment-modal.auth-modal-hidden,
+    #payment-success-modal.auth-modal-hidden {
+       display: none;
+    }
+    .download-spinner {
+      border: 3px solid #ffffff55;
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+       to { transform: rotate(360deg); }
+    }
+    #payment-modal,
+    #payment-success-modal {
+       position: fixed !important;
+       inset: 0 !important;
+       z-index: 2000 !important;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+    }
+    #payment-modal .auth-backdrop,
+    #payment-success-modal .auth-backdrop {
+       position: fixed !important;
+       inset: 0 !important;
+       background: rgba(0,0,0,0.55) !important;
+       z-index: 1990 !important;
+    }
+
+    body.modal-open {
+       overflow: hidden !important;
+    }
+
+    /* FULLSCREEN BUTTON */
+    #fullscreen-btn {
+       position: absolute;
+       top: 44px;
+       right: 12px;
+       padding: 6px 14px;
+       background: rgba(15,23,42,0.85);
+       color: #fff;
+       border-radius: 6px;
+       font-size: 13px;
+       cursor: pointer;
+       backdrop-filter: blur(4px);
+       z-index: 9999;
+       opacity: 0;
+       transition: opacity 0.25s ease;
+       display: flex;
+       align-items: center;
+       gap: 6px;
+    }
+    .fs-icon { font-size: 14px; }
+    .fs-text { font-size: 13px; }
+    .viewer-frame:hover #fullscreen-btn {
+       opacity: 1;
+    }
+
+    :fullscreen .viewer-frame,
+    :-webkit-full-screen .viewer-frame {
+       background: #000 !important;
+       width: 100vw !important;
+       height: 100vh !important;
+       max-width: none !important;
+       max-height: none !important;
+       border-radius: 0 !important;
+       box-shadow: none !important;
+    }
+    :fullscreen #pdf-scroll,
+    :-webkit-full-screen #pdf-scroll {
+       height: calc(100vh - 48px) !important;
+    }
+    :fullscreen #pdf-container,
+    :-webkit-full-screen #pdf-container {
+       margin: 0 auto !important;
+       transform-origin: top center !important;
+       width: auto !important;
+       display: block !important;
+    }
+
+    /* CODE FIELDS */
+    .code-input {
+       position:absolute;
+       border: none;
+       background: transparent;
+       display:flex;
+       gap: 2px;
+       z-index:20;
+       height: 100%;
+    }
+    .code-input .cell {
+       flex: 1;
+       min-width: 0;
+       max-width: none;
+       border: 1px solid #d1d5db;
+       display:flex;
+       align-items:center;
+       justify-content:center;
+       font-family: monospace;
+       font-size: 16px;
+       font-weight: 600;
+       background: #fff;
+       box-sizing:border-box;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            padding: 20px 5px !important;
+        }
+        .content-main {
+            padding: 15px 5px !important;
+        }
+        .viewer-frame {
+            margin-top: 16px !important;
+            border-radius: 8px;
+        }
+        .viewer-toolbar {
+            padding: 6px 8px !important;
+        }
+        #pdf-scroll {
+            height: 500px !important;
+        }
+        h1 {
+            font-size: 26px !important;
+            padding: 0 5px !important;
+        }
+        p {
+            font-size: 15px !important;
+        }
+        .sig-modal-dialog {
+            width: 92% !important;
+            padding: 22px !important;
+        }
+    }
+</style>
+
+{# PDF.js #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+{# ============ VIEWER FRAME ============ #}
+<div class="viewer-frame">
+
+    <div class="viewer-toolbar">
+        <div class="viewer-toolbar-left">
+            PDF-Editor
+        </div>
+        <div class="viewer-toolbar-right">
+            <button type="button" class="toolbar-btn" onclick="zoomOut()">−</button>
+            <span id="zoom-label">100%</span>
+            <button type="button" class="toolbar-btn" onclick="zoomIn()">+</button>
+
+            {% if not user.is_authenticated %}
+                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndOpenAuth()">
+                    PDF herunterladen
+                </button>
+            {% else %}
+                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndDownload()">
+                    PDF herunterladen
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="fullscreen-btn">
+        <span class="fs-icon">⤢</span>
+        <span class="fs-text">{{ lang.fullscreen }}</span>
+    </div>
+
+    <div id="pdf-scroll">
+        <div id="pdf-container">
+            <div id="pdf-pages">
+
+                {# overlay fields from fields_schema #}
+                {% if form_info.fields_schema %}
+                    {% for field in form_info.fields_schema %}
+                        {% if field.type == "checkbox" %}
+                            <div class="checkbox"
+                                 data-name="{{ field.name }}"
+                                 data-page="{{ field.page|default:1 }}"
+                                 data-px="{{ field.pixel_x }}"
+                                 data-py="{{ field.pixel_y }}"
+                                 data-pw="{{ field.pixel_width }}"
+                                 data-ph="{{ field.pixel_height }}">
+                            </div>
+
+                        {% elif field.type == "signature" %}
+                            <input type="text"
+                                   class="signature-input"
+                                   placeholder="{{ lang.sig_placeholder }}"
+                                   data-name="{{ field.name }}"
+                                   data-page="{{ field.page|default:1 }}"
+                                   data-px="{{ field.pixel_x }}"
+                                   data-py="{{ field.pixel_y }}"
+                                   data-pw="{{ field.pixel_width }}"
+                                   data-ph="{{ field.pixel_height }}">
+
+                        {% elif field.type == "code" %}
+                            <div class="code-input"
+                                 data-name="{{ field.name }}"
+                                 data-page="{{ field.page }}"
+                                 data-px="{{ field.pixel_x }}"
+                                 data-py="{{ field.pixel_y }}"
+                                 data-pw="{{ field.pixel_width }}"
+                                 data-ph="{{ field.pixel_height }}"
+                                 data-digits="{{ field.digits }}">
+                            </div>
+
+                        {% else %}
+                            <input type="text"
+                                   data-name="{{ field.name }}"
+                                   data-page="{{ field.page|default:1 }}"
+                                   data-px="{{ field.pixel_x }}"
+                                   data-py="{{ field.pixel_y }}"
+                                   data-pw="{{ field.pixel_width }}"
+                                   data-ph="{{ field.pixel_height }}">
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ===== PAYMENT MODALS (same as old viewer) ===== #}
+<div id="payment-modal" class="auth-modal-hidden">
+   <div class="auth-backdrop" onclick="closePaymentModal()"></div>
+
+   <div class="auth-box">
+       <button class="auth-close" onclick="closePaymentModal()">×</button>
+
+       <h2 style="text-align:center;margin-bottom:10px;">
+           {{ lang.pay_modal_title }}
+       </h2>
+
+       <p style="text-align:center;color:#555;margin-bottom:20px;">
+           {{ lang.pay_modal_description }}
+       </p>
+
+       <button class="auth-btn-primary" onclick="proceedPayment()">
+           {{ lang.pay_modal_button }}
+       </button>
+
+       <div style="margin-top:18px;opacity:0.85;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+           <span>Sicher bezahlen mit</span>
+           <img src="{% static 'stripelogo.png' %}"
+                alt="Stripe"
+                style="height:22px;opacity:0.9;">
+       </div>
+   </div>
+</div>
+
+<div id="payment-success-modal" class="auth-modal-hidden">
+   <div class="auth-backdrop" onclick="closeSuccessModal()"></div>
+
+   <div class="auth-box">
+       <button class="auth-close" onclick="closeSuccessModal()">×</button>
+
+       <h2 style="text-align:center;margin-bottom:12px;">
+           {{ lang.pay_modal_success_title }}
+       </h2>
+
+       <p style="text-align:center;color:#555;margin-bottom:20px;">
+           {{ lang.pay_modal_success_desc }}
+       </p>
+
+       <button id="success-download-btn" class="auth-btn-primary" onclick="downloadWithSpinner()">
+           {{ lang.pay_modal_success_btn }}
+       </button>
+   </div>
+</div>
+
+{# Signature modal #}
+<div id="signature-modal" class="sig-modal" aria-hidden="true">
+   <div class="sig-modal-backdrop"></div>
+   <div class="sig-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
+     <h2 id="sig-modal-title" class="sig-modal-title">{{ lang.sig_title }}</h2>
+
+     <label class="sig-modal-label" for="sig-name-input">
+       {{ lang.sig_label }}
+     </label>
+
+     <input id="sig-name-input" class="sig-modal-input" type="text" placeholder="e.g. Jane Doe">
+
+     <div class="sig-modal-preview-label">{{ lang.sig_preview }}</div>
+     <div id="sig-preview" class="sig-modal-preview"></div>
+
+     <div class="sig-modal-actions">
+       <button type="button" class="sig-btn secondary" id="sig-cancel-btn">
+         {{ lang.sig_cancel }}
+       </button>
+
+       <button type="button" class="sig-btn primary" id="sig-apply-btn">
+         {{ lang.sig_apply }}
+       </button>
+     </div>
+   </div>
+</div>
+
+{# ===========================
+   FULL VIEWER / EDITOR JS
+   (unchanged logic from old viewer)
+   =========================== #}
+<script>
+   /* =========================
+      GLOBAL STATE
+   ========================= */
+   let pendingPaymentCountry = null;
+   let pendingPaymentSlug = null;
+
+   function getCSRF() {
+       const token = document.querySelector("input[name='csrfmiddlewaretoken']");
+       if (!token) {
+           console.error("❌ CSRF token not found in DOM");
+           return "";
+       }
+       return token.value;
+   }
+
+   /* =========================
+      PDF.JS RENDERING
+   ========================= */
+   const pdfUrl = "{{ pdf_url }}";
+   const FIXED_WIDTH = 833;
+   const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
+   const pagesContainer = document.getElementById("pdf-pages");
+
+   pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
+       const pageCanvases = [];
+
+       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+           const page = await pdf.getPage(pageNum);
+           const viewport = page.getViewport({ scale: 1 });
+
+           const scale = FIXED_WIDTH / viewport.width;
+           const scaledViewport = page.getViewport({ scale });
+
+           const canvas = document.createElement("canvas");
+           canvas.width = FIXED_WIDTH;
+           canvas.height = scaledViewport.height;
+           canvas.style.width = FIXED_WIDTH + "px";
+           canvas.style.height = scaledViewport.height + "px";
+           canvas.style.marginBottom = "20px";
+           canvas.dataset.page = pageNum;
+
+           pagesContainer.appendChild(canvas);
+
+           await page.render({
+               canvasContext: canvas.getContext("2d"),
+               viewport: scaledViewport
+           }).promise;
+
+           pageCanvases.push(canvas);
+       }
+
+       positionOverlays(pageCanvases);
+
+       setTimeout(() => {
+           console.log("Trying delayed restore...");
+           restoreFieldsFromStorage();
+       }, 300);
+   });
+
+   function positionOverlays(pageCanvases) {
+       const pageOffsets = {};
+       const pageLeftOffsets = {};
+
+       pageCanvases.forEach(canvas => {
+           const pageNum = canvas.dataset.page;
+           pageOffsets[pageNum] = canvas.offsetTop;
+           pageLeftOffsets[pageNum] = canvas.offsetLeft;
+       });
+
+       const scale = VIEWER_SCALE;
+
+       document
+         .querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
+         .forEach(el => {
+             const page = el.dataset.page || "1";
+             const px = parseFloat(el.dataset.px || "0");
+             const py = parseFloat(el.dataset.py || "0");
+             const pw = parseFloat(el.dataset.pw || "0");
+             const ph = parseFloat(el.dataset.ph || "0");
+
+             const pageTop = pageOffsets[page] || 0;
+             const pageLeft = pageLeftOffsets[page] || 0;
+
+             el.style.left   = (pageLeft + px * scale) + "px";
+             el.style.top    = (pageTop  + py * scale) + "px";
+             el.style.width  = (pw * scale - 1) + "px";
+             el.style.height = (ph * scale) + "px";
+         });
+
+       document.querySelectorAll('#pdf-pages .code-input').forEach(el => {
+           const page = el.dataset.page || "1";
+           const px = parseFloat(el.dataset.px || "0");
+           const py = parseFloat(el.dataset.py || "0");
+           const pw = parseFloat(el.dataset.pw || "0");
+           const ph = parseFloat(el.dataset.ph || "0");
+
+           const pageTop = pageOffsets[page] || 0;
+           const pageLeft = pageLeftOffsets[page] || 0;
+
+           el.style.left   = (pageLeft + px * scale) + "px";
+           el.style.top    = (pageTop  + py * scale) + "px";
+           el.style.width  = (pw * scale - 1) + "px";
+           el.style.height = (ph * scale) + "px";
+       });
+   }
+
+   /* =========================
+      FIELD COLLECTION & STORAGE
+   ========================= */
+   function collectFields() {
+       const fields = {};
+
+       document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+           fields[input.dataset.name] = input.value || "";
+       });
+
+       document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+           fields[box.dataset.name] = box.classList.contains("checked") ? "1" : "0";
+       });
+
+       return fields;
+   }
+
+   function saveFields() {
+       const country = "{{ country_code }}";
+       const slug = "{{ form_info.slug }}";
+       const fields = collectFields();
+
+       const storageKey = `pending_fields_${country}_${slug}`;
+       sessionStorage.setItem(storageKey, JSON.stringify(fields));
+       sessionStorage.setItem("pending_fields", JSON.stringify(fields));
+   }
+
+   function saveFieldsAndOpenAuth() {
+       if (document.fullscreenElement) {
+           document.exitFullscreen();
+       }
+       saveFields();
+       if (typeof openAuthModal === "function") {
+           openAuthModal();
+       } else {
+           console.warn("openAuthModal() is not defined.");
+       }
+   }
+
+   function saveFieldsAndDownload() {
+       if (document.fullscreenElement) {
+           document.exitFullscreen();
+       }
+       saveFields();
+       startDownloadProcess();
+   }
+
+   async function startDownloadProcess() {
+       const country = "{{ country_code }}";
+       const slug = "{{ form_info.slug }}";
+       const fields = collectFields();
+
+       try {
+           await fetch(`/${country}/${slug}/save-fields/`, {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json",
+                   "X-CSRFToken": getCSRF(),
+               },
+               body: JSON.stringify({ fields_data: fields })
+           });
+       } catch (e) {
+           console.warn("save-fields failed:", e);
+       }
+
+       const res = await fetch(`/${country}/${slug}/has-paid/`, {
+           method: "GET",
+           headers: {
+               "X-CSRFToken": getCSRF(),
+               "X-Requested-With": "XMLHttpRequest"
+           },
+           credentials: "include"
+       });
+
+       if (!res.ok) {
+           console.error("❌ has-paid request failed:", res.status);
+           return;
+       }
+
+       const data = await res.json();
+
+       if (data.has_paid) {
+           downloadFilledPDF();
+       } else {
+           pendingPaymentCountry = country;
+           pendingPaymentSlug = slug;
+           openPaymentModal();
+       }
+   }
+
+   async function downloadFilledPDF() {
+       const textFields = {};
+       document.querySelectorAll('#pdf-pages input[type="text"]').forEach((input) => {
+           const name = input.dataset.name;
+           textFields[name] = input.value || "";
+       });
+
+       const checkboxFields = {};
+       document.querySelectorAll('#pdf-pages .checkbox').forEach((box) => {
+           const name = box.dataset.name;
+           checkboxFields[name] = box.classList.contains("checked") ? "1" : "0";
+       });
+
+       const allFields = { ...textFields, ...checkboxFields };
+
+       const res = await fetch(
+           "{% url 'fill_pdf' country_code=country_code form_slug=form_info.slug %}",
+           {
+               method: "POST",
+               headers: {
+                   "X-CSRFToken": getCSRF(),
+                   "Content-Type": "application/json"
+               },
+               body: JSON.stringify({ fields_data: allFields })
+           }
+       );
+
+       if (!res.ok) {
+           const errorText = await res.text();
+           console.error("Backend error:", errorText);
+           alert("PDF error:\n" + errorText);
+           return;
+       }
+
+       const blob = await res.blob();
+       const link = document.createElement("a");
+       link.href = URL.createObjectURL(blob);
+       link.download = "{{ form_info.slug }}_filled.pdf";
+       link.click();
+   }
+
+   /* =========================
+      ZOOM
+   ========================= */
+   let currentZoom = 1.0;
+
+   function applyZoom(){
+       const container = document.getElementById("pdf-container");
+       if (!container) return;
+       container.style.transform = `scale(${currentZoom})`;
+       const label = document.getElementById("zoom-label");
+       if (label) label.textContent = Math.round(currentZoom * 100) + "%";
+   }
+
+   function zoomIn(){
+       currentZoom = Math.min(currentZoom + 0.1, 2.0);
+       applyZoom();
+   }
+   function zoomOut(){
+       currentZoom = Math.max(currentZoom - 0.1, 0.5);
+       applyZoom();
+   }
+   document.addEventListener("DOMContentLoaded", applyZoom);
+
+   /* =========================
+      SIGNATURE MODAL
+   ========================= */
+   (function(){
+     let currentSignatureInput = null;
+
+     const modal      = document.getElementById('signature-modal');
+     const nameInput  = document.getElementById('sig-name-input');
+     const preview    = document.getElementById('sig-preview');
+     const cancelBtn  = document.getElementById('sig-cancel-btn');
+     const applyBtn   = document.getElementById('sig-apply-btn');
+
+     if(!modal || !nameInput || !preview) return;
+
+     function openSignatureModal(targetInput){
+         if (document.fullscreenElement) {
+             document.exitFullscreen();
+         }
+         currentSignatureInput = targetInput;
+         const existing = targetInput.value || '';
+
+         nameInput.value = existing;
+         preview.textContent = existing;
+         modal.setAttribute('aria-hidden', 'false');
+     }
+
+     function closeSignatureModal(){
+       modal.setAttribute('aria-hidden', 'true');
+       currentSignatureInput = null;
+     }
+
+     nameInput.addEventListener('input', () => {
+       preview.textContent = nameInput.value;
+     });
+
+     if (applyBtn) {
+         applyBtn.addEventListener('click', () => {
+           if (!currentSignatureInput) return;
+           currentSignatureInput.value = nameInput.value;
+           closeSignatureModal();
+         });
+     }
+
+     if (cancelBtn) {
+         cancelBtn.addEventListener('click', () => {
+           closeSignatureModal();
+         });
+     }
+
+     modal.addEventListener('click', (e) => {
+       if (e.target === modal || e.target.classList.contains('sig-modal-backdrop')) {
+         closeSignatureModal();
+       }
+     });
+
+     document.addEventListener('keydown', (e) => {
+       if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+         closeSignatureModal();
+       }
+     });
+
+     document.addEventListener('DOMContentLoaded', () => {
+       document.querySelectorAll('.signature-input').forEach(input => {
+         input.readOnly = true;
+         input.addEventListener('click', () => openSignatureModal(input));
+       });
+     });
+   })();
+
+   /* =========================
+      PAYMENT MODALS
+   ========================= */
+   function openPaymentModal() {
+       const modal = document.getElementById("payment-modal");
+       if (!modal) return;
+       modal.classList.remove("auth-modal-hidden");
+       document.body.classList.add("modal-open");
+   }
+   function closePaymentModal() {
+       const modal = document.getElementById("payment-modal");
+       if (!modal) return;
+       modal.classList.add("auth-modal-hidden");
+       document.body.classList.remove("modal-open");
+   }
+   function openSuccessModal() {
+       document.getElementById("payment-success-modal").classList.remove("auth-modal-hidden");
+       document.body.classList.add("modal-open");
+   }
+   function closeSuccessModal() {
+       document.getElementById("payment-success-modal").classList.add("auth-modal-hidden");
+       document.body.classList.remove("modal-open");
+   }
+
+   /* =========================
+      STRIPE CHECKOUT
+   ========================= */
+   async function proceedPayment() {
+       closePaymentModal();
+
+       const country = pendingPaymentCountry;
+       const slug = pendingPaymentSlug;
+
+       if (!country || !slug) {
+           console.error("❌ Missing country/slug for payment");
+           return;
+       }
+
+       const isLanding = window.location.pathname.includes("/lp-pdf/");
+       const endpoint = isLanding
+           ? `/${country}/lp-pdf/${slug}/create-checkout-session/`
+           : `/${country}/${slug}/create-checkout-session/`;
+
+       const res = await fetch(endpoint, {
+           method: "POST",
+           headers: {
+               "X-CSRFToken": getCSRF(),
+           }
+       });
+
+       if (!res.ok) {
+           console.error("❌ create-checkout-session failed:", res.status);
+           return;
+       }
+
+       const data = await res.json();
+       const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+       await stripe.redirectToCheckout({ sessionId: data.id });
+   }
+
+   /* =========================
+      HANDLE ?paid=1 ON RETURN
+   ========================= */
+   document.addEventListener("DOMContentLoaded", () => {
+       const urlParams = new URLSearchParams(window.location.search);
+
+       if (urlParams.get("paid") === "1") {
+           window.history.replaceState({}, "", window.location.pathname);
+           openSuccessModal();
+       }
+
+       document.querySelectorAll("#pdf-pages .checkbox").forEach(box => {
+           box.addEventListener("click", (e) => {
+               e.stopPropagation();
+               const isChecked = box.dataset.checked === "1";
+
+               if (isChecked) {
+                   box.dataset.checked = "0";
+                   box.classList.remove("checked");
+                   box.textContent = "";
+               } else {
+                   box.dataset.checked = "1";
+                   box.classList.add("checked");
+                   box.textContent = "✓";
+               }
+           });
+       });
+   });
+
+   /* =========================
+      RESTORE FIELDS FROM SESSIONSTORAGE
+   ========================= */
+   function restoreFieldsFromStorage() {
+       const country = "{{ country_code }}";
+       const slug = "{{ form_info.slug }}";
+       const storageKey = `pending_fields_${country}_${slug}`;
+
+       let raw = sessionStorage.getItem(storageKey);
+       if (!raw) {
+           raw = sessionStorage.getItem("pending_fields");
+       }
+       if (!raw) {
+           console.log("ℹ️ No pending fields in sessionStorage");
+           return;
+       }
+
+       let fields = {};
+       try {
+           fields = JSON.parse(raw);
+       } catch (e) {
+           console.log("⚠️ Could not parse pending fields from sessionStorage:", e);
+           return;
+       }
+
+       document.querySelectorAll('#pdf-pages input[type="text"]').forEach(input => {
+           const name = input.dataset.name;
+           if (!name) return;
+           if (Object.prototype.hasOwnProperty.call(fields, name)) {
+               input.value = fields[name] || "";
+           }
+       });
+
+       document.querySelectorAll('#pdf-pages .checkbox').forEach(box => {
+           const name = box.dataset.name;
+           if (!name) return;
+
+           const val = fields[name];
+           const checked = (val === "1" || val === 1 || val === true);
+
+           if (checked) {
+               box.dataset.checked = "1";
+               box.classList.add("checked");
+               box.textContent = "✓";
+           } else {
+               box.dataset.checked = "0";
+               box.classList.remove("checked");
+               box.textContent = "";
+           }
+       });
+   }
+
+   /* =========================
+      SUCCESS MODAL DOWNLOAD + SPINNER
+   ========================= */
+   async function downloadWithSpinner() {
+       const btn = document.getElementById("success-download-btn");
+       if (!btn) {
+           downloadFilledPDF();
+           return;
+       }
+
+       const originalHTML = btn.innerHTML;
+
+       btn.innerHTML = `
+           <span class="download-spinner"></span> &nbsp; Wird vorbereitet...
+       `;
+       btn.disabled = true;
+
+       await downloadFilledPDF();
+
+       setTimeout(() => {
+           btn.innerHTML = originalHTML;
+           btn.disabled = false;
+       }, 30000);
+   }
+
+   /* =========================
+      FULLSCREEN HANDLER
+   ========================= */
+   const viewerFrame = document.querySelector(".viewer-frame");
+   const fullscreenBtn = document.getElementById("fullscreen-btn");
+
+   if (fullscreenBtn && viewerFrame) {
+       fullscreenBtn.addEventListener("click", () => {
+           if (!document.fullscreenElement) {
+               viewerFrame.requestFullscreen();
+           } else {
+               document.exitFullscreen();
+           }
+       });
+
+       document.addEventListener("fullscreenchange", () => {
+           if (document.fullscreenElement) {
+               fullscreenBtn.textContent = "⤢ {{ lang.fullscreen_exit }}";
+           } else {
+               fullscreenBtn.textContent = "⤢ {{ lang.fullscreen }}";
+           }
+
+           setTimeout(() => {
+               const canvases = document.querySelectorAll("#pdf-pages canvas");
+               positionOverlays(Array.from(canvases));
+           }, 150);
+       });
+   }
+
+   window.addEventListener("resize", () => {
+       const canvases = document.querySelectorAll("#pdf-pages canvas");
+       positionOverlays(Array.from(canvases));
+   });
+
+   /* =========================
+      CODE INPUT INITIALISATION
+   ========================= */
+   document.querySelectorAll(".code-input").forEach(codeEl => {
+       const charCount = parseInt(codeEl.dataset.digits) || 1;
+       codeEl.innerHTML = "";
+
+       for (let i = 0; i < charCount; i++) {
+           const cell = document.createElement("div");
+           cell.className = "cell";
+           cell.dataset.index = i;
+           cell.contentEditable = "true";
+           cell.spellcheck = false;
+           codeEl.appendChild(cell);
+       }
+
+       const cells = [...codeEl.querySelectorAll(".cell")];
+
+       codeEl.style.display = "flex";
+       cells.forEach(c => c.style.flex = "1");
+
+       codeEl.addEventListener("click", (e) => {
+           if (e.target.classList.contains("cell")) return;
+           const firstEmpty = cells.find(c => !c.textContent.trim()) || cells[0];
+           firstEmpty.focus();
+       });
+
+       cells.forEach((cell, idx) => {
+           cell.addEventListener("input", () => {
+               const text = cell.textContent;
+
+               if (text.length > 1) {
+                   cell.textContent = text[0];
+               }
+
+               if (cell.textContent && idx < cells.length - 1) {
+                   cells[idx + 1].focus();
+               }
+           });
+
+           cell.addEventListener("keydown", (e) => {
+               if (e.key === "Backspace") {
+                   if (!cell.textContent && idx > 0) {
+                       cells[idx - 1].focus();
+                       cells[idx - 1].textContent = "";
+                       e.preventDefault();
+                   }
+               }
+
+               if (e.key === "ArrowRight" && idx < cells.length - 1) {
+                   cells[idx + 1].focus();
+                   e.preventDefault();
+               }
+
+               if (e.key === "ArrowLeft" && idx > 0) {
+                   cells[idx - 1].focus();
+                   e.preventDefault();
+               }
+           });
+       });
+   });
+</script>

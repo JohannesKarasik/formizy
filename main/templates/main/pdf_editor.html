@@ -2,53 +2,34 @@
 {% load static %}
 
 {% block title %}
-   {{ form_info.title }} — PDF Editor
+   {{ form_info.seo_title|default:form_info.title }} — PDF Editor
+{% endblock %}
+
+{% block meta %}
+  {% if form_info.seo_description %}
+    <meta name="description" content="{{ form_info.seo_description }}">
+  {% endif %}
+  <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/editor/">
 {% endblock %}
 
 {% block content %}
 
 <main class="content-main">
-
     <form id="csrf-form">{% csrf_token %}</form>
 
-    <h1 style="text-align:center;">{{ form_info.title }}</h1>
+    <h1 style="font-size:32px; font-weight:700; text-align:center; color:#0b1220; margin-bottom:20px; line-height:1.2;">
+        {{ form_info.seo_h1|default:form_info.title }}
+    </h1>
 
-    <!-- Load PDF.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    {% if form_info.seo_intro %}
+        <p style="font-size:18px; text-align:center; color:#4b5563; max-width:720px; margin:0 auto 30px auto; line-height:1.6;">
+            {{ form_info.seo_intro }}
+        </p>
+    {% endif %}
 
-    <!-- PDF Viewer UI -->
-    <div class="viewer-frame">
-
-        <div class="viewer-toolbar">
-            <div class="viewer-toolbar-left">PDF-Editor</div>
-            <div class="viewer-toolbar-right">
-                <button onclick="zoomOut()" class="toolbar-btn">−</button>
-                <span id="zoom-label">100%</span>
-                <button onclick="zoomIn()" class="toolbar-btn">+</button>
-
-                {% if not user.is_authenticated %}
-                <button class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndOpenAuth()">
-                    PDF herunterladen
-                </button>
-                {% else %}
-                <button class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndDownload()">
-                    PDF herunterladen
-                </button>
-                {% endif %}
-            </div>
-        </div>
-
-        <div id="fullscreen-btn">⤢ Vollbild</div>
-
-        <div id="pdf-scroll">
-            <div id="pdf-container">
-                <div id="pdf-pages"></div>
-            </div>
-        </div>
-    </div>
+    {# ⬇ All viewer CSS + HTML + JS lives in this partial #}
+    {% include "main/pdf_editor_script.html" %}
 
 </main>
-
-<!-- INCLUDE YOUR FULL JAVASCRIPT BLOCK HERE -->
 
 {% endblock %}
