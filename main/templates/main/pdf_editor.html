@@ -96,7 +96,32 @@
           .editor-header .title{ font-size: 14px; }
           .editor-header .btn{ padding: 7px 10px; font-size: 12.5px; }
         }
+
+
+        /* icon-only buttons */
+.editor-header .btn.icon {
+  padding: 8px;               /* tighter */
+  width: 34px; height: 34px;  /* square */
+  justify-content: center;
+}
+
+.editor-header .btn.icon .icon{
+  width: 16px; height: 16px;
+}
+
+/* subtle separator if you like (optional) */
+/*
+.editor-header .actions::before{
+  content:"";
+  width:1px; height:22px;
+  background:#e6ebf7; border-radius:1px;
+  margin-right:2px;
+}
+*/
+
       </style>
+
+      
       
 {% endblock %}
 
