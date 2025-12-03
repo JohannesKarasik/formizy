@@ -1,93 +1,91 @@
-from django.urls import path
-from . import views
-from .views import login_view, register_view
-from .views import download_pdf, create_checkout_session, has_paid
-from .views import login_view, register_view
-from .views import download_pdf, create_checkout_session, has_paid
-from django.contrib.sitemaps.views import sitemap
-from .sitemaps import FormSitemap
 from django.urls import path, re_path
+from . import views
 from .views import (
-    home,
-    country,
-    form_detail,
+    login_view, register_view, logout_view,
+    home, country,
+    form_landing, form_editor,
     map_form,
-    landingpdf_detail,
+    landingpdf_detail, create_landing_pdf_checkout_session,
+    fill_pdf, save_fields, download_pdf,
+    create_checkout_session, has_paid,
+    store_pending_fields
 )
 
-
 urlpatterns = [
-    path('', views.home, name='home'),
+
+    # HOME
+    path('', home, name='home'),
 
     # AUTH
-    path("login/", login_view, name="login"),
-    path("register/", register_view, name="register"),
-    path("logout/", views.logout_view, name="logout"),
+    path('login/', login_view, name='login'),
+    path('register/', register_view, name='register'),
+    path('logout/', logout_view, name='logout'),
 
-    # MAP
+    # MAP-FORM (PDF mapping tool)
     re_path(
         r"^map-form/(?P<country_code>[a-zA-Z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$",
-        views.map_form,
+        map_form,
         name="map_form"
     ),
 
-    # =============================
-    # ACTION ROUTES — must be ABOVE country & form_detail
-    # =============================
-    path('<str:country_code>/<str:form_slug>/store-pending-fields/',
-         views.store_pending_fields,
-         name="store_pending_fields"),
+    # ============================
+    # LP-PDF SPECIAL LANDING VIEWER
+    # ============================
 
-     # LOCALIZED landing page PDFs
+    path("<str:country_code>/lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail"),
 
+    path("<str:country_code>/lp-pdf/<slug:slug>/create-checkout-session/",
+         create_landing_pdf_checkout_session,
+         name="create_landing_checkout"),
 
-     path("<str:country_code>/lp-pdf/<slug:slug>/", landingpdf_detail, name="landingpdf_detail"),
+    # ============================
+    # ACTION ROUTES (must be above form_landing)
+    # ============================
 
+    path("<str:country_code>/<str:form_slug>/store-pending-fields/",
+         store_pending_fields, name="store_pending_fields"),
 
-    path('<str:country_code>/<str:form_slug>/save-fields/',
-         views.save_fields,
-         name="save_fields"),
+    path("<str:country_code>/<str:form_slug>/save-fields/",
+         save_fields, name="save_fields"),
 
-    path('<str:country_code>/<str:form_slug>/fill/',
-         views.fill_pdf, name='fill_pdf'),
+    path("<str:country_code>/<str:form_slug>/fill/",
+         fill_pdf, name="fill_pdf"),
 
-    path('<str:country_code>/<str:form_slug>/download/',
-         download_pdf, name='download_pdf'),
+    path("<str:country_code>/<str:form_slug>/download/",
+         download_pdf, name="download_pdf"),
 
-    path('<str:country_code>/<str:form_slug>/has-paid/',
-         has_paid, name='has_paid'),
+    path("<str:country_code>/<str:form_slug>/has-paid/",
+         has_paid, name="has_paid"),
 
-    path('<str:country_code>/<str:form_slug>/create-checkout-session/',
-         create_checkout_session, name='create_checkout_session'),
+    path("<str:country_code>/<str:form_slug>/create-checkout-session/",
+         create_checkout_session, name="create_checkout_session"),
 
+    # LANGUAGE SWITCHER
     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
 
-    # =============================
+    # ============================
+    # NEW FORM ROUTES
+    # ============================
+
+    # Landing page (clean SEO-friendly)
+    path("<str:country_code>/<slug:form_slug>/",
+         form_landing, name="form_landing"),
+
+    # Dedicated editor page (PDF viewer)
+    path("<str:country_code>/<slug:form_slug>/editor/",
+         form_editor, name="form_editor"),
+
+    # ============================
     # COUNTRY ROUTE
-    # =============================
-    re_path(r'^(?P<country_code>[a-z]{2})/$', views.country, name='country'),
-
-    # =============================
-    # FORM DETAIL (must ALWAYS be last)
-    # =============================
-     re_path(
-         r'^(?P<country_code>[a-z]{2})/(?P<form_slug>[-a-zA-Z0-9]+)/?$',
-         views.form_detail,
-         name='form_detail'
-     ),
-
-        path(
-        "<str:country_code>/lp-pdf/<slug:slug>/create-checkout-session/",
-        views.create_landing_pdf_checkout_session,
-        name="create_landing_checkout",
-    )
-
+    # ============================
+    re_path(r"^(?P<country_code>[a-z]{2})/$",
+            country, name='country'),
 ]
 
-sitemaps = {
-    'forms': FormSitemap,
-}
+# SITEMAP
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import FormSitemap
 
 urlpatterns += [
-    path("sitemap.xml", sitemap, {'sitemaps': sitemaps}, name="sitemap"),
+    path("sitemap.xml", sitemap, {'sitemaps': {'forms': FormSitemap}}, name="sitemap"),
 ]
