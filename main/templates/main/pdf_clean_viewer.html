@@ -910,99 +910,11 @@ body.modal-open {
        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
        <!-- 🖼 Viewer frame: toolbar + scroll area -->
-       <div class="viewer-frame">
-
-
-
-           <!-- 🔝 Toolbar -->
-           <div class="viewer-toolbar">
-            <div class="viewer-toolbar-left">
-                PDF-Vorschau
-            </div>
-            <div class="viewer-toolbar-right">
-                <button type="button" class="toolbar-btn" onclick="zoomOut()">−</button>
-                <span id="zoom-label">100%</span>
-                <button type="button" class="toolbar-btn" onclick="zoomIn()">+</button>
-         
-                {% if not user.is_authenticated %}
-                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndOpenAuth()">
-                  PDF herunterladen
-                </button>
-              {% else %}
-                <button type="button" class="toolbar-btn toolbar-btn-primary" onclick="saveFieldsAndDownload()">
-                  PDF herunterladen
-                </button>
-              {% endif %}
-              
-            </div>
-         </div>
-         
-
-         <div id="fullscreen-btn">
-            <span class="fs-icon">⤢</span>
-            <span class="fs-text">{{ lang.fullscreen }}</span>
-        </div>
-        
-           <!-- 📄 FIXED-HEIGHT SCROLL BOX -->
-           <div id="pdf-scroll">
-               <div id="pdf-container">
-
-                   <!-- PDF pages + overlays -->
-                   <div id="pdf-pages">
-
-                    {% if form_info.fields_schema %}
-                    {% for field in form_info.fields_schema %}
-                        {% if field.type == "checkbox" %}
-                            <div class="checkbox"
-                                 data-name="{{ field.name }}"
-                                 data-page="{{ field.page|default:1 }}"
-                                 data-px="{{ field.pixel_x }}"
-                                 data-py="{{ field.pixel_y }}"
-                                 data-pw="{{ field.pixel_width }}"
-                                 data-ph="{{ field.pixel_height }}">
-                            </div>
-                
-                        {% elif field.type == "signature" %}
-                                <input type="text"
-                                class="signature-input"
-                                placeholder="{{ lang.sig_placeholder }}"
-                                data-name="{{ field.name }}"
-                                data-page="{{ field.page|default:1 }}"
-                                data-px="{{ field.pixel_x }}"
-                                data-py="{{ field.pixel_y }}"
-                                data-pw="{{ field.pixel_width }}"
-                                data-ph="{{ field.pixel_height }}">
-                            {% elif field.type == "code" %}
-                            <div class="code-input"
-                                data-name="{{ field.name }}"
-                                data-page="{{ field.page }}"
-                                data-px="{{ field.pixel_x }}"
-                                data-py="{{ field.pixel_y }}"
-                                data-pw="{{ field.pixel_width }}"
-                                data-ph="{{ field.pixel_height }}"
-                                data-digits="{{ field.digits }}">  <!-- ⭐ REQUIRED -->
-                            </div>
-                                   
-                
-                        {% else %}
-                            <input type="text"
-                                   data-name="{{ field.name }}"
-                                   data-page="{{ field.page|default:1 }}"
-                                   data-px="{{ field.pixel_x }}"
-                                   data-py="{{ field.pixel_y }}"
-                                   data-pw="{{ field.pixel_width }}"
-                                   data-ph="{{ field.pixel_height }}">
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                
-
-                   </div>
-
-               </div>
-           </div>
-       </div>  {# end .viewer-frame #}
-       
+       <a href="/{{ country_code }}/{{ form_info.slug }}/editor/"
+       class="fill-btn">
+       Formular ausfüllen
+    </a>
+    
 
 
     {% if form_info.seo_title or form_info.seo_description or form_info.seo_sections or form_info.seo_faqs %}

@@ -63,6 +63,12 @@ urlpatterns = [
     # LANGUAGE SWITCHER
     path("lang/<str:lang_code>/", views.switch_lang, name="switch_lang"),
 
+
+    path("<str:country_code>/<slug:form_slug>/editor/",
+     views.form_editor,
+     name="form_editor"),
+
+
     # ============================
     # NEW FORM ROUTES
     # ============================
