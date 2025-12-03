@@ -119,21 +119,15 @@
         text-align:center;
     }
 
-    /* 📄 Scrollable PDF window */
-    #pdf-scroll {
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: auto; /* allow side scroll when zoomed in */
-        background: #f8f9fa;
-    }
+
 
     #pdf-scroll {
-        flex: 1 1 auto;
-        height: auto;
-        overflow-y: auto;
-        overflow-x: auto;
-        background: #f8f9fa;
-}
+    flex: 1 1 auto;
+    min-height: 0;         /* 🔑 allow child to shrink/grow inside flex */
+    overflow-y: auto;
+    overflow-x: auto;
+    background: #f8f9fa;
+    }
 
     #pdf-container {
         position: relative;
@@ -518,8 +512,12 @@
 /* Right pane (existing viewer scroll area) */
 .page-viewer{
   flex: 1 1 auto;
-  min-width: 0; /* prevent overflow in flex layouts */
+  min-width: 0;               /* prevent overflow in flex layouts */
+  display: flex;              /* 🔑 make #pdf-scroll a flex child */
+  flex-direction: column;
+  min-height: 0;              /* 🔑 allow #pdf-scroll to take remaining height */
 }
+
 
 /* Keep your top toolbar full width across both panes */
 .viewer-toolbar{ position: relative; z-index: 2; }
@@ -727,6 +725,8 @@
    ========================= */
    let pendingPaymentCountry = null;
    let pendingPaymentSlug = null;
+   let BASE_CONTENT_HEIGHT = 0;
+
 
    function getCSRF() {
        const token = document.querySelector("input[name='csrfmiddlewaretoken']");
@@ -931,12 +931,22 @@
    let currentZoom = 1.4; // 140%
 
    function applyZoom(){
-       const container = document.getElementById("pdf-container");
-       if (!container) return;
-       container.style.transform = `scale(${currentZoom})`;
-       const label = document.getElementById("zoom-label");
-       if (label) label.textContent = Math.round(currentZoom * 100) + "%";
-   }
+    const container = document.getElementById("pdf-container");
+    if (!container) return;
+
+    container.style.transform = `scale(${currentZoom})`;
+    container.style.transformOrigin = 'top left';
+
+    // 🔑 Expand layout height so scroll area matches the visual size
+    const base = BASE_CONTENT_HEIGHT || document.getElementById('pdf-pages')?.scrollHeight || 0;
+    if (base > 0) {
+        container.style.height = (base * currentZoom) + 'px';
+    }
+
+    const label = document.getElementById("zoom-label");
+    if (label) label.textContent = Math.round(currentZoom * 100) + "%";
+}
+
 
    function zoomIn(){
        currentZoom = Math.min(currentZoom + 0.1, 2.0);
@@ -1376,9 +1386,16 @@
       if (thumbCount) thumbCount.textContent = `${pdf.numPages} Seiten`;
   
       positionOverlays(pageCanvases);
-  
-      // Restore field values (your original delayed restore)
-      setTimeout(() => { restoreFieldsFromStorage(); }, 300);
+
+        setTimeout(() => {
+            console.log("Trying delayed restore...");
+            restoreFieldsFromStorage();
+
+            // measure base (unscaled) content height after fields restoration
+            BASE_CONTENT_HEIGHT = document.getElementById('pdf-pages').scrollHeight;
+            applyZoom(); // re-apply to set container height for scrolling
+        }, 300);
+
   
       // Set the first thumb active
       setActiveThumb(1);
