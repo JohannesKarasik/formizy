@@ -1,22 +1,55 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-
 {% block meta %}
     <meta name="description" content="{{ form_info.seo_description }}">
-  <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/editor/">
+    <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/editor/">
+    <style>
+      /* Hide the site-wide header only on this page */
+      .site-header { display: none !important; }
+      /* Your editor header styles */
+      .editor-header{
+        display:flex; align-items:center; justify-content:space-between;
+        padding: 10px 14px; background:#e5edf7; border-bottom:1px solid #e6eaf2;
+      }
+      .editor-header .title{
+        font-size:14px; font-weight:600; color:#334155;
+      }
+      .editor-header .actions{
+        display:flex; gap:8px;
+      }
+      .editor-header .btn{
+        border:1px solid #cbd5f5; background:#fff; border-radius:6px;
+        padding:4px 10px; font-size:13px; cursor:pointer;
+      }
+      .editor-header .btn.primary{
+        border-color: transparent;
+        background: linear-gradient(180deg,#2563eb,#1e54d4);
+        color:#fff; font-weight:600;
+      }
+    </style>
 {% endblock %}
 
 {% block content %}
 
+<!-- ✅ Your page-specific header (replaces the global one) -->
+<header class="editor-header" role="banner">
+  <div class="title">PDF-Editor</div>
+  <div class="actions">
+    <button type="button" class="btn" onclick="history.back()">Zurück</button>
+    {% if not user.is_authenticated %}
+      <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()">PDF herunterladen</button>
+    {% else %}
+      <button type="button" class="btn primary" onclick="saveFieldsAndDownload()">PDF herunterladen</button>
+    {% endif %}
+  </div>
+</header>
+
 <main class="content-main">
-    <form id="csrf-form">{% csrf_token %}</form>
+  <form id="csrf-form">{% csrf_token %}</form>
 
-
-
-    {# ⬇ All viewer CSS + HTML + JS lives in this partial #}
-    {% include "main/pdf_editor_script.html" %}
-
+  {# ⬇ All viewer CSS + HTML + JS lives in this partial #}
+  {% include "main/pdf_editor_script.html" %}
 </main>
 
 {% endblock %}
