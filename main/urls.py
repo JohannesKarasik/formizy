@@ -68,23 +68,17 @@ urlpatterns = [
      views.form_editor,
      name="form_editor"),
 
-
-    # ============================
-    # NEW FORM ROUTES
-    # ============================
-
-    # Landing page (clean SEO-friendly)
-# ============================
-# NEW FORM ROUTES
+     # ============================
+# NEW FORM ROUTES (CORRECT)
 # ============================
 
-# Main page (SEO + PDF editor) at /<country>/<slug>/
+     # 1) Landing page (SEO page)
      path("<str:country_code>/<slug:form_slug>/",
-          form_editor, name="form_editor"),
+          form_landing, name="form_landing"),
 
-     # Optional: secondary URL /<country>/<slug>/editor/ pointing to same view
+     # 2) PDF editor page
      path("<str:country_code>/<slug:form_slug>/editor/",
-          form_editor, name="form_editor_alias"),
+          form_editor, name="form_editor"),
 
 
     # ============================
