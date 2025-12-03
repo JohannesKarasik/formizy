@@ -125,17 +125,19 @@
     flex: 1 1 auto;
     min-height: 0;         /* 🔑 allow child to shrink/grow inside flex */
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;    /* 🔒 no horizontal scrolling */
     background: #f8f9fa;
     }
+
 
     #pdf-container {
         position: relative;
         width: 100%;
         display: inline-block;
-        transform-origin: top left;
-        transform-origin: top center;
-    }
+        transform-origin: top center; /* 🔒 scale from the middle horizontally */
+        margin: 0 auto;               /* center the scaled content */
+        }
+
 
     #pdf-pages {
         position: relative;
@@ -935,7 +937,7 @@
     if (!container) return;
 
     container.style.transform = `scale(${currentZoom})`;
-    container.style.transformOrigin = 'top left';
+    container.style.transformOrigin = 'top center';
 
     // 🔑 Expand layout height so scroll area matches the visual size
     const base = BASE_CONTENT_HEIGHT || document.getElementById('pdf-pages')?.scrollHeight || 0;
@@ -945,7 +947,12 @@
 
     const label = document.getElementById("zoom-label");
     if (label) label.textContent = Math.round(currentZoom * 100) + "%";
-}
+
+    // 🔒 ensure no horizontal offset remains
+    const scroller = document.getElementById('pdf-scroll');
+    if (scroller) scroller.scrollLeft = 0;
+    }
+
 
 
    function zoomIn(){
