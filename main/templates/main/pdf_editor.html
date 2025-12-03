@@ -1,14 +1,9 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}
-   {{ form_info.seo_title|default:form_info.title }} — PDF Editor
-{% endblock %}
 
 {% block meta %}
-  {% if form_info.seo_description %}
     <meta name="description" content="{{ form_info.seo_description }}">
-  {% endif %}
   <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/editor/">
 {% endblock %}
 
@@ -17,15 +12,7 @@
 <main class="content-main">
     <form id="csrf-form">{% csrf_token %}</form>
 
-    <h1 style="font-size:32px; font-weight:700; text-align:center; color:#0b1220; margin-bottom:20px; line-height:1.2;">
-        {{ form_info.seo_h1|default:form_info.title }}
-    </h1>
 
-    {% if form_info.seo_intro %}
-        <p style="font-size:18px; text-align:center; color:#4b5563; max-width:720px; margin:0 auto 30px auto; line-height:1.6;">
-            {{ form_info.seo_intro }}
-        </p>
-    {% endif %}
 
     {# ⬇ All viewer CSS + HTML + JS lives in this partial #}
     {% include "main/pdf_editor_script.html" %}
