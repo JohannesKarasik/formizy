@@ -41,19 +41,39 @@
           gap: 10px;
         }
       
-        /* Buttons */
         .editor-header .btn{
-          appearance: none;
-          border: 1px solid #d7def0;
-          background: #fff;
-          color: #0f172a;
-          border-radius: 10px;
-          padding: 8px 12px;
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform .06s ease, box-shadow .18s ease, border-color .18s ease;
-        }
+  appearance: none;
+  border: 1px solid #d7def0;
+  background: #fff;
+  color: #0f172a;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .18s ease, border-color .18s ease;
+  display: inline-flex;                /* 👈 for icon + text */
+  align-items: center;
+  gap: 8px;                            /* space between icon and text */
+}
+
+.editor-header .btn .icon{
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+
+.editor-header .btn.primary{
+  border-color: transparent;
+  background: linear-gradient(135deg, #2563eb, #1e54d4);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(37,99,235,0.25);
+}
+
+.editor-header .btn.primary .icon{
+  filter: drop-shadow(0 0 0 rgba(0,0,0,0)); /* crisp on gradient */
+}
+
         .editor-header .btn:hover{
           transform: translateY(-1px);
           border-color: #c7d2f5;
@@ -88,14 +108,24 @@
     <div class="actions">
       <button type="button" class="btn" onclick="history.back()">Zurück</button>
       {% if not user.is_authenticated %}
-        <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()" aria-label="Fertig">
-          Fertig
-        </button>
-      {% else %}
-        <button type="button" class="btn primary" onclick="saveFieldsAndDownload()" aria-label="Fertig">
-          Fertig
-        </button>
-      {% endif %}
+      <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()" aria-label="Fertig">
+        <!-- check icon -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 6L9 17l-5-5"
+                stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Fertig</span>
+      </button>
+    {% else %}
+      <button type="button" class="btn primary" onclick="saveFieldsAndDownload()" aria-label="Fertig">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 6L9 17l-5-5"
+                stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Fertig</span>
+      </button>
+    {% endif %}
+    
     </div>
   </header>
   
