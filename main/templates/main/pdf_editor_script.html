@@ -22,12 +22,17 @@
         font-family: Inter, ui-sans-serif, system-ui;
         margin: 0;
         padding: 0;
+        height: 100%;
+        overflow: hidden; /* keep scrolling inside #pdf-scroll */
     }
 
     main {
        padding: 40px 20px;
        max-width: 900px;
        margin: 0 auto;
+        padding: 0;
+        max-width: none;
+        margin: 0;
     }
 
     .content-main {
@@ -36,6 +41,9 @@
         padding: 30px;
         overflow: hidden;
         position: relative;
+        max-width: none;
+        margin: 0;
+        padding: 0;
     }
 
     /* 🖼 Frame around toolbar + viewer */
@@ -47,6 +55,17 @@
         overflow: hidden; /* keep corners round */
         margin-top: 24px;
         position: relative;
+        background: #ffffff;
+        position: relative;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* keep everything inside */
     }
 
     /* 🔝 Top toolbar */
@@ -107,6 +126,14 @@
         overflow-x: auto; /* allow side scroll when zoomed in */
         background: #f8f9fa;
     }
+
+    #pdf-scroll {
+        flex: 1 1 auto;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: #f8f9fa;
+}
 
     #pdf-container {
         position: relative;
@@ -440,6 +467,9 @@
 .viewer-body{
   display:flex;
   min-height: 600px; /* matches #pdf-scroll default */
+  display:flex;
+  flex: 1 1 auto;
+  min-height: 0;     /* important so #pdf-scroll can size */
 }
 
 /* Left sidebar (thumbnails) */
