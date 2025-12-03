@@ -321,39 +321,47 @@ def country(request, country_code):
 
 from .models import Form
 
-def form_detail(request, country_code, form_slug):
+def form_landing(request, country_code, form_slug):
     form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
 
-    # Fetch other forms from the same country, excluding the current one
     related_forms = Form.objects.filter(
         country__code=country_code
     ).exclude(slug=form_slug)
 
-    # Existing logic...
-    import time
-    pdf_url = f"{form_info.pdf_file.url}?v={int(time.time())}"
-    pdf_path = form_info.pdf_file.path
-    doc = fitz.open(pdf_path)
-    width = doc[0].rect.width
-    doc.close()
-    viewer_scale = 833 / width
-
-    # ✅ NEW: auto-language from URL → or cookie → fallback
     lang, lang_code = get_ui_language(request, country_code)
 
-    return render(request, "main/pdf_clean_viewer.html", {
+    return render(request, "main/form_landing.html", {
+        "form_info": form_info,
+        "country_code": country_code,
+        "related_forms": related_forms,
+        "lang": lang,
+        "lang_code": lang_code,
+    })
+
+def form_editor(request, country_code, form_slug):
+    form_info = get_object_or_404(Form, country__code=country_code, slug=form_slug)
+
+    import time
+    pdf_url = f"{form_info.pdf_file.url}?v={int(time.time())}"
+
+    doc = fitz.open(form_info.pdf_file.path)
+    width = doc[0].rect.width
+    doc.close()
+
+    viewer_scale = 833 / width
+
+    lang, lang_code = get_ui_language(request, country_code)
+
+    return render(request, "main/pdf_editor.html", {
         "form_info": form_info,
         "pdf_url": pdf_url,
         "country_code": country_code,
         "viewer_scale": viewer_scale,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-
-        # NEW — correct language
         "lang": lang,
         "lang_code": lang_code,
-
-        "related_forms": related_forms,
     })
+
 
 
 
@@ -1077,3 +1085,5 @@ def create_landing_pdf_checkout_session(request, country_code, slug):
     )
 
     return JsonResponse({"id": session.id})
+
+
