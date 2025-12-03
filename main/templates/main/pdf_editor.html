@@ -40,16 +40,21 @@
 
 <!-- ✅ Your page-specific header (replaces the global one) -->
 <header class="editor-header" role="banner">
-  <div class="title">PDF-Editor</div>
-  <div class="actions">
-    <button type="button" class="btn" onclick="history.back()">Zurück</button>
-    {% if not user.is_authenticated %}
-      <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()">PDF herunterladen</button>
-    {% else %}
-      <button type="button" class="btn primary" onclick="saveFieldsAndDownload()">PDF herunterladen</button>
-    {% endif %}
-  </div>
-</header>
+    <div class="title">PDF-Editor</div>
+    <div class="actions">
+      <button type="button" class="btn" onclick="history.back()">Zurück</button>
+      {% if not user.is_authenticated %}
+        <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()" aria-label="Fertig">
+            Abschließen
+        </button>
+      {% else %}
+        <button type="button" class="btn primary" onclick="saveFieldsAndDownload()" aria-label="Fertig">
+            Abschließen
+        </button>
+      {% endif %}
+    </div>
+  </header>
+  
 
 <main class="content-main">
   <form id="csrf-form">{% csrf_token %}</form>
