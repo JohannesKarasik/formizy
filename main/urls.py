@@ -68,12 +68,18 @@ urlpatterns = [
     # ============================
 
     # Landing page (clean SEO-friendly)
-    path("<str:country_code>/<slug:form_slug>/",
-         form_landing, name="form_landing"),
+# ============================
+# NEW FORM ROUTES
+# ============================
 
-    # Dedicated editor page (PDF viewer)
-    path("<str:country_code>/<slug:form_slug>/editor/",
-         form_editor, name="form_editor"),
+# Main page (SEO + PDF editor) at /<country>/<slug>/
+     path("<str:country_code>/<slug:form_slug>/",
+          form_editor, name="form_editor"),
+
+     # Optional: secondary URL /<country>/<slug>/editor/ pointing to same view
+     path("<str:country_code>/<slug:form_slug>/editor/",
+          form_editor, name="form_editor_alias"),
+
 
     # ============================
     # COUNTRY ROUTE
