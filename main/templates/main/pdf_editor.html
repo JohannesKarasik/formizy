@@ -5,6 +5,12 @@
     <meta name="description" content="{{ form_info.seo_description }}">
     <link rel="canonical" href="https://formskies.com/{{ country_code }}/{{ form_info.slug }}/editor/">
     <style>
+
+          /* Hide ONLY the global header from base (direct child of <body>) */
+  body > header { display: none !important; }
+
+/* (Optional) If you also want to hide the global footer on this page: */
+/* body > footer.fs-footer { display: none !important; } */
       /* Hide the site-wide header only on this page */
       .site-header { display: none !important; }
       /* Your editor header styles */
