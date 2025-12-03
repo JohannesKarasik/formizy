@@ -140,6 +140,7 @@
         width: 100%;
         display: inline-block;
         transform-origin: top left;
+        transform-origin: top center;
     }
 
     #pdf-pages {
@@ -927,7 +928,7 @@
    /* =========================
       ZOOM
    ========================= */
-   let currentZoom = 1.0;
+   let currentZoom = 1.4; // 140%
 
    function applyZoom(){
        const container = document.getElementById("pdf-container");
