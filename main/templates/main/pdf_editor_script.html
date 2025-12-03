@@ -435,6 +435,75 @@
             padding: 22px !important;
         }
     }
+
+    /* === 2-pane layout (sidebar + viewer) === */
+.viewer-body{
+  display:flex;
+  min-height: 600px; /* matches #pdf-scroll default */
+}
+
+/* Left sidebar (thumbnails) */
+.page-sidebar{
+  width: 220px;                 /* smaller than viewer */
+  flex: 0 0 220px;
+  border-right: 1px solid var(--border);
+  background: #f6f8fc;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.sidebar-header{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:13px; color:#475569; margin-bottom:6px; padding:0 4px;
+}
+
+#thumbs{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.thumb{
+  position: relative;
+  border: 1px solid #dde3f1;
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px 6px 4px;
+  cursor: pointer;
+  transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+}
+.thumb:hover{ transform: translateY(-1px); box-shadow: var(--shadow); }
+.thumb canvas{ width: 100%; height: auto; display:block; border-radius:4px; }
+.thumb-label{
+  margin-top: 6px; font-size: 12px; color:#64748b; text-align:center;
+}
+
+/* Active state while scrolling */
+.thumb[aria-current="page"]{
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37,99,235,.2);
+}
+
+/* Right pane (existing viewer scroll area) */
+.page-viewer{
+  flex: 1 1 auto;
+  min-width: 0; /* prevent overflow in flex layouts */
+}
+
+/* Keep your top toolbar full width across both panes */
+.viewer-toolbar{ position: relative; z-index: 2; }
+
+/* Mobile: collapse sidebar under a toggle */
+@media (max-width: 900px){
+  .page-sidebar{ display:none; }
+  .page-sidebar.open{ display:block; position:absolute; z-index:3; width: 76vw; max-width: 320px; height: calc(100% - 48px); }
+  .viewer-frame{ position: relative; }
+  .sidebar-toggle{
+    position:absolute; left:12px; top:8px; z-index:4;
+    border:1px solid #cbd5f5; background:#fff; border-radius:6px; padding:4px 8px; font-size:13px; cursor:pointer;
+  }
+}
+
 </style>
 
 {# PDF.js #}
@@ -469,60 +538,80 @@
         <span class="fs-text">{{ lang.fullscreen }}</span>
     </div>
 
-    <div id="pdf-scroll">
-        <div id="pdf-container">
-            <div id="pdf-pages">
+<!-- Optional mobile toggle button -->
+<button class="sidebar-toggle" type="button"
+        aria-controls="page-sidebar" aria-expanded="false"
+        onclick="toggleSidebar()" style="display:none;">☰ Seiten</button>
 
-                {# overlay fields from fields_schema #}
-                {% if form_info.fields_schema %}
-                    {% for field in form_info.fields_schema %}
-                        {% if field.type == "checkbox" %}
-                            <div class="checkbox"
-                                 data-name="{{ field.name }}"
-                                 data-page="{{ field.page|default:1 }}"
-                                 data-px="{{ field.pixel_x }}"
-                                 data-py="{{ field.pixel_y }}"
-                                 data-pw="{{ field.pixel_width }}"
-                                 data-ph="{{ field.pixel_height }}">
-                            </div>
-
-                        {% elif field.type == "signature" %}
-                            <input type="text"
-                                   class="signature-input"
-                                   placeholder="{{ lang.sig_placeholder }}"
-                                   data-name="{{ field.name }}"
-                                   data-page="{{ field.page|default:1 }}"
-                                   data-px="{{ field.pixel_x }}"
-                                   data-py="{{ field.pixel_y }}"
-                                   data-pw="{{ field.pixel_width }}"
-                                   data-ph="{{ field.pixel_height }}">
-
-                        {% elif field.type == "code" %}
-                            <div class="code-input"
-                                 data-name="{{ field.name }}"
-                                 data-page="{{ field.page }}"
-                                 data-px="{{ field.pixel_x }}"
-                                 data-py="{{ field.pixel_y }}"
-                                 data-pw="{{ field.pixel_width }}"
-                                 data-ph="{{ field.pixel_height }}"
-                                 data-digits="{{ field.digits }}">
-                            </div>
-
-                        {% else %}
-                            <input type="text"
-                                   data-name="{{ field.name }}"
-                                   data-page="{{ field.page|default:1 }}"
-                                   data-px="{{ field.pixel_x }}"
-                                   data-py="{{ field.pixel_y }}"
-                                   data-pw="{{ field.pixel_width }}"
-                                   data-ph="{{ field.pixel_height }}">
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-
-            </div>
-        </div>
+<div class="viewer-body">
+  <!-- LEFT: Sidebar -->
+  <aside id="page-sidebar" class="page-sidebar" aria-label="PDF Seitenvorschau">
+    <div class="sidebar-header">
+      <span>Seiten</span>
+      <span id="thumb-count" aria-live="polite"></span>
     </div>
+    <div id="thumbs"></div>
+  </aside>
+
+  <!-- RIGHT: Existing viewer -->
+  <section class="page-viewer" aria-label="PDF Anzeige">
+    <div id="pdf-scroll">
+      <div id="pdf-container">
+        <div id="pdf-pages">
+
+          {# overlay fields from fields_schema #}
+          {% if form_info.fields_schema %}
+              {% for field in form_info.fields_schema %}
+                  {% if field.type == "checkbox" %}
+                      <div class="checkbox"
+                           data-name="{{ field.name }}"
+                           data-page="{{ field.page|default:1 }}"
+                           data-px="{{ field.pixel_x }}"
+                           data-py="{{ field.pixel_y }}"
+                           data-pw="{{ field.pixel_width }}"
+                           data-ph="{{ field.pixel_height }}">
+                      </div>
+
+                  {% elif field.type == "signature" %}
+                      <input type="text"
+                             class="signature-input"
+                             placeholder="{{ lang.sig_placeholder }}"
+                             data-name="{{ field.name }}"
+                             data-page="{{ field.page|default:1 }}"
+                             data-px="{{ field.pixel_x }}"
+                             data-py="{{ field.pixel_y }}"
+                             data-pw="{{ field.pixel_width }}"
+                             data-ph="{{ field.pixel_height }}">
+
+                  {% elif field.type == "code" %}
+                      <div class="code-input"
+                           data-name="{{ field.name }}"
+                           data-page="{{ field.page }}"
+                           data-px="{{ field.pixel_x }}"
+                           data-py="{{ field.pixel_y }}"
+                           data-pw="{{ field.pixel_width }}"
+                           data-ph="{{ field.pixel_height }}"
+                           data-digits="{{ field.digits }}">
+                      </div>
+
+                  {% else %}
+                      <input type="text"
+                             data-name="{{ field.name }}"
+                             data-page="{{ field.page|default:1 }}"
+                             data-px="{{ field.pixel_x }}"
+                             data-py="{{ field.pixel_y }}"
+                             data-pw="{{ field.pixel_width }}"
+                             data-ph="{{ field.pixel_height }}">
+                  {% endif %}
+              {% endfor %}
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 </div>
 
 {# ===== PAYMENT MODALS (same as old viewer) ===== #}
@@ -1193,3 +1282,128 @@
        });
    });
 </script>
+
+<script>
+    /* ===== Sidebar toggle (mobile) ===== */
+    function toggleSidebar(){
+      const aside = document.getElementById('page-sidebar');
+      const btn = document.querySelector('.sidebar-toggle');
+      const open = !aside.classList.contains('open');
+      aside.classList.toggle('open', open);
+      if (btn){ btn.setAttribute('aria-expanded', String(open)); }
+    }
+    // Show toggle on small screens
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      const btn = document.querySelector('.sidebar-toggle');
+      if (btn) btn.style.display = 'inline-flex';
+    }
+  
+    /* ===== Helpers ===== */
+    const thumbsEl = document.getElementById('thumbs');
+    const thumbCount = document.getElementById('thumb-count');
+    const scrollEl = document.getElementById('pdf-scroll');
+  
+    function setActiveThumb(pageNum){
+      document.querySelectorAll('.thumb[aria-current]').forEach(t => t.removeAttribute('aria-current'));
+      const t = document.querySelector(`.thumb[data-page="${pageNum}"]`);
+      if (t) t.setAttribute('aria-current','page');
+    }
+  
+    function scrollToPage(pageNum){
+      const target = document.querySelector(`#pdf-pages canvas[data-page="${pageNum}"]`);
+      if (!target) return;
+      scrollEl.scrollTo({
+        top: target.offsetTop - 8,
+        left: 0,
+        behavior: 'smooth'
+      });
+      setActiveThumb(pageNum);
+    }
+  
+    /* ===== Render loop: also create thumbnails ===== */
+    // Hook into your existing pdfjsLib.getDocument(...).promise.then(async pdf => { ... })
+    // Add inside that block after you get each `page`:
+    // (If you prefer, paste the whole block below to replace your loop.)
+  
+    // --- REPLACE your rendering loop with the following: ---
+    pdfjsLib.getDocument(pdfUrl).promise.then(async pdf => {
+      const pageCanvases = [];
+      const THUMB_W = 160; // thumbnail width in px (fits 220px sidebar nicely)
+  
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+  
+        // Main canvas (right pane)
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = FIXED_WIDTH / viewport.width;
+        const scaledViewport = page.getViewport({ scale });
+  
+        const canvas = document.createElement("canvas");
+        canvas.width = FIXED_WIDTH;
+        canvas.height = scaledViewport.height;
+        canvas.style.width = FIXED_WIDTH + "px";
+        canvas.style.height = scaledViewport.height + "px";
+        canvas.style.marginBottom = "20px";
+        canvas.dataset.page = pageNum;
+        pagesContainer.appendChild(canvas);
+  
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport: scaledViewport }).promise;
+  
+        // Thumbnail (left pane)
+        const thumbViewport = page.getViewport({ scale: THUMB_W / viewport.width });
+        const tCanvas = document.createElement('canvas');
+        tCanvas.width = Math.round(thumbViewport.width);
+        tCanvas.height = Math.round(thumbViewport.height);
+        await page.render({ canvasContext: tCanvas.getContext('2d'), viewport: thumbViewport }).promise;
+  
+        const thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.className = 'thumb';
+        thumb.dataset.page = pageNum;
+        thumb.setAttribute('aria-label', `Seite ${pageNum}`);
+        thumb.innerHTML = '';
+        thumb.appendChild(tCanvas);
+  
+        const label = document.createElement('div');
+        label.className = 'thumb-label';
+        label.textContent = `Seite ${pageNum}`;
+        thumb.appendChild(label);
+  
+        thumb.addEventListener('click', () => scrollToPage(pageNum));
+        thumbsEl.appendChild(thumb);
+  
+        pageCanvases.push(canvas);
+      }
+  
+      // Count label
+      if (thumbCount) thumbCount.textContent = `${pdf.numPages} Seiten`;
+  
+      positionOverlays(pageCanvases);
+  
+      // Restore field values (your original delayed restore)
+      setTimeout(() => { restoreFieldsFromStorage(); }, 300);
+  
+      // Set the first thumb active
+      setActiveThumb(1);
+  
+      // Scroll sync: highlight thumb for the most visible page
+      const io = new IntersectionObserver((entries) => {
+        // pick the entry with highest intersection ratio
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible){
+          const pageNum = visible.target.dataset.page;
+          setActiveThumb(pageNum);
+        }
+      }, { root: scrollEl, threshold: [0.2, 0.6, 0.9] });
+  
+      pageCanvases.forEach(c => io.observe(c));
+    });
+  
+    /* ===== Keep overlays positioned if layout changes ===== */
+    // Your existing resize/fullscreen handlers already call positionOverlays(...).
+    // No changes needed here.
+  
+  </script>
+  
