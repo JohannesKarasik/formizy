@@ -69,7 +69,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'mysite.mysite.urls'
+ROOT_URLCONF = 'mysite.urls'
+
 
 TEMPLATES = [
     {
@@ -86,8 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'formizy.wsgi.application'
-
+WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # Database
