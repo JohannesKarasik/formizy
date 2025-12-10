@@ -37,7 +37,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'formskies.com',
     'www.formskies.com',
-    '164.90.155.58',
+    '46.101.170.130',
     'localhost',
     '127.0.0.1'
 ]
