@@ -138,7 +138,7 @@ STATIC_URL = '/static/'
 
 # Folder where you keep your development static files (logo.png, CSS, JS)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'main' / 'static',
 ]
 
 
@@ -199,3 +199,6 @@ LANGUAGE_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = True
+
+
+
