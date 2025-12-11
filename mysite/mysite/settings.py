@@ -136,10 +136,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Folder where you keep your development static files (logo.png, CSS, JS)
 STATICFILES_DIRS = [
-    BASE_DIR / 'main' / 'static',
+    BASE_DIR.parent / 'main' / 'static',
 ]
+
+STATIC_ROOT = BASE_DIR.parent / 'staticfiles'
+
+
 
 
 # Folder where Django will OUTPUT collected static files (production)
