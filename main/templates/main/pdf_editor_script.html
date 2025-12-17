@@ -818,7 +818,8 @@ function renderPageToCanvas(page, scale, canvas) {
    ========================= */
    const pdfUrl = "{{ pdf_url }}";
    const FIXED_WIDTH = 833;
-   const VIEWER_SCALE = {{ viewer_scale|floatformat:6 }};
+    const MAPPER_PDF_WIDTH = {{ mapper_pdf_width }};
+
    const pagesContainer = document.getElementById("pdf-pages");
 
 
@@ -833,10 +834,14 @@ function renderPageToCanvas(page, scale, canvas) {
            pageLeftOffsets[pageNum] = canvas.offsetLeft;
        });
 
-       const scale = VIEWER_SCALE;
+       const scale = (FIXED_WIDTH / MAPPER_PDF_WIDTH) * currentZoom;
 
-       document
-         .querySelectorAll('#pdf-pages input[type="text"], #pdf-pages .checkbox')
+       document.querySelectorAll(
+            '#pdf-pages input[type="text"], \
+            #pdf-pages .checkbox, \
+            #pdf-pages .signature-input, \
+            #pdf-pages .code-input'
+            )
          .forEach(el => {
              const page = el.dataset.page || "1";
              const px = parseFloat(el.dataset.px || "0");
