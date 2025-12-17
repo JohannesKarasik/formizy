@@ -769,13 +769,37 @@
 </div>
 
 
+
+
 <script>
+
+
+function renderPageToCanvas(page, scale, canvas) {
+  const dpr = window.devicePixelRatio || 1;
+
+  const viewport = page.getViewport({ scale });
+  const ctx = canvas.getContext("2d");
+
+  canvas.width  = Math.floor(viewport.width * dpr);
+  canvas.height = Math.floor(viewport.height * dpr);
+
+  canvas.style.width  = Math.floor(viewport.width) + "px";
+  canvas.style.height = Math.floor(viewport.height) + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  return page.render({
+    canvasContext: ctx,
+    viewport
+  }).promise;
+}
+
    /* =========================
       GLOBAL STATE
    ========================= */
    let pendingPaymentCountry = null;
    let pendingPaymentSlug = null;
-   let BASE_CONTENT_HEIGHT = 0;
+
    let LOAD_START = performance.now();
 
 
@@ -982,26 +1006,7 @@
    ========================= */
    let currentZoom = 1.4; // 140%
 
-   function applyZoom(){
-    const container = document.getElementById("pdf-container");
-    if (!container) return;
 
-    container.style.transform = `scale(${currentZoom})`;
-    container.style.transformOrigin = 'top center';
-
-    // 🔑 Expand layout height so scroll area matches the visual size
-    const base = BASE_CONTENT_HEIGHT || document.getElementById('pdf-pages')?.scrollHeight || 0;
-    if (base > 0) {
-        container.style.height = (base * currentZoom) + 'px';
-    }
-
-    const label = document.getElementById("zoom-label");
-    if (label) label.textContent = Math.round(currentZoom * 100) + "%";
-
-    // 🔒 ensure no horizontal offset remains
-    const scroller = document.getElementById('pdf-scroll');
-    if (scroller) scroller.scrollLeft = 0;
-    }
 
 
 
@@ -1013,7 +1018,6 @@
        currentZoom = Math.max(currentZoom - 0.1, 0.5);
        applyZoom();
    }
-   document.addEventListener("DOMContentLoaded", applyZoom);
 
    /* =========================
       SIGNATURE MODAL
@@ -1399,20 +1403,16 @@
   
         // Main canvas (right pane)
         const viewport = page.getViewport({ scale: 1 });
-        const scale = FIXED_WIDTH / viewport.width;
-        const scaledViewport = page.getViewport({ scale });
-  
+        const scale = (FIXED_WIDTH / viewport.width) * currentZoom;
+
         const canvas = document.createElement("canvas");
-        canvas.width = FIXED_WIDTH;
-        canvas.height = scaledViewport.height;
-        canvas.style.width = FIXED_WIDTH + "px";
-        canvas.style.height = scaledViewport.height + "px";
-        canvas.style.marginBottom = "20px";
         canvas.dataset.page = pageNum;
+        canvas.style.marginBottom = "20px";
         pagesContainer.appendChild(canvas);
-  
-        await page.render({ canvasContext: canvas.getContext("2d"), viewport: scaledViewport }).promise;
-  
+
+        await renderPageToCanvas(page, scale, canvas);
+
+        
         // Thumbnail (left pane)
         const thumbViewport = page.getViewport({ scale: THUMB_W / viewport.width });
         const tCanvas = document.createElement('canvas');
