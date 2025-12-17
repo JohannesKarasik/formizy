@@ -895,6 +895,7 @@ def has_paid(request, country_code, form_slug):
 
 @login_required
 @require_POST
+
 def save_fields(request, country_code, form_slug):
 
     try:

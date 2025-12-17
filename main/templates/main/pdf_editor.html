@@ -169,23 +169,7 @@
       
   
       {# Primary "Fertig" button with check #}
-      {% if not user.is_authenticated %}
-        <button type="button" class="btn primary" onclick="saveFieldsAndOpenAuth()" aria-label="Fertig">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20 6L9 17l-5-5"
-                  stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Fertig</span>
-        </button>
-      {% else %}
-        <button type="button" class="btn primary" onclick="saveFieldsAndDownload()" aria-label="Fertig">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20 6L9 17l-5-5"
-                  stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Fertig</span>
-        </button>
-      {% endif %}
+
     </div>
   </header>
   
