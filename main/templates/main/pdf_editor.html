@@ -142,21 +142,20 @@
   
     <div class="actions">
       {# Download icon button #}
-      {% if not user.is_authenticated %}
-        <button type="button" class="btn icon" onclick="saveFieldsAndOpenAuth()" aria-label="Download">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 3v10m0 0l4-4m-4 4l-4-4M5 21h14"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      {% else %}
-        <button type="button" class="btn icon" onclick="saveFieldsAndDownload()" aria-label="Download">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 3v10m0 0l4-4m-4 4l-4-4M5 21h14"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      {% endif %}
+      <button
+      type="button"
+      class="btn primary"
+      onclick="saveFieldsAndPay()"
+      aria-label="Fertig"
+    >
+      <svg class="icon" viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5"
+              stroke="white" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Fertig</span>
+    </button>
+    
   
       {# Print icon button (PNG with fallback + cache-bust) #}
       <button type="button" class="btn icon" onclick="window.print()" aria-label="Drucken">
@@ -201,3 +200,25 @@
 </main>
 
 {% endblock %}
+
+
+<script>
+  async function saveFieldsAndPay() {
+  // 1. Collect fields (you already have this helper)
+  const fieldsData = collectAllFieldValues();
+
+  // 2. Save fields to session (NO auth required)
+  await fetch(`/{{ country_code }}/{{ form_info.slug }}/save-fields/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRF(),
+    },
+    body: JSON.stringify({ fields_data: fieldsData }),
+  });
+
+  // 3. Open Stripe payment modal
+  openPaymentModal();
+}
+
+</script>
